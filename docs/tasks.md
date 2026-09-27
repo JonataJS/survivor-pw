@@ -21,7 +21,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Boot, Menu, Game, Hud, Pause, LevelUp, Cultivo e Result, com troca entre elas.
   **Pronto quando:** dá para ir do Menu ao Game e voltar pelo Result usando botões de teste.
 
-- [ ] **T004 — Texturas placeholder** · Dep.: T003
+- [x] **T004 — Texturas placeholder** · Dep.: T003
   Gerar na BootScene formas simples: mago (círculo roxo), inimigos (quadrados por tipo), projéteis e gemas, com cores por elemento.
   **Pronto quando:** todas as texturas usadas no MVP existem sem arquivos externos.
 

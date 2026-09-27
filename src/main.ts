@@ -9,7 +9,7 @@ import { LevelUpScene } from './scenes/LevelUpScene';
 import { CultivationScene } from './scenes/CultivationScene';
 import { ResultScene } from './scenes/ResultScene';
 
-new Phaser.Game({
+const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'app',
   width: BASE_WIDTH,
@@ -39,3 +39,7 @@ new Phaser.Game({
     ResultScene,
   ],
 });
+
+if (import.meta.env.DEV) {
+  (window as unknown as { game: Phaser.Game }).game = game;
+}
