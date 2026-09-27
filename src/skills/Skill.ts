@@ -16,6 +16,9 @@ export interface SkillContext {
   // All enemies within `halfWidth` of the line from the caster out to
   // `range` along (dirX, dirY) — the "atravessa e acerta todos" hitbox.
   findEnemiesInLine: (dirX: number, dirY: number, range: number, halfWidth: number) => Enemy[];
+  // All enemies within `radius` of (centerX, centerY) — area-around-a-point
+  // hitbox (Tempestade Flamejante's pulses around the caster).
+  findEnemiesInRadius: (centerX: number, centerY: number, radius: number) => Enemy[];
   // Shared damage → death → gem-drop pipeline (owned by GameScene), so every
   // skill that hits an enemy directly (not through a Projectile) uses the
   // exact same resolution as everything else.

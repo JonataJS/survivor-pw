@@ -15,6 +15,7 @@ import { FireMarkSkill } from '../skills/FireMark';
 import { SuddenSpringSkill } from '../skills/SuddenSpring';
 import { StoneRainSkill } from '../skills/StoneRain';
 import { PhoenixWingsSkill } from '../skills/PhoenixWings';
+import { FlamingStormSkill } from '../skills/FlamingStorm';
 import { createTextButton } from '../ui/textButton';
 import { createRng, pickOne, type Rng } from '../core/rng';
 import type { Enemy } from '../entities/Enemy';
@@ -66,6 +67,7 @@ export class GameScene extends Phaser.Scene {
     this.skillSystem.add(new SuddenSpringSkill(this.areaEffectSystem));
     this.skillSystem.add(new StoneRainSkill(this.areaEffectSystem));
     this.skillSystem.add(new PhoenixWingsSkill(this.areaEffectSystem));
+    this.skillSystem.add(new FlamingStormSkill(this.areaEffectSystem));
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
@@ -144,6 +146,8 @@ export class GameScene extends Phaser.Scene {
       findRandomVisibleEnemy: (exclude) => this.findRandomVisibleEnemy(exclude),
       findEnemiesInLine: (dirX, dirY, range, halfWidth) =>
         this.findEnemiesInLine(dirX, dirY, range, halfWidth),
+      findEnemiesInRadius: (centerX, centerY, radius) =>
+        this.findEnemiesInRadius(centerX, centerY, radius),
       dealDamage: (enemy, damage) => this.dealDamageToEnemy(enemy, damage),
     });
     this.projectileSystem.update(delta, (enemy, damage) => this.dealDamageToEnemy(enemy, damage));
@@ -227,6 +231,11 @@ export class GameScene extends Phaser.Scene {
       result.push(enemy);
     }
     return result;
+  }
+
+  private findEnemiesInRadius(centerX: number, centerY: number, radius: number): Enemy[] {
+    const candidates = this.spawnSystem.grid.queryNeighbors(centerX, centerY, radius);
+    return candidates.filter((enemy) => enemy.active);
   }
 
   private dealDamageToEnemy(enemy: Enemy, damage: number): void {
