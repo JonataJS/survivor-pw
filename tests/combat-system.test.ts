@@ -137,12 +137,12 @@ describe('calculateStats — passivos e seus próprios aditivos', () => {
   it('Escudo de Terra god: −15% de dano recebido, defesa do escudo intacta', () => {
     const stats = calculateStats(earthShield, 3, [], 'god');
     expect(stats.damageTakenReduction).toBeCloseTo(0.15);
-    expect(stats.values.physicalDefenseBonus).toBeCloseTo(0.6);
+    expect(stats.values.physicalDefenseBonus).toBeCloseTo(6);
   });
 
   it('Escudo de Terra evil: bônus de defesa do escudo +150%', () => {
     const stats = calculateStats(earthShield, 3, [], 'evil');
-    expect(stats.values.physicalDefenseBonus).toBeCloseTo(0.6 * 2.5);
+    expect(stats.values.physicalDefenseBonus).toBeCloseTo(6 * 2.5);
   });
 
   it('Escudo de Fogo evil: regeneração do escudo ×3', () => {

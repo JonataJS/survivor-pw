@@ -9,7 +9,9 @@ import { AreaEffectSystem } from '../systems/AreaEffectSystem';
 import {
   calculateDamage,
   calculatePhysicalDamage,
+  calculateStats,
   CONTACT_DAMAGE_INTERVAL_SECONDS,
+  type EquippedPassive,
 } from '../systems/CombatSystem';
 import { FireMarkSkill } from '../skills/FireMark';
 import { SuddenSpringSkill } from '../skills/SuddenSpring';
@@ -19,7 +21,13 @@ import { FlamingStormSkill } from '../skills/FlamingStorm';
 import { SandStormSkill } from '../skills/SandStorm';
 import { createTextButton } from '../ui/textButton';
 import { createRng, pickOne, type Rng } from '../core/rng';
+import { fireMastery, waterMastery, earthMastery, earthShield, fireShield, serenity } from '../data/passives';
+import type { PassiveDef } from '../data/types';
 import type { Enemy } from '../entities/Enemy';
+
+// Debug-only max level used while T041's upgrade picker doesn't exist yet —
+// lets T030's passives be toggled on/off to verify their effect manually.
+const DEBUG_PASSIVE_LEVEL = 5;
 
 const GRID_SIZE = 100;
 const CONTACT_QUERY_RADIUS = 64;
@@ -39,6 +47,7 @@ export class GameScene extends Phaser.Scene {
   private debugGridGraphics!: Phaser.GameObjects.Graphics;
   private skillSystem!: SkillSystem;
   private skillRng!: Rng;
+  private equippedPassives: EquippedPassive[] = [];
   matchElapsedSeconds = 0;
 
   constructor() {
@@ -84,6 +93,12 @@ export class GameScene extends Phaser.Scene {
     keyboard.on('keydown-F2', () => {
       this.spawnSystem.spawnBurst(debug.stressTestEnemyCount, this.cameras.main.worldView);
     });
+    keyboard.on('keydown-F3', () => this.togglePassive(fireMastery));
+    keyboard.on('keydown-F4', () => this.togglePassive(waterMastery));
+    keyboard.on('keydown-F5', () => this.togglePassive(earthMastery));
+    keyboard.on('keydown-F6', () => this.togglePassive(earthShield));
+    keyboard.on('keydown-F7', () => this.togglePassive(fireShield));
+    keyboard.on('keydown-F8', () => this.togglePassive(serenity));
 
     this.add.text(width / 2, 40, 'Game (placeholder)', { fontSize: '24px' }).setOrigin(0.5).setScrollFactor(0);
     this.timerText = this.add
@@ -140,6 +155,11 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    const regenPerSecond = this.totalRegenPerSecond();
+    if (regenPerSecond > 0) {
+      this.player.hp = Math.min(this.player.maxHp, this.player.hp + regenPerSecond * (delta / 1000));
+    }
+
     this.spawnSystem.update(delta * timeScale, this.matchElapsedSeconds, this.cameras.main.worldView);
     this.spawnSystem.chaseAll(this.player.x, this.player.y);
     this.skillSystem.update(delta / 1000, {
@@ -147,7 +167,7 @@ export class GameScene extends Phaser.Scene {
       casterY: this.player.y,
       facingX: this.player.facingX,
       facingY: this.player.facingY,
-      equippedPassives: [],
+      equippedPassives: this.equippedPassives,
       path: undefined,
       findNearestEnemy: (exclude) =>
         this.spawnSystem.grid.findNearest(
@@ -189,13 +209,18 @@ export class GameScene extends Phaser.Scene {
     const fps = this.game.loop.actualFps;
     const totalEntities = this.spawnSystem.activeEnemies.size + 1;
     const cellCount = this.spawnSystem.grid.populatedCellCount;
+    const passiveNames = this.equippedPassives.map((p) => p.def.name).join(', ') || 'nenhum';
     this.debugText.setText(
       [
         `FPS: ${fps.toFixed(0)}`,
         `Entidades: ${totalEntities}`,
         `Células ocupadas: ${cellCount}`,
         `XP: ${this.player.xp}   Gemas ativas: ${this.gemSystem.activeGems.size}`,
+        `Passivos: ${passiveNames}`,
+        `Defesa física: ${(this.player.physicalDefense + this.totalPhysicalDefenseBonus()).toFixed(1)}` +
+          `   Regen: ${this.totalRegenPerSecond().toFixed(1)}/s`,
         '[F1] fechar debug   [F2] +300 inimigos',
+        '[F3] Maestria Fogo [F4] Água [F5] Terra [F6] Escudo Terra [F7] Escudo Fogo [F8] Serenidade',
       ].join('\n'),
     );
 
@@ -205,6 +230,33 @@ export class GameScene extends Phaser.Scene {
     this.spawnSystem.grid.forEachPopulatedCell((cx, cy) => {
       this.debugGridGraphics.strokeRect(cx * cellSize, cy * cellSize, cellSize, cellSize);
     });
+  }
+
+  private togglePassive(def: PassiveDef): void {
+    const index = this.equippedPassives.findIndex((equipped) => equipped.def.id === def.id);
+    if (index !== -1) {
+      this.equippedPassives.splice(index, 1);
+    } else {
+      this.equippedPassives.push({ def, level: DEBUG_PASSIVE_LEVEL });
+    }
+  }
+
+  private totalPhysicalDefenseBonus(): number {
+    let total = 0;
+    for (const equipped of this.equippedPassives) {
+      if (equipped.def.id !== earthShield.id) continue;
+      total += calculateStats(equipped.def, equipped.level).values.physicalDefenseBonus ?? 0;
+    }
+    return total;
+  }
+
+  private totalRegenPerSecond(): number {
+    let total = 0;
+    for (const equipped of this.equippedPassives) {
+      if (equipped.def.id !== fireShield.id) continue;
+      total += calculateStats(equipped.def, equipped.level).values.regenPerSecond ?? 0;
+    }
+    return total;
   }
 
   private findRandomVisibleEnemy(exclude?: Set<Enemy>): Enemy | undefined {
@@ -288,7 +340,7 @@ export class GameScene extends Phaser.Scene {
 
       const damage = calculatePhysicalDamage(
         enemy.def.contactDamage * enemy.damageDealtMultiplier,
-        this.player.physicalDefense,
+        this.player.physicalDefense + this.totalPhysicalDefenseBonus(),
       );
       this.player.takeDamage(damage);
       enemy.contactCooldown = CONTACT_DAMAGE_INTERVAL_SECONDS;

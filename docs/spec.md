@@ -82,7 +82,7 @@ Disponível desde o início. Sobe de nível pelo menu de upgrades, como as outra
 | **Maestria de Fogo** | +10% de dano de fogo |
 | **Maestria de Água** | +10% de dano de água |
 | **Maestria de Terra** | +10% de dano de terra |
-| **Escudo de Terra** | +20% de defesa física |
+| **Escudo de Terra** | +2 de defesa física (pontos fixos, somados antes do cálculo de dano recebido — a defesa base do mago é 0) |
 | **Escudo de Fogo** | +0,5 HP/s de regeneração |
 | **Serenidade** | −6% no tempo de espera de todas as skills (adaptada, já que não há mana) |
 

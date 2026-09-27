@@ -57,11 +57,11 @@ export const earthShield: PassiveDef = {
   id: 'earth-shield',
   name: 'Escudo de Terra',
   levels: [
-    { physicalDefenseBonus: 0.2 },
-    { physicalDefenseBonus: 0.4 },
-    { physicalDefenseBonus: 0.6 },
-    { physicalDefenseBonus: 0.8 },
-    { physicalDefenseBonus: 1.0 },
+    { physicalDefenseBonus: 2 },
+    { physicalDefenseBonus: 4 },
+    { physicalDefenseBonus: 6 },
+    { physicalDefenseBonus: 8 },
+    { physicalDefenseBonus: 10 },
   ],
   cultivation: {
     god: {

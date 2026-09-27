@@ -84,7 +84,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Espaço/botão; dash na direção do movimento; intocável durante o dash; recarga mostrada.
   **Pronto quando:** o dash atravessa inimigos sem receber dano.
 
-- [ ] **T030 — Passivos** · Dep.: T020
+- [x] **T030 — Passivos** · Dep.: T020
   3 maestrias, Escudo de Terra, Escudo de Fogo e Serenidade.
   **Pronto quando:** cada passivo altera o valor esperado (conferido no modo debug).
 
