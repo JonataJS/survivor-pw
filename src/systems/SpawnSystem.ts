@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { Pool } from '../core/Pool';
 import { createRng, pickOne, type Rng } from '../core/rng';
+import { SpatialGrid } from '../core/SpatialGrid';
 import { Enemy } from '../entities/Enemy';
 import { enemies as enemyDefs } from '../data/enemies';
 import { waves } from '../data/waves';
@@ -8,9 +9,11 @@ import type { WaveDef } from '../data/types';
 import { pickSpawnPoint, pickWaveForTime, type ViewRect } from './spawnLogic';
 
 const SPAWN_MARGIN = 80;
+const GRID_CELL_SIZE = 64;
 
 export class SpawnSystem {
   readonly activeEnemies = new Set<Enemy>();
+  readonly grid = new SpatialGrid<Enemy>(GRID_CELL_SIZE);
 
   private readonly pool: Pool<Enemy>;
   private readonly rng: Rng;
@@ -30,6 +33,11 @@ export class SpawnSystem {
   }
 
   update(deltaMs: number, elapsedMatchSeconds: number, view: ViewRect): void {
+    for (const enemy of this.activeEnemies) {
+      enemy.contactCooldown = Math.max(0, enemy.contactCooldown - deltaMs / 1000);
+      this.grid.move(enemy, enemy.x, enemy.y);
+    }
+
     const wave = pickWaveForTime(waves, elapsedMatchSeconds);
     this.timeSinceLastSpawn += deltaMs / 1000;
 
@@ -47,6 +55,7 @@ export class SpawnSystem {
 
   release(enemy: Enemy): void {
     this.activeEnemies.delete(enemy);
+    this.grid.remove(enemy);
     this.pool.release(enemy);
   }
 
@@ -60,5 +69,6 @@ export class SpawnSystem {
     const enemy = this.pool.acquire();
     enemy.spawn(def, point.x, point.y, wave.hpMultiplier);
     this.activeEnemies.add(enemy);
+    this.grid.insert(enemy, point.x, point.y);
   }
 }

@@ -5,6 +5,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   def!: EnemyDef;
   hp = 0;
   moveSpeed = 0;
+  contactRadius = 0;
+  contactCooldown = 0;
 
   constructor(scene: Phaser.Scene) {
     super(scene, 0, 0, 'enemy-common');
@@ -17,8 +19,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.def = def;
     this.hp = def.hp * hpMultiplier;
     this.moveSpeed = def.speed;
+    this.contactCooldown = 0;
 
     this.setTexture(`enemy-${def.id}`);
+    this.contactRadius = this.width / 2;
     this.setPosition(x, y);
     this.setActive(true);
     this.setVisible(true);

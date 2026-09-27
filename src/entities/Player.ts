@@ -5,6 +5,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   readonly maxHp: number = mage.maxHp;
   hp: number = mage.maxHp;
   readonly speed: number = mage.speed;
+  readonly physicalDefense: number = mage.physicalDefense;
 
   private readonly cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private readonly wasdKeys: Record<'W' | 'A' | 'S' | 'D', Phaser.Input.Keyboard.Key>;
@@ -40,5 +41,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     this.setVelocity(moveX, moveY);
+  }
+
+  takeDamage(amount: number): void {
+    this.hp = Math.max(0, this.hp - amount);
   }
 }

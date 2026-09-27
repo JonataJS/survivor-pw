@@ -43,7 +43,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   `Enemy` com os 3 tipos; `SpawnSystem` lendo `waves.ts`, surgindo fora da tela e perseguindo o jogador.
   **Pronto quando:** as ondas crescem com o tempo e os tipos Rápido (1:30) e Tanque (3:00) aparecem na hora certa.
 
-- [ ] **T014 — Dano de contato e morte** · Dep.: T013
+- [x] **T014 — Dano de contato e morte** · Dep.: T013
   Inimigo encosta → dano no jogador (intervalo de 0,5 s, com defesa). HP zero → Result com derrota.
   **Pronto quando:** morrer leva à tela final.
 
