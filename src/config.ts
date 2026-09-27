@@ -5,6 +5,9 @@ export const TARGET_FPS = 60;
 export const WORLD_WIDTH = 3000;
 export const WORLD_HEIGHT = 3000;
 
+export const MATCH_DURATION_SECONDS = 600;
+
 export const debug = {
   active: false,
+  fastForwardTimeScale: 20,
 };

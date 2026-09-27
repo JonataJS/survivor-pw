@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { WORLD_WIDTH, WORLD_HEIGHT } from '../config';
+import { WORLD_WIDTH, WORLD_HEIGHT, MATCH_DURATION_SECONDS, debug } from '../config';
 import { Player } from '../entities/Player';
 import { SpawnSystem } from '../systems/SpawnSystem';
 import { calculatePhysicalDamage, CONTACT_DAMAGE_INTERVAL_SECONDS } from '../systems/CombatSystem';
@@ -12,6 +12,8 @@ export class GameScene extends Phaser.Scene {
   private player!: Player;
   private spawnSystem!: SpawnSystem;
   private matchEnded = false;
+  private timerText!: Phaser.GameObjects.Text;
+  private fastForwardKey!: Phaser.Input.Keyboard.Key;
   matchElapsedSeconds = 0;
 
   constructor() {
@@ -33,7 +35,14 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.spawnSystem = new SpawnSystem(this, WORLD_WIDTH, WORLD_HEIGHT);
 
+    const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
+    this.fastForwardKey = keyboard.addKey('F');
+
     this.add.text(width / 2, 40, 'Game (placeholder)', { fontSize: '24px' }).setOrigin(0.5).setScrollFactor(0);
+    this.timerText = this.add
+      .text(width - 16, 16, this.formatTime(0), { fontSize: '20px' })
+      .setOrigin(1, 0)
+      .setScrollFactor(0);
 
     createTextButton(this, width / 2 - 220, height - 100, 'Pausar', () => {
       this.scene.pause();
@@ -51,7 +60,7 @@ export class GameScene extends Phaser.Scene {
     }).setScrollFactor(0);
 
     createTextButton(this, width / 2, height - 40, 'Terminar partida', () => {
-      this.endMatch();
+      this.endMatch(false);
     }).setScrollFactor(0);
   }
 
@@ -60,10 +69,25 @@ export class GameScene extends Phaser.Scene {
 
     this.player.update();
 
-    this.matchElapsedSeconds += delta / 1000;
-    this.spawnSystem.update(delta, this.matchElapsedSeconds, this.cameras.main.worldView);
+    const fastForwarding = this.fastForwardKey.isDown;
+    const timeScale = fastForwarding ? debug.fastForwardTimeScale : 1;
+    this.matchElapsedSeconds += (delta / 1000) * timeScale;
+    this.timerText.setText(this.formatTime(this.matchElapsedSeconds));
+
+    if (this.matchElapsedSeconds >= MATCH_DURATION_SECONDS) {
+      this.endMatch(true);
+      return;
+    }
+
+    this.spawnSystem.update(delta * timeScale, this.matchElapsedSeconds, this.cameras.main.worldView);
     this.spawnSystem.chaseAll(this.player.x, this.player.y);
-    this.handleContactDamage();
+
+    // The debug fast-forward is meant to skip time safely to reach the
+    // victory condition; contact damage is paused while it's held so
+    // testers aren't killed by the side effect of also speeding up combat.
+    if (!fastForwarding) {
+      this.handleContactDamage();
+    }
   }
 
   private handleContactDamage(): void {
@@ -85,17 +109,24 @@ export class GameScene extends Phaser.Scene {
       enemy.contactCooldown = CONTACT_DAMAGE_INTERVAL_SECONDS;
 
       if (this.player.hp <= 0) {
-        this.endMatch();
+        this.endMatch(false);
         return;
       }
     }
   }
 
-  private endMatch(): void {
+  private endMatch(victory: boolean): void {
     if (this.matchEnded) return;
     this.matchEnded = true;
     this.scene.stop('Hud');
-    this.scene.start('Result');
+    this.scene.start('Result', { victory });
+  }
+
+  private formatTime(totalSeconds: number): string {
+    const clamped = Math.min(totalSeconds, MATCH_DURATION_SECONDS);
+    const minutes = Math.floor(clamped / 60);
+    const seconds = Math.floor(clamped % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
   private drawWorldGrid(): void {

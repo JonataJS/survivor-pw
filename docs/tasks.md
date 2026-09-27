@@ -47,7 +47,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Inimigo encosta → dano no jogador (intervalo de 0,5 s, com defesa). HP zero → Result com derrota.
   **Pronto quando:** morrer leva à tela final.
 
-- [ ] **T015 — Cronômetro e vitória** · Dep.: T011
+- [x] **T015 — Cronômetro e vitória** · Dep.: T011
   Cronômetro de partida; aos 10:00 → Result com vitória.
   **Pronto quando:** com um modo de tempo acelerado (debug), a vitória é disparada.
 
