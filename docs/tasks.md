@@ -73,7 +73,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Gema ao matar; atração dentro do raio de coleta; fusão acima de ~200 gemas.
   **Pronto quando:** coletar gemas enche a barra de XP.
 
-- [ ] **T024 — Fonte Repentina** · Dep.: T021 — coluna de água que sobe do chão sob o inimigo (dano instantâneo, sem projétil), com lentidão. Visual: círculo azul no chão que cresce para cima em forma de jato vertical e se desfaz.
+- [x] **T024 — Fonte Repentina** · Dep.: T021 — coluna de água que sobe do chão sob o inimigo (dano instantâneo, sem projétil), com lentidão. Visual: círculo azul no chão que cresce para cima em forma de jato vertical e se desfaz.
 - [ ] **T025 — Chuva de Pedra** · Dep.: T021 — pedra que cai do céu como meteoro sobre um inimigo aleatório visível (sombra no chão antes do impacto).
 - [ ] **T026 — Asas da Fênix** · Dep.: T021 — fênix de fogo em linha reta na direção do movimento, atravessa e empurra todos os inimigos no caminho.
 - [ ] **T027 — Tempestade Flamejante** · Dep.: T021 — área em pulsos ao redor do jogador.

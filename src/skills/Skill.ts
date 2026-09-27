@@ -8,6 +8,10 @@ export interface SkillContext {
   equippedPassives: EquippedPassive[];
   path?: Path;
   findNearestEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
+  // Shared damage → death → gem-drop pipeline (owned by GameScene), so every
+  // skill that hits an enemy directly (not through a Projectile) uses the
+  // exact same resolution as everything else.
+  dealDamage: (enemy: Enemy, damage: number) => void;
 }
 
 export interface Skill {

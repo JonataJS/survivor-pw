@@ -5,9 +5,16 @@ import { SpawnSystem } from '../systems/SpawnSystem';
 import { SkillSystem } from '../systems/SkillSystem';
 import { ProjectileSystem } from '../systems/ProjectileSystem';
 import { GemSystem } from '../systems/GemSystem';
-import { calculatePhysicalDamage, CONTACT_DAMAGE_INTERVAL_SECONDS } from '../systems/CombatSystem';
+import { AreaEffectSystem } from '../systems/AreaEffectSystem';
+import {
+  calculateDamage,
+  calculatePhysicalDamage,
+  CONTACT_DAMAGE_INTERVAL_SECONDS,
+} from '../systems/CombatSystem';
 import { FireMarkSkill } from '../skills/FireMark';
+import { SuddenSpringSkill } from '../skills/SuddenSpring';
 import { createTextButton } from '../ui/textButton';
+import type { Enemy } from '../entities/Enemy';
 
 const GRID_SIZE = 100;
 const CONTACT_QUERY_RADIUS = 64;
@@ -17,6 +24,7 @@ export class GameScene extends Phaser.Scene {
   private spawnSystem!: SpawnSystem;
   private projectileSystem!: ProjectileSystem;
   private gemSystem!: GemSystem;
+  private areaEffectSystem!: AreaEffectSystem;
   private matchEnded = false;
   private timerText!: Phaser.GameObjects.Text;
   private fastForwardKey!: Phaser.Input.Keyboard.Key;
@@ -46,9 +54,11 @@ export class GameScene extends Phaser.Scene {
     this.spawnSystem = new SpawnSystem(this, WORLD_WIDTH, WORLD_HEIGHT);
     this.projectileSystem = new ProjectileSystem(this);
     this.gemSystem = new GemSystem(this);
+    this.areaEffectSystem = new AreaEffectSystem(this);
 
     this.skillSystem = new SkillSystem();
     this.skillSystem.add(new FireMarkSkill(this.projectileSystem));
+    this.skillSystem.add(new SuddenSpringSkill(this.areaEffectSystem));
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
@@ -122,10 +132,9 @@ export class GameScene extends Phaser.Scene {
           this.player.y,
           (enemy) => enemy.active && !exclude?.has(enemy),
         ),
+      dealDamage: (enemy, damage) => this.dealDamageToEnemy(enemy, damage),
     });
-    this.projectileSystem.update(delta, this.spawnSystem, (enemy) => {
-      this.gemSystem.spawn(enemy.x, enemy.y, enemy.def.xp);
-    });
+    this.projectileSystem.update(delta, (enemy, damage) => this.dealDamageToEnemy(enemy, damage));
     this.gemSystem.update(
       this.player.x,
       this.player.y,
@@ -166,6 +175,14 @@ export class GameScene extends Phaser.Scene {
     this.spawnSystem.grid.forEachPopulatedCell((cx, cy) => {
       this.debugGridGraphics.strokeRect(cx * cellSize, cy * cellSize, cellSize, cellSize);
     });
+  }
+
+  private dealDamageToEnemy(enemy: Enemy, damage: number): void {
+    enemy.hp -= calculateDamage(damage);
+    if (enemy.hp <= 0) {
+      this.gemSystem.spawn(enemy.x, enemy.y, enemy.def.xp);
+      this.spawnSystem.release(enemy);
+    }
   }
 
   private handleContactDamage(): void {

@@ -35,6 +35,7 @@ export class SpawnSystem {
   update(deltaMs: number, elapsedMatchSeconds: number, view: ViewRect): void {
     for (const enemy of this.activeEnemies) {
       enemy.contactCooldown = Math.max(0, enemy.contactCooldown - deltaMs / 1000);
+      enemy.tickStatus(deltaMs / 1000);
       this.grid.move(enemy, enemy.x, enemy.y);
     }
 

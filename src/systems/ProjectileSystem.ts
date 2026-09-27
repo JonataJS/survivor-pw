@@ -2,8 +2,8 @@ import Phaser from 'phaser';
 import { Pool } from '../core/Pool';
 import { Projectile } from '../entities/Projectile';
 import type { Enemy } from '../entities/Enemy';
-import type { SpawnSystem } from './SpawnSystem';
-import { calculateDamage } from './CombatSystem';
+
+export type DealDamage = (enemy: Enemy, damage: number) => void;
 
 export class ProjectileSystem {
   private readonly pool: Pool<Projectile>;
@@ -22,46 +22,27 @@ export class ProjectileSystem {
     this.active.add(projectile);
   }
 
-  update(deltaMs: number, spawnSystem: SpawnSystem, onEnemyKilled: (enemy: Enemy) => void): void {
+  update(deltaMs: number, dealDamage: DealDamage): void {
     for (const projectile of this.active) {
-      if (!projectile.target || !projectile.target.active) {
+      if (!projectile.hasLiveTarget) {
         this.release(projectile);
         continue;
       }
 
+      const target = projectile.target as Enemy;
       projectile.travel(deltaMs);
 
-      const distance = Phaser.Math.Distance.Between(
-        projectile.x,
-        projectile.y,
-        projectile.target.x,
-        projectile.target.y,
-      );
+      const distance = Phaser.Math.Distance.Between(projectile.x, projectile.y, target.x, target.y);
 
-      if (distance <= projectile.hitRadius + projectile.target.contactRadius) {
-        this.applyHit(projectile, spawnSystem, onEnemyKilled);
+      if (distance <= projectile.hitRadius + target.contactRadius) {
+        dealDamage(target, projectile.damage);
+        this.release(projectile);
         continue;
       }
 
       if (projectile.expired) {
         this.release(projectile);
       }
-    }
-  }
-
-  private applyHit(
-    projectile: Projectile,
-    spawnSystem: SpawnSystem,
-    onEnemyKilled: (enemy: Enemy) => void,
-  ): void {
-    const enemy = projectile.target;
-    this.release(projectile);
-    if (!enemy) return;
-
-    enemy.hp -= calculateDamage(projectile.damage);
-    if (enemy.hp <= 0) {
-      onEnemyKilled(enemy);
-      spawnSystem.release(enemy);
     }
   }
 

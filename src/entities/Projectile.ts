@@ -7,6 +7,7 @@ const MAX_LIFETIME_MS = 3000;
 export class Projectile extends Phaser.Physics.Arcade.Sprite {
   damage = 0;
   target?: Enemy;
+  private targetGeneration = -1;
   private lifetimeMs = 0;
 
   constructor(scene: Phaser.Scene) {
@@ -18,6 +19,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
 
   fire(x: number, y: number, target: Enemy, damage: number, textureKey: string): void {
     this.target = target;
+    this.targetGeneration = target.generation;
     this.damage = damage;
     this.lifetimeMs = 0;
 
@@ -53,6 +55,13 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     if (length > 0) {
       this.setVelocity((dx / length) * PROJECTILE_SPEED, (dy / length) * PROJECTILE_SPEED);
     }
+  }
+
+  // False once the target dies AND the pool recycles that same JS object
+  // into a different enemy (generation mismatch) — not just active===false,
+  // since a stale projectile shouldn't suddenly start chasing the new one.
+  get hasLiveTarget(): boolean {
+    return !!this.target && this.target.active && this.target.generation === this.targetGeneration;
   }
 
   get hitRadius(): number {
