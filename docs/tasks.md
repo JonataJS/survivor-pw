@@ -120,7 +120,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
 
 ## Fase 4 — Interface
 
-- [ ] **T050 — HUD** · Dep.: T040, T029
+- [x] **T050 — HUD** · Dep.: T040, T029
   HP, XP e nível, cronômetro, mortes, ícones de skills com nível e recarga do dash.
   **Pronto quando:** tudo atualiza em tempo real via EventBus.
 

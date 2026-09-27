@@ -11,6 +11,7 @@ export interface GameEvents {
   'cultivation-chosen': [path: 'god' | 'evil'];
   'enemy-killed': [count: number];
   'skill-leveled': [skillId: string, level: number];
+  'match-time-changed': [elapsedSeconds: number];
 }
 
 type Listener<Args extends unknown[]> = (...args: Args) => void;

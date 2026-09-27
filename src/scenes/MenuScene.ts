@@ -13,7 +13,6 @@ export class MenuScene extends Phaser.Scene {
 
     createTextButton(this, width / 2, height / 2, 'Jogar', () => {
       this.scene.start('Game');
-      this.scene.launch('Hud');
     });
   }
 }

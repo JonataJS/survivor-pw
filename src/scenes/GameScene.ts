@@ -45,6 +45,7 @@ import { DamageNumberSystem } from '../systems/DamageNumberSystem';
 import { GOD_COLOR, EVIL_COLOR } from '../skills/pathColors';
 import type { LevelUpSceneData } from './LevelUpScene';
 import type { CultivationSceneData } from './CultivationScene';
+import type { HudSceneData } from './HudScene';
 import { EventBus } from '../core/EventBus';
 
 // Debug-only max level while there's no UI for it yet — lets T030's
@@ -63,8 +64,7 @@ export class GameScene extends Phaser.Scene {
   private damageNumberSystem!: DamageNumberSystem;
   private playerAura!: Phaser.GameObjects.Arc;
   private matchEnded = false;
-  private timerText!: Phaser.GameObjects.Text;
-  private dashText!: Phaser.GameObjects.Text;
+  private killCount = 0;
   private fastForwardKey!: Phaser.Input.Keyboard.Key;
   private debugActive = false;
   private debugText!: Phaser.GameObjects.Text;
@@ -86,8 +86,6 @@ export class GameScene extends Phaser.Scene {
   private onCultivationRequired = (): void => {
     this.pendingCultivation += 1;
   };
-  private pathIcon!: Phaser.GameObjects.Arc;
-  private pathText!: Phaser.GameObjects.Text;
   // Serenidade god: a cada `interval` segundos, +`damageBonus` de dano por
   // `duration` segundos — global, então fica fora do ciclo de recarga de
   // qualquer skill (calculateDamage's periodicBuffActive é lido daqui).
@@ -105,6 +103,7 @@ export class GameScene extends Phaser.Scene {
 
     this.matchElapsedSeconds = 0;
     this.matchEnded = false;
+    this.killCount = 0;
     this.cameras.main.setBackgroundColor('#0a2a12');
     this.drawWorldGrid();
 
@@ -155,6 +154,9 @@ export class GameScene extends Phaser.Scene {
       EventBus.off('cultivation-required', this.onCultivationRequired);
     });
 
+    const hudData: HudSceneData = { player: this.player, equippedSkills: this.equippedSkills };
+    this.scene.launch('Hud', hudData);
+
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
 
@@ -176,23 +178,6 @@ export class GameScene extends Phaser.Scene {
     keyboard.on('keydown-F9', () => this.forcePath('god'));
     keyboard.on('keydown-F10', () => this.forcePath('evil'));
 
-    this.add.text(width / 2, 40, 'Game (placeholder)', { fontSize: '24px' }).setOrigin(0.5).setScrollFactor(0);
-    this.timerText = this.add
-      .text(width - 16, 16, this.formatTime(0), { fontSize: '20px' })
-      .setOrigin(1, 0)
-      .setScrollFactor(0);
-    this.dashText = this.add
-      .text(width - 16, 44, '', { fontSize: '16px', color: '#8a5a2b' })
-      .setOrigin(1, 0)
-      .setScrollFactor(0);
-    this.pathText = this.add
-      .text(width - 34, 72, '', { fontSize: '16px', color: '#ffffff' })
-      .setOrigin(1, 0)
-      .setScrollFactor(0);
-    this.pathIcon = this.add
-      .circle(width - 16, 80, 8, 0xffffff)
-      .setScrollFactor(0)
-      .setVisible(false);
     this.debugText = this.add
       .text(16, 44, '', { fontSize: '16px', color: '#ffdd55', backgroundColor: '#00000088' })
       .setScrollFactor(0)
@@ -224,16 +209,11 @@ export class GameScene extends Phaser.Scene {
     this.player.update(delta / 1000);
     this.updatePeriodicBuff(delta / 1000);
     this.playerAura.setPosition(this.player.x, this.player.y);
-    this.dashText.setText(
-      this.player.dashCooldownRemaining > 0
-        ? `Dash: ${this.player.dashCooldownRemaining.toFixed(1)}s`
-        : 'Dash: pronto',
-    );
 
     const fastForwarding = this.fastForwardKey.isDown;
     const timeScale = fastForwarding ? debug.fastForwardTimeScale : 1;
     this.matchElapsedSeconds += (delta / 1000) * timeScale;
-    this.timerText.setText(this.formatTime(this.matchElapsedSeconds));
+    EventBus.emit('match-time-changed', Math.min(this.matchElapsedSeconds, MATCH_DURATION_SECONDS));
 
     if (this.matchElapsedSeconds >= MATCH_DURATION_SECONDS) {
       this.endMatch(true);
@@ -242,7 +222,7 @@ export class GameScene extends Phaser.Scene {
 
     const regenPerSecond = this.totalRegenPerSecond();
     if (regenPerSecond > 0) {
-      this.player.hp = Math.min(this.player.maxHp, this.player.hp + regenPerSecond * (delta / 1000));
+      this.player.heal(regenPerSecond * (delta / 1000));
     }
 
     this.spawnSystem.update(delta * timeScale, this.matchElapsedSeconds, this.cameras.main.worldView);
@@ -327,8 +307,6 @@ export class GameScene extends Phaser.Scene {
     const path = this.cultivationSystem.path;
     if (!path) return;
     const color = path === 'god' ? GOD_COLOR : EVIL_COLOR;
-    this.pathIcon.setFillStyle(color).setVisible(true);
-    this.pathText.setText(path === 'god' ? 'God' : 'Evil').setColor(path === 'god' ? '#ffd700' : '#cc66ff');
     this.playerAura.setFillStyle(color, 0.25).setVisible(true);
   }
 
@@ -360,6 +338,7 @@ export class GameScene extends Phaser.Scene {
       case 'new-skill':
         this.equippedSkills.push({ def: option.skill, level: 1 });
         this.equipNewSkill(option.skill, 1);
+        EventBus.emit('skill-leveled', option.skill.id, 1);
         break;
       case 'improve-skill': {
         const equipped = this.equippedSkills.find((s) => s.def.id === option.skill.id);
@@ -370,6 +349,7 @@ export class GameScene extends Phaser.Scene {
           const instance = this.skillInstances.get(option.skill.id);
           if (instance) instance.level = option.toLevel;
         }
+        EventBus.emit('skill-leveled', option.skill.id, option.toLevel);
         break;
       }
       case 'new-passive':
@@ -467,7 +447,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private healPlayer(amount: number): void {
-    this.player.hp = Math.min(this.player.maxHp, this.player.hp + amount);
+    this.player.heal(amount);
   }
 
   private totalPhysicalDefenseBonus(): number {
@@ -588,6 +568,8 @@ export class GameScene extends Phaser.Scene {
     if (enemy.hp <= 0) {
       this.gemSystem.spawn(enemy.x, enemy.y, enemy.def.xp);
       this.spawnSystem.release(enemy);
+      this.killCount += 1;
+      EventBus.emit('enemy-killed', this.killCount);
     }
 
     return finalDamage;
@@ -632,13 +614,6 @@ export class GameScene extends Phaser.Scene {
     this.matchEnded = true;
     this.scene.stop('Hud');
     this.scene.start('Result', { victory });
-  }
-
-  private formatTime(totalSeconds: number): string {
-    const clamped = Math.min(totalSeconds, MATCH_DURATION_SECONDS);
-    const minutes = Math.floor(clamped / 60);
-    const seconds = Math.floor(clamped % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
   private drawWorldGrid(): void {

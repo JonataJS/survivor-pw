@@ -4,6 +4,7 @@ import { movingEarth } from '../data/skills';
 import { calculateStats, type EquippedPassive } from '../systems/CombatSystem';
 import { XpSystem } from '../systems/XpSystem';
 import type { Path } from '../data/types';
+import { EventBus } from '../core/EventBus';
 
 // How long the dash's burst of movement lasts. Distance and recarga come
 // from data/skills.ts (Terra Móvel); this is purely the animation timing.
@@ -113,6 +114,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   takeDamage(amount: number): void {
     this.hp = Math.max(0, this.hp - amount);
+    EventBus.emit('hp-changed', this.hp, this.maxHp);
+  }
+
+  // Regen (Escudo de Fogo) e roubo de vida/cura por acerto passam por aqui,
+  // então o HUD recebe 'hp-changed' independente da origem da cura.
+  heal(amount: number): void {
+    this.hp = Math.min(this.maxHp, this.hp + amount);
+    EventBus.emit('hp-changed', this.hp, this.maxHp);
   }
 
   addXp(amount: number): void {
@@ -123,6 +132,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   increaseMaxHp(amount: number): void {
     this.maxHp += amount;
     this.hp = Math.min(this.maxHp, this.hp + amount);
+    EventBus.emit('hp-changed', this.hp, this.maxHp);
   }
 
   setDashLevel(level: number): void {
