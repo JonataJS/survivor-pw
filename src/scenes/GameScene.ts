@@ -31,7 +31,7 @@ import {
   passives,
 } from '../data/passives';
 import { attackSkills, fireMark, movingEarth } from '../data/skills';
-import type { PassiveDef, SkillDef } from '../data/types';
+import type { PassiveDef, Path, SkillDef } from '../data/types';
 import type { Enemy } from '../entities/Enemy';
 import type { Skill } from '../skills/Skill';
 import {
@@ -39,7 +39,9 @@ import {
   type EquippedSkillState,
   type UpgradeOption,
 } from '../systems/UpgradeSystem';
+import { CultivationSystem } from '../systems/CultivationSystem';
 import type { LevelUpSceneData } from './LevelUpScene';
+import type { CultivationSceneData } from './CultivationScene';
 import { EventBus } from '../core/EventBus';
 
 // Debug-only max level while there's no UI for it yet — lets T030's
@@ -73,6 +75,14 @@ export class GameScene extends Phaser.Scene {
   private onLevelUp = (): void => {
     this.pendingLevelUps += 1;
   };
+  private cultivationSystem = new CultivationSystem();
+  private pendingCultivation = 0;
+  private cultivationActive = false;
+  private onCultivationRequired = (): void => {
+    this.pendingCultivation += 1;
+  };
+  private pathIcon!: Phaser.GameObjects.Arc;
+  private pathText!: Phaser.GameObjects.Text;
   matchElapsedSeconds = 0;
 
   constructor() {
@@ -117,9 +127,14 @@ export class GameScene extends Phaser.Scene {
 
     this.pendingLevelUps = 0;
     this.levelUpActive = false;
+    this.cultivationSystem = new CultivationSystem();
+    this.pendingCultivation = 0;
+    this.cultivationActive = false;
     EventBus.on('level-up', this.onLevelUp);
+    EventBus.on('cultivation-required', this.onCultivationRequired);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       EventBus.off('level-up', this.onLevelUp);
+      EventBus.off('cultivation-required', this.onCultivationRequired);
     });
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
@@ -150,6 +165,14 @@ export class GameScene extends Phaser.Scene {
       .text(width - 16, 44, '', { fontSize: '16px', color: '#8a5a2b' })
       .setOrigin(1, 0)
       .setScrollFactor(0);
+    this.pathText = this.add
+      .text(width - 34, 72, '', { fontSize: '16px', color: '#ffffff' })
+      .setOrigin(1, 0)
+      .setScrollFactor(0);
+    this.pathIcon = this.add
+      .circle(width - 16, 80, 8, 0xffffff)
+      .setScrollFactor(0)
+      .setVisible(false);
     this.debugText = this.add
       .text(16, 44, '', { fontSize: '16px', color: '#ffdd55', backgroundColor: '#00000088' })
       .setScrollFactor(0)
@@ -166,8 +189,7 @@ export class GameScene extends Phaser.Scene {
     }).setScrollFactor(0);
 
     createTextButton(this, width / 2 + 100, height - 100, 'Cultivo', () => {
-      this.scene.pause();
-      this.scene.launch('Cultivation');
+      if (!this.cultivationActive) this.openCultivation();
     }).setScrollFactor(0);
 
     createTextButton(this, width / 2, height - 40, 'Terminar partida', () => {
@@ -208,7 +230,7 @@ export class GameScene extends Phaser.Scene {
       facingX: this.player.facingX,
       facingY: this.player.facingY,
       equippedPassives: this.equippedPassives,
-      path: undefined,
+      path: this.cultivationSystem.path,
       findNearestEnemy: (exclude) =>
         this.spawnSystem.grid.findNearest(
           this.player.x,
@@ -244,12 +266,42 @@ export class GameScene extends Phaser.Scene {
       this.updateDebugOverlay();
     }
 
-    // Fila de level-ups: um XP grande pode disparar vários 'level-up' no
-    // mesmo frame (T040); resolve um de cada vez, na ordem em que chegaram.
-    if (!this.levelUpActive && this.pendingLevelUps > 0) {
+    // Fila de level-ups e Cultivo (T043): o Cultivo do nível 20 sempre
+    // resolve antes de qualquer level-up pendente, inclusive o desse
+    // mesmo nível — depois disso a fila de level-ups segue normalmente.
+    if (!this.levelUpActive && !this.cultivationActive && this.pendingCultivation > 0) {
+      this.pendingCultivation -= 1;
+      this.openCultivation();
+    } else if (!this.levelUpActive && !this.cultivationActive && this.pendingLevelUps > 0) {
       this.pendingLevelUps -= 1;
       this.openLevelUp();
     }
+  }
+
+  private openCultivation(): void {
+    this.cultivationActive = true;
+    const data: CultivationSceneData = {
+      equippedSkills: this.equippedSkills,
+      equippedPassives: this.equippedPassives,
+      onChoose: (path) => this.handleCultivationChosen(path),
+    };
+    this.scene.pause();
+    this.scene.launch('Cultivation', data);
+  }
+
+  private handleCultivationChosen(path: Path): void {
+    this.cultivationSystem.choosePath(path);
+    this.cultivationActive = false;
+    this.updatePathIndicator();
+    this.scene.resume();
+  }
+
+  private updatePathIndicator(): void {
+    const path = this.cultivationSystem.path;
+    if (!path) return;
+    const color = path === 'god' ? 0xffd700 : 0x8800ff;
+    this.pathIcon.setFillStyle(color).setVisible(true);
+    this.pathText.setText(path === 'god' ? 'God' : 'Evil').setColor(path === 'god' ? '#ffd700' : '#cc66ff');
   }
 
   private openLevelUp(): void {

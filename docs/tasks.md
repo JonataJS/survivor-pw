@@ -106,7 +106,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   `CultivoSystem` guardando o caminho; `XpSystem` insere o Cultivo na fila no nível 20 (antes do level-up normal). Testes: nível 20 sozinho, subir do 18 ao 22 de uma vez, e skill pega depois da escolha já recebendo o aditivo.
   **Pronto quando:** os testes passam.
 
-- [ ] **T044 — Tela de Cultivo** · Dep.: T043, T042
+- [x] **T044 — Tela de Cultivo** · Dep.: T043, T042
   Duas colunas (God dourado/branco, Evil vermelho/roxo) listando os aditivos das skills e passivos atuais, lidos de `descricao` nos dados; confirmar com clique, toque ou teclas 1/2. Ícone do caminho no HUD depois da escolha.
   **Pronto quando:** a escolha pausa o jogo, aplica o caminho e segue para o level-up normal do nível 20.
 
