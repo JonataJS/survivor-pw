@@ -9,6 +9,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   contactCooldown = 0;
   slowMultiplier = 1;
   private slowRemaining = 0;
+  damageDealtMultiplier = 1;
+  private damageDebuffRemaining = 0;
   // Bumped on every spawn() so stale external references (e.g. a Projectile
   // still in flight) can detect that the pool recycled this instance into a
   // different logical enemy, even though the JS object is the same.
@@ -29,6 +31,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.contactCooldown = 0;
     this.slowMultiplier = 1;
     this.slowRemaining = 0;
+    this.damageDealtMultiplier = 1;
+    this.damageDebuffRemaining = 0;
 
     this.setTexture(`enemy-${def.id}`);
     this.contactRadius = this.width / 2;
@@ -56,13 +60,28 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.slowRemaining = Math.max(this.slowRemaining, durationSeconds);
   }
 
-  tickStatus(deltaSeconds: number): void {
-    if (this.slowRemaining <= 0) return;
+  // Tempestade de Areia: reduces the contact damage this enemy deals for a
+  // time. Keeps the stronger/longer debuff, same rule as applySlow.
+  applyDamageDebuff(percentage: number, durationSeconds: number): void {
+    this.damageDealtMultiplier = Math.min(this.damageDealtMultiplier, 1 - percentage);
+    this.damageDebuffRemaining = Math.max(this.damageDebuffRemaining, durationSeconds);
+  }
 
-    this.slowRemaining -= deltaSeconds;
-    if (this.slowRemaining <= 0) {
-      this.slowRemaining = 0;
-      this.slowMultiplier = 1;
+  tickStatus(deltaSeconds: number): void {
+    if (this.slowRemaining > 0) {
+      this.slowRemaining -= deltaSeconds;
+      if (this.slowRemaining <= 0) {
+        this.slowRemaining = 0;
+        this.slowMultiplier = 1;
+      }
+    }
+
+    if (this.damageDebuffRemaining > 0) {
+      this.damageDebuffRemaining -= deltaSeconds;
+      if (this.damageDebuffRemaining <= 0) {
+        this.damageDebuffRemaining = 0;
+        this.damageDealtMultiplier = 1;
+      }
     }
   }
 

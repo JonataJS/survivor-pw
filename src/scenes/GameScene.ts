@@ -16,6 +16,7 @@ import { SuddenSpringSkill } from '../skills/SuddenSpring';
 import { StoneRainSkill } from '../skills/StoneRain';
 import { PhoenixWingsSkill } from '../skills/PhoenixWings';
 import { FlamingStormSkill } from '../skills/FlamingStorm';
+import { SandStormSkill } from '../skills/SandStorm';
 import { createTextButton } from '../ui/textButton';
 import { createRng, pickOne, type Rng } from '../core/rng';
 import type { Enemy } from '../entities/Enemy';
@@ -68,6 +69,7 @@ export class GameScene extends Phaser.Scene {
     this.skillSystem.add(new StoneRainSkill(this.areaEffectSystem));
     this.skillSystem.add(new PhoenixWingsSkill(this.areaEffectSystem));
     this.skillSystem.add(new FlamingStormSkill(this.areaEffectSystem));
+    this.skillSystem.add(new SandStormSkill(this.areaEffectSystem));
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
@@ -144,6 +146,8 @@ export class GameScene extends Phaser.Scene {
           (enemy) => enemy.active && !exclude?.has(enemy),
         ),
       findRandomVisibleEnemy: (exclude) => this.findRandomVisibleEnemy(exclude),
+      findStrongestEnemyNearby: (radius, exclude) =>
+        this.findStrongestEnemyNearby(radius, exclude),
       findEnemiesInLine: (dirX, dirY, range, halfWidth) =>
         this.findEnemiesInLine(dirX, dirY, range, halfWidth),
       findEnemiesInRadius: (centerX, centerY, radius) =>
@@ -205,6 +209,16 @@ export class GameScene extends Phaser.Scene {
     return pickOne(this.skillRng, candidates);
   }
 
+  private findStrongestEnemyNearby(radius: number, exclude?: Set<Enemy>): Enemy | undefined {
+    const candidates = this.spawnSystem.grid.queryNeighbors(this.player.x, this.player.y, radius);
+    let strongest: Enemy | undefined;
+    for (const enemy of candidates) {
+      if (!enemy.active || exclude?.has(enemy)) continue;
+      if (!strongest || enemy.hp > strongest.hp) strongest = enemy;
+    }
+    return strongest;
+  }
+
   private findEnemiesInLine(
     dirX: number,
     dirY: number,
@@ -260,7 +274,10 @@ export class GameScene extends Phaser.Scene {
       const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, enemy.x, enemy.y);
       if (distance > playerRadius + enemy.contactRadius) continue;
 
-      const damage = calculatePhysicalDamage(enemy.def.contactDamage, this.player.physicalDefense);
+      const damage = calculatePhysicalDamage(
+        enemy.def.contactDamage * enemy.damageDealtMultiplier,
+        this.player.physicalDefense,
+      );
       this.player.takeDamage(damage);
       enemy.contactCooldown = CONTACT_DAMAGE_INTERVAL_SECONDS;
 

@@ -13,6 +13,9 @@ export interface SkillContext {
   path?: Path;
   findNearestEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
   findRandomVisibleEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
+  // Highest-HP enemy within `radius` of the caster — the "inimigo mais
+  // forte por perto" target for Tempestade de Areia.
+  findStrongestEnemyNearby: (radius: number, exclude?: Set<Enemy>) => Enemy | undefined;
   // All enemies within `halfWidth` of the line from the caster out to
   // `range` along (dirX, dirY) — the "atravessa e acerta todos" hitbox.
   findEnemiesInLine: (dirX: number, dirY: number, range: number, halfWidth: number) => Enemy[];
