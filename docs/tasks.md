@@ -39,7 +39,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   `core/Pool.ts` e `core/SpatialGrid.ts`, com testes (inserir, mover, consultar vizinhos, mais próximo).
   **Pronto quando:** os testes passam.
 
-- [ ] **T013 — Inimigos e spawn** · Dep.: T011, T012
+- [x] **T013 — Inimigos e spawn** · Dep.: T011, T012
   `Enemy` com os 3 tipos; `SpawnSystem` lendo `waves.ts`, surgindo fora da tela e perseguindo o jogador.
   **Pronto quando:** as ondas crescem com o tempo e os tipos Rápido (1:30) e Tanque (3:00) aparecem na hora certa.
 
