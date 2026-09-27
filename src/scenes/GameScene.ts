@@ -4,6 +4,7 @@ import { Player } from '../entities/Player';
 import { SpawnSystem } from '../systems/SpawnSystem';
 import { SkillSystem } from '../systems/SkillSystem';
 import { ProjectileSystem } from '../systems/ProjectileSystem';
+import { GemSystem } from '../systems/GemSystem';
 import { calculatePhysicalDamage, CONTACT_DAMAGE_INTERVAL_SECONDS } from '../systems/CombatSystem';
 import { FireMarkSkill } from '../skills/FireMark';
 import { createTextButton } from '../ui/textButton';
@@ -15,6 +16,7 @@ export class GameScene extends Phaser.Scene {
   private player!: Player;
   private spawnSystem!: SpawnSystem;
   private projectileSystem!: ProjectileSystem;
+  private gemSystem!: GemSystem;
   private matchEnded = false;
   private timerText!: Phaser.GameObjects.Text;
   private fastForwardKey!: Phaser.Input.Keyboard.Key;
@@ -43,6 +45,7 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.spawnSystem = new SpawnSystem(this, WORLD_WIDTH, WORLD_HEIGHT);
     this.projectileSystem = new ProjectileSystem(this);
+    this.gemSystem = new GemSystem(this);
 
     this.skillSystem = new SkillSystem();
     this.skillSystem.add(new FireMarkSkill(this.projectileSystem));
@@ -120,7 +123,16 @@ export class GameScene extends Phaser.Scene {
           (enemy) => enemy.active && !exclude?.has(enemy),
         ),
     });
-    this.projectileSystem.update(delta, this.spawnSystem);
+    this.projectileSystem.update(delta, this.spawnSystem, (enemy) => {
+      this.gemSystem.spawn(enemy.x, enemy.y, enemy.def.xp);
+    });
+    this.gemSystem.update(
+      this.player.x,
+      this.player.y,
+      this.player.pickupRadius,
+      this.player.width / 2,
+      (value) => this.player.addXp(value),
+    );
 
     // The debug fast-forward is meant to skip time safely to reach the
     // victory condition; contact damage is paused while it's held so
@@ -143,6 +155,7 @@ export class GameScene extends Phaser.Scene {
         `FPS: ${fps.toFixed(0)}`,
         `Entidades: ${totalEntities}`,
         `Células ocupadas: ${cellCount}`,
+        `XP: ${this.player.xp}   Gemas ativas: ${this.gemSystem.activeGems.size}`,
         '[F1] fechar debug   [F2] +300 inimigos',
       ].join('\n'),
     );

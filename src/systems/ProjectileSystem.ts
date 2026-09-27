@@ -22,7 +22,7 @@ export class ProjectileSystem {
     this.active.add(projectile);
   }
 
-  update(deltaMs: number, spawnSystem: SpawnSystem): void {
+  update(deltaMs: number, spawnSystem: SpawnSystem, onEnemyKilled: (enemy: Enemy) => void): void {
     for (const projectile of this.active) {
       if (!projectile.target || !projectile.target.active) {
         this.release(projectile);
@@ -39,7 +39,7 @@ export class ProjectileSystem {
       );
 
       if (distance <= projectile.hitRadius + projectile.target.contactRadius) {
-        this.applyHit(projectile, spawnSystem);
+        this.applyHit(projectile, spawnSystem, onEnemyKilled);
         continue;
       }
 
@@ -49,13 +49,18 @@ export class ProjectileSystem {
     }
   }
 
-  private applyHit(projectile: Projectile, spawnSystem: SpawnSystem): void {
+  private applyHit(
+    projectile: Projectile,
+    spawnSystem: SpawnSystem,
+    onEnemyKilled: (enemy: Enemy) => void,
+  ): void {
     const enemy = projectile.target;
     this.release(projectile);
     if (!enemy) return;
 
     enemy.hp -= calculateDamage(projectile.damage);
     if (enemy.hp <= 0) {
+      onEnemyKilled(enemy);
       spawnSystem.release(enemy);
     }
   }

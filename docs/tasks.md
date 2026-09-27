@@ -69,7 +69,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Projétil no inimigo mais próximo; +projéteis nos níveis 3 e 5. Skill inicial.
   **Pronto quando:** o mago mata inimigos comuns sozinho desde o começo.
 
-- [ ] **T023 — Gemas de XP e coleta** · Dep.: T014
+- [x] **T023 — Gemas de XP e coleta** · Dep.: T014
   Gema ao matar; atração dentro do raio de coleta; fusão acima de ~200 gemas.
   **Pronto quando:** coletar gemas enche a barra de XP.
 
