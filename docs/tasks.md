@@ -65,7 +65,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Interface `Skill`, `SkillSystem` (recarga, disparo, Serenidade) e busca de alvo pela grade.
   **Pronto quando:** uma skill de teste dispara no ritmo certo.
 
-- [ ] **T022 — Marca do Fogo** · Dep.: T021
+- [x] **T022 — Marca do Fogo** · Dep.: T021
   Projétil no inimigo mais próximo; +projéteis nos níveis 3 e 5. Skill inicial.
   **Pronto quando:** o mago mata inimigos comuns sozinho desde o começo.
 

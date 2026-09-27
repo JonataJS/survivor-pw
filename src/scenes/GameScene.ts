@@ -3,30 +3,18 @@ import { WORLD_WIDTH, WORLD_HEIGHT, MATCH_DURATION_SECONDS, debug } from '../con
 import { Player } from '../entities/Player';
 import { SpawnSystem } from '../systems/SpawnSystem';
 import { SkillSystem } from '../systems/SkillSystem';
+import { ProjectileSystem } from '../systems/ProjectileSystem';
 import { calculatePhysicalDamage, CONTACT_DAMAGE_INTERVAL_SECONDS } from '../systems/CombatSystem';
-import { BaseSkill, type SkillContext } from '../skills/Skill';
-import { fireMark } from '../data/skills';
+import { FireMarkSkill } from '../skills/FireMark';
 import { createTextButton } from '../ui/textButton';
 
 const GRID_SIZE = 100;
 const CONTACT_QUERY_RADIUS = 64;
 
-// T021: proves the cooldown/fire cadence and grid-based targeting work end
-// to end in a real scene. The actual Marca do Fogo behavior (projectile,
-// damage) arrives in T022 — this only pulses the player and logs the time.
-class DebugPulseSkill extends BaseSkill {
-  constructor(private readonly onFire: (target: ReturnType<SkillContext['findNearestEnemy']>) => void) {
-    super(fireMark, 1);
-  }
-
-  protected fire(ctx: SkillContext): void {
-    this.onFire(ctx.findNearestEnemy());
-  }
-}
-
 export class GameScene extends Phaser.Scene {
   private player!: Player;
   private spawnSystem!: SpawnSystem;
+  private projectileSystem!: ProjectileSystem;
   private matchEnded = false;
   private timerText!: Phaser.GameObjects.Text;
   private fastForwardKey!: Phaser.Input.Keyboard.Key;
@@ -35,7 +23,6 @@ export class GameScene extends Phaser.Scene {
   private debugGridGraphics!: Phaser.GameObjects.Graphics;
   private skillSystem!: SkillSystem;
   matchElapsedSeconds = 0;
-  debugSkillFireLog: number[] = [];
 
   constructor() {
     super('Game');
@@ -55,16 +42,10 @@ export class GameScene extends Phaser.Scene {
     this.player = new Player(this, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.spawnSystem = new SpawnSystem(this, WORLD_WIDTH, WORLD_HEIGHT);
+    this.projectileSystem = new ProjectileSystem(this);
 
-    this.debugSkillFireLog = [];
     this.skillSystem = new SkillSystem();
-    this.skillSystem.add(
-      new DebugPulseSkill(() => {
-        this.debugSkillFireLog.push(this.matchElapsedSeconds);
-        this.player.setTintFill(0xffffff);
-        this.time.delayedCall(80, () => this.player.clearTint());
-      }),
-    );
+    this.skillSystem.add(new FireMarkSkill(this.projectileSystem));
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
@@ -132,9 +113,14 @@ export class GameScene extends Phaser.Scene {
       casterY: this.player.y,
       equippedPassives: [],
       path: undefined,
-      findNearestEnemy: () =>
-        this.spawnSystem.grid.findNearest(this.player.x, this.player.y, (enemy) => enemy.active),
+      findNearestEnemy: (exclude) =>
+        this.spawnSystem.grid.findNearest(
+          this.player.x,
+          this.player.y,
+          (enemy) => enemy.active && !exclude?.has(enemy),
+        ),
     });
+    this.projectileSystem.update(delta, this.spawnSystem);
 
     // The debug fast-forward is meant to skip time safely to reach the
     // victory condition; contact damage is paused while it's held so

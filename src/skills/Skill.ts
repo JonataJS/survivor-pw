@@ -7,7 +7,7 @@ export interface SkillContext {
   casterY: number;
   equippedPassives: EquippedPassive[];
   path?: Path;
-  findNearestEnemy: () => Enemy | undefined;
+  findNearestEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
 }
 
 export interface Skill {
