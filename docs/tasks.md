@@ -31,7 +31,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Criar `data/classes.ts`, `skills.ts`, `passives.ts`, `enemies.ts` e `waves.ts` com os valores de `spec.md` §5–§6, e os tipos `SkillDef`, `EnemyDef`, `Modificador` etc. Cada skill e passivo já inclui o bloco `cultivo` (God e Evil) de `spec.md` §5.4.
   **Pronto quando:** os arquivos compilam e cobrem todas as skills, passivos, aditivos de cultivo e inimigos do MVP.
 
-- [ ] **T011 — Jogador e movimento** · Dep.: T004, T010
+- [x] **T011 — Jogador e movimento** · Dep.: T004, T010
   Mago com HP e velocidade vindos dos dados; movimento por WASD/setas; câmera seguindo.
   **Pronto quando:** o mago anda em 8 direções numa área maior que a tela.
 
