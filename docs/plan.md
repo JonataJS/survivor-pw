@@ -134,6 +134,7 @@ type Path = 'god' | 'evil';
 
 type Modifier =
   | { type: 'cooldown_mult'; value: number }                 // 0.8 = −20%
+  | { type: 'flat_cooldown'; value: number }                 // segundos, negativo = redução
   | { type: 'flat_damage'; value: number }
   | { type: 'status_chance'; status: 'stun' | 'paralyze'; chance: number; duration: number }
   | { type: 'lifesteal'; chance: number; percentage: number }
