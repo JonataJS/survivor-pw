@@ -61,7 +61,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   `CombatSystem` com dano por elemento, maestrias, defesa, **crítico** e status (lentidão, redução de dano, **atordoar**, **paralisar**), além de **roubo de vida** e cura por acerto. Função pura `calcularStats(def, nivel, passivos, caminho)`. Lógica pura, com testes.
   **Pronto quando:** os testes cobrem as fórmulas de `plan.md` §3.2 e §3.3.
 
-- [ ] **T021 — Base de skills** · Dep.: T020, T012
+- [x] **T021 — Base de skills** · Dep.: T020, T012
   Interface `Skill`, `SkillSystem` (recarga, disparo, Serenidade) e busca de alvo pela grade.
   **Pronto quando:** uma skill de teste dispara no ritmo certo.
 
