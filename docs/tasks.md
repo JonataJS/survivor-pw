@@ -17,7 +17,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Repositório no GitHub conectado à Vercel.
   **Pronto quando:** a URL pública abre o jogo; um push na `main` atualiza o site.
 
-- [ ] **T003 — Cenas vazias e navegação** · Dep.: T001
+- [x] **T003 — Cenas vazias e navegação** · Dep.: T001
   Boot, Menu, Game, Hud, Pause, LevelUp, Cultivo e Result, com troca entre elas.
   **Pronto quando:** dá para ir do Menu ao Game e voltar pelo Result usando botões de teste.
 

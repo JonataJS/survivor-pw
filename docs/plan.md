@@ -34,7 +34,7 @@ survivor-pw/
 │   │   ├── GameScene.ts     # partida
 │   │   ├── HudScene.ts      # UI sobreposta à partida
 │   │   ├── LevelUpScene.ts
-│   │   ├── CultivoScene.ts  # escolha God/Evil no nível 20
+│   │   ├── CultivationScene.ts  # escolha God/Evil no nível 20
 │   │   ├── PauseScene.ts
 │   │   └── ResultScene.ts
 │   ├── entities/
@@ -47,19 +47,19 @@ survivor-pw/
 │   │   ├── SkillSystem.ts   # recargas e disparo das skills
 │   │   ├── SpawnSystem.ts   # ondas por tempo
 │   │   ├── CombatSystem.ts  # dano, crítico, defesa, status (lentidão, atordoar, paralisar, redução de dano)
-│   │   ├── CultivoSystem.ts # caminho ativo e aplicação dos modificadores
+│   │   ├── CultivationSystem.ts # caminho ativo e aplicação dos modificadores
 │   │   ├── XpSystem.ts      # XP e subida de nível
 │   │   ├── UpgradeSystem.ts # sorteio das 3 opções
 │   │   └── StatsTracker.ts  # dados para a tela final
 │   ├── skills/
 │   │   ├── Skill.ts         # interface base
-│   │   ├── MarcaDoFogo.ts
-│   │   ├── FonteRepentina.ts
-│   │   ├── ChuvaDePedra.ts
-│   │   ├── AsasDaFenix.ts
-│   │   ├── TempestadeFlamejante.ts
-│   │   ├── TempestadeDeAreia.ts
-│   │   └── TerraMovel.ts
+│   │   ├── FireMark.ts          # Marca do Fogo
+│   │   ├── SuddenSpring.ts      # Fonte Repentina
+│   │   ├── StoneRain.ts         # Chuva de Pedra
+│   │   ├── PhoenixWings.ts      # Asas da Fênix
+│   │   ├── FlamingStorm.ts      # Tempestade Flamejante
+│   │   ├── SandStorm.ts         # Tempestade de Areia
+│   │   └── MovingEarth.ts       # Terra Móvel
 │   ├── data/                # TODO o balanceamento fica aqui
 │   │   ├── classes.ts       # atributos do Mago
 │   │   ├── skills.ts        # valores por nível de cada skill
@@ -82,9 +82,9 @@ survivor-pw/
 
 ### 3.1 Cenas
 
-`Boot → Menu → Game (+ Hud em paralelo) → LevelUp / Cultivo / Pause (sobrepostas, pausam o Game) → Result → Menu`
+`Boot → Menu → Game (+ Hud em paralelo) → LevelUp / Cultivation / Pause (sobrepostas, pausam o Game) → Result → Menu`
 
-`GameScene` roda a simulação. `HudScene` só lê o estado e escuta o `EventBus` (`hp-changed`, `xp-changed`, `level-up`, `cultivo-escolhido`, `enemy-killed`, `skill-leveled`).
+`GameScene` roda a simulação. `HudScene` só lê o estado e escuta o `EventBus` (`hp-changed`, `xp-changed`, `level-up`, `cultivation-chosen`, `enemy-killed`, `skill-leveled`).
 
 ### 3.2 Skills orientadas a dados
 
@@ -92,17 +92,17 @@ Cada skill tem uma **definição** (dados) e um **comportamento** (código):
 
 ```ts
 // data/skills.ts
-export const marcaDoFogo: SkillDef = {
-  id: 'marca-do-fogo',
-  nome: 'Marca do Fogo',
-  elemento: 'fogo',
-  tipo: 'ataque',
-  niveis: [
-    { dano: 10, espera: 1.5, projeteis: 1 },
-    { dano: 14, espera: 1.5, projeteis: 1 },
-    { dano: 16, espera: 1.4, projeteis: 2 },
-    { dano: 20, espera: 1.3, projeteis: 2 },
-    { dano: 24, espera: 1.2, projeteis: 3 },
+export const fireMark: SkillDef = {
+  id: 'fire-mark',
+  name: 'Marca do Fogo',
+  element: 'fire',
+  type: 'attack',
+  levels: [
+    { damage: 10, cooldown: 1.5, projectiles: 1 },
+    { damage: 14, cooldown: 1.5, projectiles: 1 },
+    { damage: 16, cooldown: 1.4, projectiles: 2 },
+    { damage: 20, cooldown: 1.3, projectiles: 2 },
+    { damage: 24, cooldown: 1.2, projectiles: 3 },
   ],
 };
 ```
@@ -111,7 +111,7 @@ export const marcaDoFogo: SkillDef = {
 // skills/Skill.ts
 interface Skill {
   def: SkillDef;
-  nivel: number;
+  level: number;
   update(dt: number, ctx: SkillContext): void; // controla a recarga e dispara
 }
 ```
@@ -119,8 +119,8 @@ interface Skill {
 O `SkillSystem` percorre as skills equipadas a cada frame. Dano final:
 
 ```
-danoFinal = danoBase(nível) × (1 + maestriaDoElemento) × (1 − reduçãoDoAlvo)
-esperaFinal = esperaBase(nível) × (1 − serenidade)
+finalDamage = baseDamage(level) × (1 + elementMastery) × (1 − targetReduction)
+finalCooldown = baseCooldown(level) × (1 − serenity)
 ```
 
 Adicionar uma skill nova = um objeto em `data/skills.ts` + uma classe em `skills/`. Nada mais muda.
@@ -130,29 +130,29 @@ Adicionar uma skill nova = um objeto em `data/skills.ts` + uma classe em `skills
 Os aditivos não são código dentro de cada skill: são **modificadores declarados nos dados**, e cada skill só consulta o valor final.
 
 ```ts
-type Caminho = 'god' | 'evil';
+type Path = 'god' | 'evil';
 
-type Modificador =
-  | { tipo: 'mult_espera'; valor: number }                 // 0.8 = −20%
-  | { tipo: 'dano_fixo'; valor: number }
-  | { tipo: 'chance_status'; status: 'atordoar' | 'paralisar'; chance: number; duracao: number }
-  | { tipo: 'roubo_vida'; chance: number; porcentagem: number }
-  | { tipo: 'cura_por_acerto'; chance: number; valor: number; maxPorAtivacao: number }
-  | { tipo: 'mult_lentidao'; valor: number }
-  | { tipo: 'mult_area'; valor: number }
-  | { tipo: 'mult_duracao_efeito'; valor: number }
-  | { tipo: 'mult_distancia'; valor: number }
-  | { tipo: 'bonus_dano_elemento'; valor: number }
-  | { tipo: 'chance_critico'; valor: number }
-  | { tipo: 'reducao_dano_recebido'; valor: number }
-  | { tipo: 'mult_regeneracao'; valor: number }
-  | { tipo: 'mult_defesa'; valor: number }
-  | { tipo: 'buff_periodico'; intervalo: number; duracao: number; bonusDano: number };
+type Modifier =
+  | { type: 'cooldown_mult'; value: number }                 // 0.8 = −20%
+  | { type: 'flat_damage'; value: number }
+  | { type: 'status_chance'; status: 'stun' | 'paralyze'; chance: number; duration: number }
+  | { type: 'lifesteal'; chance: number; percentage: number }
+  | { type: 'heal_on_hit'; chance: number; value: number; maxPerActivation: number }
+  | { type: 'slow_mult'; value: number }
+  | { type: 'area_mult'; value: number }
+  | { type: 'effect_duration_mult'; value: number }
+  | { type: 'range_mult'; value: number }
+  | { type: 'element_damage_bonus'; value: number }
+  | { type: 'crit_chance'; value: number }
+  | { type: 'damage_taken_reduction'; value: number }
+  | { type: 'regen_mult'; value: number }
+  | { type: 'defense_mult'; value: number }
+  | { type: 'periodic_buff'; interval: number; duration: number; damageBonus: number };
 
 // dentro de SkillDef / PassiveDef
-cultivo: {
-  god:  { descricao: string; modificadores: Modificador[] };
-  evil: { descricao: string; modificadores: Modificador[] };
+cultivation: {
+  god:  { description: string; modifiers: Modifier[] };
+  evil: { description: string; modifiers: Modifier[] };
 };
 ```
 
@@ -160,27 +160,27 @@ Exemplo:
 
 ```ts
 // data/skills.ts — Chuva de Pedra
-cultivo: {
-  god:  { descricao: '−20% de espera', modificadores: [{ tipo: 'mult_espera', valor: 0.8 }] },
-  evil: { descricao: '20% de chance de atordoar por 2 s',
-          modificadores: [{ tipo: 'chance_status', status: 'atordoar', chance: 0.2, duracao: 2 }] },
+cultivation: {
+  god:  { description: '−20% de espera', modifiers: [{ type: 'cooldown_mult', value: 0.8 }] },
+  evil: { description: '20% de chance de atordoar por 2 s',
+          modifiers: [{ type: 'status_chance', status: 'stun', chance: 0.2, duration: 2 }] },
 },
 ```
 
 Como funciona:
-- `CultivoSystem` guarda o caminho escolhido (ou nenhum) e expõe `modificadoresDe(skillId)`.
-- `SkillSystem` e `CombatSystem` calculam os valores finais juntando **nível da skill + passivos + cultivo**, numa função pura `calcularStats(def, nivel, passivos, caminho)`. Ela é testável e é a única fonte da verdade.
-- A tela de Cultivo lê `descricao` dos dados para montar as colunas. Nada de texto duplicado no código.
-- A escolha dispara `cultivo-escolhido`; as skills trocam a cor do efeito ao ouvir o evento.
-- Na fila de level-up (`XpSystem`), o nível 20 insere um item do tipo `cultivo` antes do level-up normal.
+- `CultivationSystem` guarda o caminho escolhido (ou nenhum) e expõe `modifiersFor(skillId)`.
+- `SkillSystem` e `CombatSystem` calculam os valores finais juntando **nível da skill + passivos + cultivo**, numa função pura `calculateStats(def, level, passives, path)`. Ela é testável e é a única fonte da verdade.
+- A tela de Cultivo lê `description` dos dados para montar as colunas. Nada de texto duplicado no código.
+- A escolha dispara `cultivation-chosen`; as skills trocam a cor do efeito ao ouvir o evento.
+- Na fila de level-up (`XpSystem`), o nível 20 insere um item do tipo `cultivation` antes do level-up normal.
 
 Dano final, agora com cultivo:
 
 ```
-danoBase     = dano(nível) + danoFixoCultivo
-multiplicador = (1 + maestria + bonusDanoElementoCultivo) × buffPeriodico
-danoFinal    = danoBase × multiplicador × (crítico ? 2 : 1) × (1 − reduçãoDoAlvo)
-esperaFinal  = espera(nível) × (1 − serenidade) × multEsperaCultivo
+baseDamage    = damage(level) + cultivationFlatDamage
+multiplier    = (1 + mastery + cultivationElementDamageBonus) × periodicBuff
+finalDamage   = baseDamage × multiplier × (crit ? 2 : 1) × (1 − targetReduction)
+finalCooldown = cooldown(level) × (1 − serenity) × cultivationCooldownMult
 ```
 
 ### 3.4 Desempenho
@@ -226,8 +226,8 @@ O jogo depende só da interface `ScoreService`:
 
 ```ts
 interface ScoreService {
-  salvarPartida(resultado: RunResult): Promise<void>;
-  ranking(limite: number): Promise<RankingEntry[]>;
+  saveRun(result: RunResult): Promise<void>;
+  ranking(limit: number): Promise<RankingEntry[]>;
 }
 ```
 
@@ -236,11 +236,11 @@ No MVP, `LocalScoreService` guarda o melhor resultado no navegador. Depois, `Sup
 Esboço das tabelas:
 
 ```sql
-profiles (id uuid pk -> auth.users, apelido text, criado_em timestamptz)
+profiles (id uuid pk -> auth.users, nickname text, created_at timestamptz)
 runs (
-  id uuid pk, user_id uuid -> profiles, classe text,
-  tempo_seg int, nivel int, mortes int, vitoria bool, cultivo text,
-  seed bigint, versao_jogo text, criado_em timestamptz
+  id uuid pk, user_id uuid -> profiles, class text,
+  time_seconds int, level int, kills int, victory bool, cultivation_path text,
+  seed bigint, game_version text, created_at timestamptz
 )
 ```
 
@@ -251,7 +251,7 @@ runs (
 
 - O cliente é estático e servido pela CDN da Vercel; escala sem mudanças.
 - Supabase aguenta ranking e saves com folga; se um dia houver multiplayer, entra um servidor de tempo real separado (ex.: Supabase Realtime ou um serviço dedicado), sem mexer no cliente de jogo solo.
-- `versao_jogo` em cada partida permite mudar o balanceamento sem misturar rankings.
+- `game_version` em cada partida permite mudar o balanceamento sem misturar rankings.
 
 ## 7. Riscos
 

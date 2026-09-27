@@ -1,7 +1,7 @@
-export const LARGURA_BASE = 1280;
-export const ALTURA_BASE = 720;
-export const FPS_ALVO = 60;
+export const BASE_WIDTH = 1280;
+export const BASE_HEIGHT = 720;
+export const TARGET_FPS = 60;
 
 export const debug = {
-  ativo: false,
+  active: false,
 };

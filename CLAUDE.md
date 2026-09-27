@@ -31,12 +31,12 @@ TypeScript (strict) · Phaser 3 · Vite · Vitest · ESLint + Prettier · deploy
 ## Regras de código
 
 - **Todo balanceamento fica em `src/data/`** (dano, espera, HP, spawn, aditivos de cultivo). Nenhum número de balanceamento solto na lógica.
-- Lógica de regras (dano, XP, level-up, sorteio, `calcularStats`, cultivo) em funções puras, fora das classes do Phaser, e com testes.
+- Lógica de regras (dano, XP, level-up, sorteio, `calculateStats`, cultivo) em funções puras, fora das classes do Phaser, e com testes.
 - Aditivos de Cultivo são **modificadores declarados nos dados** (`plan.md` §3.3), não `if` dentro de cada skill.
 - Use os pools (`core/Pool.ts`) para inimigos, projéteis, gemas e efeitos; nada de criar/destruir objetos durante a partida.
 - Busca de alvos e colisões pela grade espacial (`core/SpatialGrid.ts`).
 - Aleatoriedade sempre pelo RNG com semente (`core/rng.ts`).
 - Comunicação jogo → HUD pelo `EventBus`.
-- Nomes do domínio em português (skills, atributos, eventos), como nos documentos. Código e comentários podem misturar, mas mantenha consistência dentro de cada arquivo.
-- Textos da interface em português.
+- **Código em inglês, sempre:** nomes de arquivos, classes, funções, variáveis, campos de tipos e comentários — inclusive termos de domínio (`damage`, `cooldown`, `cultivation`, `mastery`, `stun`, `slow`, `path`, etc.), mesmo quando o `plan.md`/`spec.md` os descrevem em português. Só o texto exibido ao jogador (nomes de skills como "Marca do Fogo", labels de UI, descrições) fica em português, vindo de `src/data/`.
+- Textos da interface (o que o jogador vê) em português.
 - Arte é placeholder (formas geométricas geradas na BootScene). Não adicionar assets oficiais do Perfect World.
