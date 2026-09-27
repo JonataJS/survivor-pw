@@ -57,7 +57,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
 
 ## Fase 2 — Combate e skills
 
-- [ ] **T020 — Sistema de combate** · Dep.: T010
+- [x] **T020 — Sistema de combate** · Dep.: T010
   `CombatSystem` com dano por elemento, maestrias, defesa, **crítico** e status (lentidão, redução de dano, **atordoar**, **paralisar**), além de **roubo de vida** e cura por acerto. Função pura `calcularStats(def, nivel, passivos, caminho)`. Lógica pura, com testes.
   **Pronto quando:** os testes cobrem as fórmulas de `plan.md` §3.2 e §3.3.
 

@@ -48,6 +48,9 @@ export interface SkillDef {
 export interface PassiveDef {
   id: string;
   name: string;
+  // Only present on mastery passives — gates elementDamageBonus so it only
+  // boosts skills of the same element.
+  element?: Element;
   levels: SkillLevelStats[];
   cultivation: CultivationBlock;
 }

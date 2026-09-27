@@ -14,6 +14,7 @@ const masteryCultivation = () => ({
 export const fireMastery: PassiveDef = {
   id: 'fire-mastery',
   name: 'Maestria de Fogo',
+  element: 'fire',
   levels: [
     { elementDamageBonus: 0.1 },
     { elementDamageBonus: 0.2 },
@@ -27,6 +28,7 @@ export const fireMastery: PassiveDef = {
 export const waterMastery: PassiveDef = {
   id: 'water-mastery',
   name: 'Maestria de Água',
+  element: 'water',
   levels: [
     { elementDamageBonus: 0.1 },
     { elementDamageBonus: 0.2 },
@@ -40,6 +42,7 @@ export const waterMastery: PassiveDef = {
 export const earthMastery: PassiveDef = {
   id: 'earth-mastery',
   name: 'Maestria de Terra',
+  element: 'earth',
   levels: [
     { elementDamageBonus: 0.1 },
     { elementDamageBonus: 0.2 },
