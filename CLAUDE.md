@@ -16,6 +16,7 @@ Em caso de conflito, a spec manda. Se algo na spec estiver ambíguo ou parecer e
 - Ao concluir, marque `[x]` na tarefa e confira o critério "Pronto quando".
 - Não implemente nada que esteja fora do escopo do MVP (`docs/spec.md` §2) sem pedir.
 - Se uma decisão mudar a spec ou o plano, atualize o documento no mesmo commit.
+- Ao terminar cada tarefa (testes, lint e build passando), **commit e push automaticamente**, sem pedir confirmação — um commit por tarefa.
 
 ## Stack
 
