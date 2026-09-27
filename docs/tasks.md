@@ -13,7 +13,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Vite + TypeScript + Phaser 3. ESLint, Prettier e Vitest configurados. Pastas conforme `plan.md` §2.
   **Pronto quando:** `npm run dev` abre uma tela preta do Phaser; `npm test` roda.
 
-- [ ] **T002 — Deploy inicial na Vercel** · Dep.: T001
+- [x] **T002 — Deploy inicial na Vercel** · Dep.: T001
   Repositório no GitHub conectado à Vercel.
   **Pronto quando:** a URL pública abre o jogo; um push na `main` atualiza o site.
 
