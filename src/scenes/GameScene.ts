@@ -14,6 +14,9 @@ export class GameScene extends Phaser.Scene {
   private matchEnded = false;
   private timerText!: Phaser.GameObjects.Text;
   private fastForwardKey!: Phaser.Input.Keyboard.Key;
+  private debugActive = false;
+  private debugText!: Phaser.GameObjects.Text;
+  private debugGridGraphics!: Phaser.GameObjects.Graphics;
   matchElapsedSeconds = 0;
 
   constructor() {
@@ -38,11 +41,26 @@ export class GameScene extends Phaser.Scene {
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
 
+    this.debugActive = false;
+    keyboard.on('keydown-F1', () => {
+      this.debugActive = !this.debugActive;
+      this.debugText.setVisible(this.debugActive);
+      if (!this.debugActive) this.debugGridGraphics.clear();
+    });
+    keyboard.on('keydown-F2', () => {
+      this.spawnSystem.spawnBurst(debug.stressTestEnemyCount, this.cameras.main.worldView);
+    });
+
     this.add.text(width / 2, 40, 'Game (placeholder)', { fontSize: '24px' }).setOrigin(0.5).setScrollFactor(0);
     this.timerText = this.add
       .text(width - 16, 16, this.formatTime(0), { fontSize: '20px' })
       .setOrigin(1, 0)
       .setScrollFactor(0);
+    this.debugText = this.add
+      .text(16, 44, '', { fontSize: '16px', color: '#ffdd55', backgroundColor: '#00000088' })
+      .setScrollFactor(0)
+      .setVisible(false);
+    this.debugGridGraphics = this.add.graphics();
 
     createTextButton(this, width / 2 - 220, height - 100, 'Pausar', () => {
       this.scene.pause();
@@ -88,6 +106,31 @@ export class GameScene extends Phaser.Scene {
     if (!fastForwarding) {
       this.handleContactDamage();
     }
+
+    if (this.debugActive) {
+      this.updateDebugOverlay();
+    }
+  }
+
+  private updateDebugOverlay(): void {
+    const fps = this.game.loop.actualFps;
+    const totalEntities = this.spawnSystem.activeEnemies.size + 1;
+    const cellCount = this.spawnSystem.grid.populatedCellCount;
+    this.debugText.setText(
+      [
+        `FPS: ${fps.toFixed(0)}`,
+        `Entidades: ${totalEntities}`,
+        `Células ocupadas: ${cellCount}`,
+        '[F1] fechar debug   [F2] +300 inimigos',
+      ].join('\n'),
+    );
+
+    this.debugGridGraphics.clear();
+    this.debugGridGraphics.lineStyle(1, 0xffaa00, 0.5);
+    const cellSize = this.spawnSystem.grid.cellSize;
+    this.spawnSystem.grid.forEachPopulatedCell((cx, cy) => {
+      this.debugGridGraphics.strokeRect(cx * cellSize, cy * cellSize, cellSize, cellSize);
+    });
   }
 
   private handleContactDamage(): void {

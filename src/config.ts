@@ -10,4 +10,5 @@ export const MATCH_DURATION_SECONDS = 600;
 export const debug = {
   active: false,
   fastForwardTimeScale: 20,
+  stressTestEnemyCount: 300,
 };

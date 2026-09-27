@@ -16,7 +16,7 @@ export class SpatialGrid<T> {
   private minCy = Infinity;
   private maxCy = -Infinity;
 
-  constructor(private readonly cellSize = 64) {}
+  constructor(readonly cellSize = 64) {}
 
   insert(item: T, x: number, y: number): void {
     this.cellAt(x, y).add(item);
@@ -116,6 +116,22 @@ export class SpatialGrid<T> {
       }
     }
     return nearest;
+  }
+
+  get populatedCellCount(): number {
+    let count = 0;
+    for (const cell of this.cells.values()) {
+      if (cell.size > 0) count += 1;
+    }
+    return count;
+  }
+
+  forEachPopulatedCell(callback: (cx: number, cy: number, itemCount: number) => void): void {
+    for (const [key, cell] of this.cells) {
+      if (cell.size === 0) continue;
+      const [cx, cy] = key.split(',').map(Number);
+      callback(cx, cy, cell.size);
+    }
   }
 
   private cellKey(x: number, y: number): string {

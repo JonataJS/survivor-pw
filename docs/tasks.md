@@ -51,7 +51,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Cronômetro de partida; aos 10:00 → Result com vitória.
   **Pronto quando:** com um modo de tempo acelerado (debug), a vitória é disparada.
 
-- [ ] **T016 — Teste de estresse** · Dep.: T013
+- [x] **T016 — Teste de estresse** · Dep.: T013
   Modo debug (F1) mostrando FPS e total de entidades; comando para gerar 300 inimigos.
   **Pronto quando:** 300 inimigos rodam perto de 60 FPS. Se não, otimizar antes de seguir.
 

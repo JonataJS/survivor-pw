@@ -2,6 +2,35 @@ import { describe, expect, it } from 'vitest';
 import { SpatialGrid } from '../src/core/SpatialGrid';
 
 describe('SpatialGrid', () => {
+  it('reports the number of populated cells for the debug overlay', () => {
+    const grid = new SpatialGrid<string>(64);
+    expect(grid.populatedCellCount).toBe(0);
+
+    grid.insert('a', 0, 0);
+    grid.insert('b', 5, 5); // same cell as 'a'
+    grid.insert('c', 1000, 1000);
+    expect(grid.populatedCellCount).toBe(2);
+
+    grid.remove('a');
+    grid.remove('b');
+    expect(grid.populatedCellCount).toBe(1);
+  });
+
+  it('iterates every populated cell with its item count', () => {
+    const grid = new SpatialGrid<string>(64);
+    grid.insert('a', 0, 0);
+    grid.insert('b', 5, 5);
+    grid.insert('c', 1000, 1000);
+
+    const seen: Record<string, number> = {};
+    grid.forEachPopulatedCell((cx, cy, itemCount) => {
+      seen[`${cx},${cy}`] = itemCount;
+    });
+
+    expect(seen['0,0']).toBe(2);
+    expect(seen['15,15']).toBe(1);
+  });
+
   it('finds neighbors within a radius', () => {
     const grid = new SpatialGrid<string>(64);
     grid.insert('close', 10, 10);
