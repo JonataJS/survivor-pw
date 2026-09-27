@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyXpGain, xpToNextLevel, XpSystem } from '../src/systems/XpSystem';
+import { applyXpGain, buildLevelUpQueue, xpToNextLevel, XpSystem } from '../src/systems/XpSystem';
 import { EventBus } from '../src/core/EventBus';
 
 describe('xpToNextLevel', () => {
@@ -30,6 +30,32 @@ describe('applyXpGain', () => {
   it('resolving level 20 alone still yields exactly one level-up', () => {
     const result = applyXpGain(19, 0, xpToNextLevel(19));
     expect(result).toEqual({ level: 20, xp: 0, levelsGained: 1 });
+  });
+});
+
+describe('buildLevelUpQueue', () => {
+  it('nível 20 sozinho: Cultivo vem antes do level-up desse nível', () => {
+    const queue = buildLevelUpQueue(19, 1);
+    expect(queue).toEqual([
+      { kind: 'cultivation-required', level: 20 },
+      { kind: 'level-up', level: 20 },
+    ]);
+  });
+
+  it('subindo do 18 ao 22 de uma vez: Cultivo aparece uma única vez, na posição certa', () => {
+    const queue = buildLevelUpQueue(18, 4);
+    expect(queue).toEqual([
+      { kind: 'level-up', level: 19 },
+      { kind: 'cultivation-required', level: 20 },
+      { kind: 'level-up', level: 20 },
+      { kind: 'level-up', level: 21 },
+      { kind: 'level-up', level: 22 },
+    ]);
+  });
+
+  it('não insere Cultivo quando o nível 20 não é alcançado', () => {
+    const queue = buildLevelUpQueue(1, 2);
+    expect(queue.some((item) => item.kind === 'cultivation-required')).toBe(false);
   });
 });
 
@@ -70,5 +96,23 @@ describe('XpSystem', () => {
 
     EventBus.off('level-up', onLevelUp);
     expect(levelsEmitted).toEqual([]);
+  });
+
+  it('emits cultivation-required right before level-up(20)', () => {
+    const system = new XpSystem();
+    system.level = 19;
+    system.xp = 0;
+
+    const emitted: string[] = [];
+    const onCultivation = (level: number) => emitted.push(`cultivation:${level}`);
+    const onLevelUp = (level: number) => emitted.push(`level-up:${level}`);
+    EventBus.on('cultivation-required', onCultivation);
+    EventBus.on('level-up', onLevelUp);
+
+    system.addXp(xpToNextLevel(19));
+
+    EventBus.off('cultivation-required', onCultivation);
+    EventBus.off('level-up', onLevelUp);
+    expect(emitted).toEqual(['cultivation:20', 'level-up:20']);
   });
 });

@@ -5,6 +5,29 @@ export function xpToNextLevel(level: number): number {
   return 5 + level * 10;
 }
 
+// spec.md §5.4/§7: nível em que o Cultivo (God/Evil) abre, antes do
+// level-up normal desse mesmo nível.
+export const CULTIVATION_LEVEL = 20;
+
+export type LevelUpQueueItem =
+  | { kind: 'cultivation-required'; level: number }
+  | { kind: 'level-up'; level: number };
+
+// Pura para que a ordem (Cultivo antes do level-up do nível 20) seja
+// testável sem depender do EventBus. Cobre "subir vários níveis de uma vez
+// passando pelo 20": o Cultivo aparece uma única vez, na posição certa.
+export function buildLevelUpQueue(startingLevel: number, levelsGained: number): LevelUpQueueItem[] {
+  const queue: LevelUpQueueItem[] = [];
+  for (let i = 1; i <= levelsGained; i++) {
+    const level = startingLevel + i;
+    if (level === CULTIVATION_LEVEL) {
+      queue.push({ kind: 'cultivation-required', level });
+    }
+    queue.push({ kind: 'level-up', level });
+  }
+  return queue;
+}
+
 export interface XpGainResult {
   level: number;
   xp: number;
@@ -39,8 +62,8 @@ export class XpSystem {
     this.xp = result.xp;
 
     EventBus.emit('xp-changed', this.xp, xpToNextLevel(this.level));
-    for (let i = 1; i <= result.levelsGained; i++) {
-      EventBus.emit('level-up', startingLevel + i);
+    for (const item of buildLevelUpQueue(startingLevel, result.levelsGained)) {
+      EventBus.emit(item.kind, item.level);
     }
   }
 }

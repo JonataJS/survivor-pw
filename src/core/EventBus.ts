@@ -5,6 +5,9 @@ export interface GameEvents {
   'hp-changed': [hp: number, maxHp: number];
   'xp-changed': [xp: number, xpToNextLevel: number];
   'level-up': [level: number];
+  // spec.md §5.4: disparado ao alcançar o nível 20, antes do 'level-up'
+  // desse mesmo nível — XpSystem insere isso na fila (T043).
+  'cultivation-required': [level: number];
   'cultivation-chosen': [path: 'god' | 'evil'];
   'enemy-killed': [count: number];
   'skill-leveled': [skillId: string, level: number];

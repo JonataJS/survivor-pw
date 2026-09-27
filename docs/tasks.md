@@ -102,7 +102,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Pausa o jogo; 3 cartas com nome, cor do elemento, nível atual → próximo e descrição; teclas 1/2/3, clique ou toque.
   **Pronto quando:** escolher uma carta aplica o upgrade e retoma a partida.
 
-- [ ] **T043 — Sistema de Cultivo** · Dep.: T040, T020
+- [x] **T043 — Sistema de Cultivo** · Dep.: T040, T020
   `CultivoSystem` guardando o caminho; `XpSystem` insere o Cultivo na fila no nível 20 (antes do level-up normal). Testes: nível 20 sozinho, subir do 18 ao 22 de uma vez, e skill pega depois da escolha já recebendo o aditivo.
   **Pronto quando:** os testes passam.
 

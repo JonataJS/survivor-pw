@@ -84,7 +84,9 @@ survivor-pw/
 
 `Boot → Menu → Game (+ Hud em paralelo) → LevelUp / Cultivation / Pause (sobrepostas, pausam o Game) → Result → Menu`
 
-`GameScene` roda a simulação. `HudScene` só lê o estado e escuta o `EventBus` (`hp-changed`, `xp-changed`, `level-up`, `cultivation-chosen`, `enemy-killed`, `skill-leveled`).
+`GameScene` roda a simulação. `HudScene` só lê o estado e escuta o `EventBus` (`hp-changed`, `xp-changed`, `level-up`, `cultivation-required`, `cultivation-chosen`, `enemy-killed`, `skill-leveled`).
+
+`cultivation-required` é disparado pelo `XpSystem` ao alcançar o nível 20, inserido na fila antes do `level-up` desse mesmo nível (spec.md §5.4, T043).
 
 ### 3.2 Skills orientadas a dados
 
