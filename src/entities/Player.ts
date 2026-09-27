@@ -9,7 +9,7 @@ import { XpSystem } from '../systems/XpSystem';
 const DASH_DURATION_SECONDS = 0.15;
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  readonly maxHp: number = mage.maxHp;
+  maxHp: number = mage.maxHp;
   hp: number = mage.maxHp;
   readonly speed: number = mage.speed;
   readonly physicalDefense: number = mage.physicalDefense;
@@ -23,12 +23,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   // damage entirely for the duration.
   invulnerable = false;
   dashCooldownRemaining = 0;
-  readonly dashCooldownDuration: number = calculateStats(movingEarth, 1).values.cooldown ?? 0;
 
   private readonly cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private readonly wasdKeys: Record<'W' | 'A' | 'S' | 'D', Phaser.Input.Keyboard.Key>;
   private readonly dashKey: Phaser.Input.Keyboard.Key;
-  private readonly dashLevel = 1;
+  private dashLevel = 1;
   private dashRemainingSeconds = 0;
   private dashDirX = 0;
   private dashDirY = 0;
@@ -103,6 +102,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   addXp(amount: number): void {
     this.xpSystem.addXp(amount);
+  }
+
+  // Upgrade card "Vitalidade" (fallback quando não há mais nada a oferecer).
+  increaseMaxHp(amount: number): void {
+    this.maxHp += amount;
+    this.hp = Math.min(this.maxHp, this.hp + amount);
+  }
+
+  setDashLevel(level: number): void {
+    this.dashLevel = level;
+  }
+
+  get dashCooldownDuration(): number {
+    return calculateStats(movingEarth, this.dashLevel).values.cooldown ?? 0;
   }
 
   get level(): number {

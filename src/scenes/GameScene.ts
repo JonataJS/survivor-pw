@@ -21,12 +21,29 @@ import { FlamingStormSkill } from '../skills/FlamingStorm';
 import { SandStormSkill } from '../skills/SandStorm';
 import { createTextButton } from '../ui/textButton';
 import { createRng, pickOne, type Rng } from '../core/rng';
-import { fireMastery, waterMastery, earthMastery, earthShield, fireShield, serenity } from '../data/passives';
-import type { PassiveDef } from '../data/types';
+import {
+  fireMastery,
+  waterMastery,
+  earthMastery,
+  earthShield,
+  fireShield,
+  serenity,
+  passives,
+} from '../data/passives';
+import { attackSkills, fireMark, movingEarth } from '../data/skills';
+import type { PassiveDef, SkillDef } from '../data/types';
 import type { Enemy } from '../entities/Enemy';
+import type { Skill } from '../skills/Skill';
+import {
+  rollUpgradeOptions,
+  type EquippedSkillState,
+  type UpgradeOption,
+} from '../systems/UpgradeSystem';
+import type { LevelUpSceneData } from './LevelUpScene';
+import { EventBus } from '../core/EventBus';
 
-// Debug-only max level used while T041's upgrade picker doesn't exist yet —
-// lets T030's passives be toggled on/off to verify their effect manually.
+// Debug-only max level while there's no UI for it yet — lets T030's
+// passives be toggled on/off to verify their effect manually.
 const DEBUG_PASSIVE_LEVEL = 5;
 
 const GRID_SIZE = 100;
@@ -48,6 +65,14 @@ export class GameScene extends Phaser.Scene {
   private skillSystem!: SkillSystem;
   private skillRng!: Rng;
   private equippedPassives: EquippedPassive[] = [];
+  private equippedSkills: EquippedSkillState[] = [];
+  private skillInstances = new Map<string, Skill>();
+  private skillFactories!: Record<string, () => Skill>;
+  private pendingLevelUps = 0;
+  private levelUpActive = false;
+  private onLevelUp = (): void => {
+    this.pendingLevelUps += 1;
+  };
   matchElapsedSeconds = 0;
 
   constructor() {
@@ -74,12 +99,28 @@ export class GameScene extends Phaser.Scene {
 
     this.skillRng = createRng(Date.now());
     this.skillSystem = new SkillSystem();
-    this.skillSystem.add(new FireMarkSkill(this.projectileSystem));
-    this.skillSystem.add(new SuddenSpringSkill(this.areaEffectSystem));
-    this.skillSystem.add(new StoneRainSkill(this.areaEffectSystem));
-    this.skillSystem.add(new PhoenixWingsSkill(this.areaEffectSystem));
-    this.skillSystem.add(new FlamingStormSkill(this.areaEffectSystem));
-    this.skillSystem.add(new SandStormSkill(this.areaEffectSystem));
+    this.skillFactories = {
+      'fire-mark': () => new FireMarkSkill(this.projectileSystem),
+      'sudden-spring': () => new SuddenSpringSkill(this.areaEffectSystem),
+      'stone-rain': () => new StoneRainSkill(this.areaEffectSystem),
+      'phoenix-wings': () => new PhoenixWingsSkill(this.areaEffectSystem),
+      'flaming-storm': () => new FlamingStormSkill(this.areaEffectSystem),
+      'sand-storm': () => new SandStormSkill(this.areaEffectSystem),
+    };
+    this.equippedSkills = [];
+    this.skillInstances = new Map();
+    // spec.md §2: começa apenas com Marca do Fogo; Terra Móvel (dash) já vem
+    // desbloqueada mas não ocupa slot de ataque — ver UpgradeSystem.ts.
+    this.equippedSkills.push({ def: fireMark, level: 1 });
+    this.equipNewSkill(fireMark, 1);
+    this.equippedSkills.push({ def: movingEarth, level: 1 });
+
+    this.pendingLevelUps = 0;
+    this.levelUpActive = false;
+    EventBus.on('level-up', this.onLevelUp);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      EventBus.off('level-up', this.onLevelUp);
+    });
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
@@ -121,8 +162,7 @@ export class GameScene extends Phaser.Scene {
     }).setScrollFactor(0);
 
     createTextButton(this, width / 2 - 70, height - 100, 'Level Up', () => {
-      this.scene.pause();
-      this.scene.launch('LevelUp');
+      if (!this.levelUpActive) this.openLevelUp();
     }).setScrollFactor(0);
 
     createTextButton(this, width / 2 + 100, height - 100, 'Cultivo', () => {
@@ -203,6 +243,76 @@ export class GameScene extends Phaser.Scene {
     if (this.debugActive) {
       this.updateDebugOverlay();
     }
+
+    // Fila de level-ups: um XP grande pode disparar vários 'level-up' no
+    // mesmo frame (T040); resolve um de cada vez, na ordem em que chegaram.
+    if (!this.levelUpActive && this.pendingLevelUps > 0) {
+      this.pendingLevelUps -= 1;
+      this.openLevelUp();
+    }
+  }
+
+  private openLevelUp(): void {
+    this.levelUpActive = true;
+    const options = rollUpgradeOptions(
+      this.skillRng,
+      this.equippedSkills,
+      this.equippedPassives,
+      attackSkills,
+      passives,
+    );
+    const data: LevelUpSceneData = {
+      options,
+      onChoose: (option) => this.handleUpgradeChosen(option),
+    };
+    this.scene.pause();
+    this.scene.launch('LevelUp', data);
+  }
+
+  private handleUpgradeChosen(option: UpgradeOption): void {
+    this.applyUpgrade(option);
+    this.levelUpActive = false;
+    this.scene.resume();
+  }
+
+  private applyUpgrade(option: UpgradeOption): void {
+    switch (option.kind) {
+      case 'new-skill':
+        this.equippedSkills.push({ def: option.skill, level: 1 });
+        this.equipNewSkill(option.skill, 1);
+        break;
+      case 'improve-skill': {
+        const equipped = this.equippedSkills.find((s) => s.def.id === option.skill.id);
+        if (equipped) equipped.level = option.toLevel;
+        if (option.skill.id === movingEarth.id) {
+          this.player.setDashLevel(option.toLevel);
+        } else {
+          const instance = this.skillInstances.get(option.skill.id);
+          if (instance) instance.level = option.toLevel;
+        }
+        break;
+      }
+      case 'new-passive':
+        this.equippedPassives.push({ def: option.passive, level: 1 });
+        break;
+      case 'improve-passive': {
+        const equipped = this.equippedPassives.find((p) => p.def.id === option.passive.id);
+        if (equipped) equipped.level = option.toLevel;
+        break;
+      }
+      case 'flat-hp':
+        this.player.increaseMaxHp(option.amount);
+        break;
+    }
+  }
+
+  private equipNewSkill(def: SkillDef, level: number): void {
+    const factory = this.skillFactories[def.id];
+    if (!factory) return;
+    const skill = factory();
+    skill.level = level;
+    this.skillInstances.set(def.id, skill);
+    this.skillSystem.add(skill);
   }
 
   private updateDebugOverlay(): void {

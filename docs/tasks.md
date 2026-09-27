@@ -98,7 +98,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   3 opções, respeitando slots (6+6), nível máximo 5 e fallback de +20 HP. Com testes e RNG com semente.
   **Pronto quando:** os testes cobrem todos os casos de `spec.md` §7.
 
-- [ ] **T042 — Tela de level-up** · Dep.: T041
+- [x] **T042 — Tela de level-up** · Dep.: T041
   Pausa o jogo; 3 cartas com nome, cor do elemento, nível atual → próximo e descrição; teclas 1/2/3, clique ou toque.
   **Pronto quando:** escolher uma carta aplica o upgrade e retoma a partida.
 
