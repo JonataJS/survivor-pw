@@ -74,8 +74,8 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   **Pronto quando:** coletar gemas enche a barra de XP.
 
 - [x] **T024 — Fonte Repentina** · Dep.: T021 — coluna de água que sobe do chão sob o inimigo (dano instantâneo, sem projétil), com lentidão. Visual: círculo azul no chão que cresce para cima em forma de jato vertical e se desfaz.
-- [ ] **T025 — Chuva de Pedra** · Dep.: T021 — pedra que cai do céu como meteoro sobre um inimigo aleatório visível (sombra no chão antes do impacto).
-- [ ] **T026 — Asas da Fênix** · Dep.: T021 — fênix de fogo em linha reta na direção do movimento, atravessa e empurra todos os inimigos no caminho.
+- [x] **T025 — Chuva de Pedra** · Dep.: T021 — pedra que cai do céu como meteoro sobre um inimigo aleatório visível (sombra no chão antes do impacto).
+- [x] **T026 — Asas da Fênix** · Dep.: T021 — fênix de fogo em linha reta na direção do movimento, atravessa e empurra todos os inimigos no caminho.
 - [ ] **T027 — Tempestade Flamejante** · Dep.: T021 — área em pulsos ao redor do jogador.
 - [ ] **T028 — Tempestade de Areia** · Dep.: T021 — rajada de areia do mago até o inimigo mais forte por perto; dano em alvo único e −50% no dano dele por 3 s.
   **Pronto quando (T024–T028):** cada skill funciona nos níveis 1 a 5 com os valores dos dados.

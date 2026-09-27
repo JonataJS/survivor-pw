@@ -13,7 +13,10 @@ import {
 } from '../systems/CombatSystem';
 import { FireMarkSkill } from '../skills/FireMark';
 import { SuddenSpringSkill } from '../skills/SuddenSpring';
+import { StoneRainSkill } from '../skills/StoneRain';
+import { PhoenixWingsSkill } from '../skills/PhoenixWings';
 import { createTextButton } from '../ui/textButton';
+import { createRng, pickOne, type Rng } from '../core/rng';
 import type { Enemy } from '../entities/Enemy';
 
 const GRID_SIZE = 100;
@@ -32,6 +35,7 @@ export class GameScene extends Phaser.Scene {
   private debugText!: Phaser.GameObjects.Text;
   private debugGridGraphics!: Phaser.GameObjects.Graphics;
   private skillSystem!: SkillSystem;
+  private skillRng!: Rng;
   matchElapsedSeconds = 0;
 
   constructor() {
@@ -56,9 +60,12 @@ export class GameScene extends Phaser.Scene {
     this.gemSystem = new GemSystem(this);
     this.areaEffectSystem = new AreaEffectSystem(this);
 
+    this.skillRng = createRng(Date.now());
     this.skillSystem = new SkillSystem();
     this.skillSystem.add(new FireMarkSkill(this.projectileSystem));
     this.skillSystem.add(new SuddenSpringSkill(this.areaEffectSystem));
+    this.skillSystem.add(new StoneRainSkill(this.areaEffectSystem));
+    this.skillSystem.add(new PhoenixWingsSkill(this.areaEffectSystem));
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
@@ -124,6 +131,8 @@ export class GameScene extends Phaser.Scene {
     this.skillSystem.update(delta / 1000, {
       casterX: this.player.x,
       casterY: this.player.y,
+      facingX: this.player.facingX,
+      facingY: this.player.facingY,
       equippedPassives: [],
       path: undefined,
       findNearestEnemy: (exclude) =>
@@ -132,6 +141,9 @@ export class GameScene extends Phaser.Scene {
           this.player.y,
           (enemy) => enemy.active && !exclude?.has(enemy),
         ),
+      findRandomVisibleEnemy: (exclude) => this.findRandomVisibleEnemy(exclude),
+      findEnemiesInLine: (dirX, dirY, range, halfWidth) =>
+        this.findEnemiesInLine(dirX, dirY, range, halfWidth),
       dealDamage: (enemy, damage) => this.dealDamageToEnemy(enemy, damage),
     });
     this.projectileSystem.update(delta, (enemy, damage) => this.dealDamageToEnemy(enemy, damage));
@@ -175,6 +187,46 @@ export class GameScene extends Phaser.Scene {
     this.spawnSystem.grid.forEachPopulatedCell((cx, cy) => {
       this.debugGridGraphics.strokeRect(cx * cellSize, cy * cellSize, cellSize, cellSize);
     });
+  }
+
+  private findRandomVisibleEnemy(exclude?: Set<Enemy>): Enemy | undefined {
+    const view = this.cameras.main.worldView;
+    const candidates: Enemy[] = [];
+    for (const enemy of this.spawnSystem.activeEnemies) {
+      if (!enemy.active || exclude?.has(enemy)) continue;
+      if (!Phaser.Geom.Rectangle.Contains(view, enemy.x, enemy.y)) continue;
+      candidates.push(enemy);
+    }
+    if (candidates.length === 0) return undefined;
+    return pickOne(this.skillRng, candidates);
+  }
+
+  private findEnemiesInLine(
+    dirX: number,
+    dirY: number,
+    range: number,
+    halfWidth: number,
+  ): Enemy[] {
+    const originX = this.player.x;
+    const originY = this.player.y;
+    const candidates = this.spawnSystem.grid.queryNeighbors(originX, originY, range);
+    const result: Enemy[] = [];
+
+    for (const enemy of candidates) {
+      if (!enemy.active) continue;
+
+      const dx = enemy.x - originX;
+      const dy = enemy.y - originY;
+      const along = dx * dirX + dy * dirY;
+      if (along < 0 || along > range) continue;
+
+      const perpX = dx - along * dirX;
+      const perpY = dy - along * dirY;
+      if (Math.hypot(perpX, perpY) > halfWidth + enemy.contactRadius) continue;
+
+      result.push(enemy);
+    }
+    return result;
   }
 
   private dealDamageToEnemy(enemy: Enemy, damage: number): void {

@@ -34,9 +34,13 @@ function baseContext(overrides: Partial<SkillContext> = {}): SkillContext {
   return {
     casterX: 0,
     casterY: 0,
+    facingX: 0,
+    facingY: 1,
     equippedPassives: [],
     path: undefined,
     findNearestEnemy: () => undefined,
+    findRandomVisibleEnemy: () => undefined,
+    findEnemiesInLine: () => [],
     dealDamage: () => {},
     ...overrides,
   };

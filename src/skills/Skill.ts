@@ -5,9 +5,17 @@ import { calculateStats, type CalculatedStats, type EquippedPassive } from '../s
 export interface SkillContext {
   casterX: number;
   casterY: number;
+  // Last non-zero movement direction (unit vector), for skills that fire
+  // "na direção do movimento" (Asas da Fênix) instead of at a target.
+  facingX: number;
+  facingY: number;
   equippedPassives: EquippedPassive[];
   path?: Path;
   findNearestEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
+  findRandomVisibleEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
+  // All enemies within `halfWidth` of the line from the caster out to
+  // `range` along (dirX, dirY) — the "atravessa e acerta todos" hitbox.
+  findEnemiesInLine: (dirX: number, dirY: number, range: number, halfWidth: number) => Enemy[];
   // Shared damage → death → gem-drop pipeline (owned by GameScene), so every
   // skill that hits an enemy directly (not through a Projectile) uses the
   // exact same resolution as everything else.

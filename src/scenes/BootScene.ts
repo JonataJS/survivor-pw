@@ -50,6 +50,11 @@ export class BootScene extends Phaser.Scene {
     }
 
     graphics.clear();
+    graphics.fillStyle(0x000000, 0.5);
+    graphics.fillEllipse(9, 5, 18, 10);
+    graphics.generateTexture('shadow', 18, 10);
+
+    graphics.clear();
     graphics.fillStyle(GEM_COLOR, 1);
     graphics.fillPoints(
       [

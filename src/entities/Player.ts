@@ -8,6 +8,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   readonly physicalDefense: number = mage.physicalDefense;
   readonly pickupRadius: number = mage.pickupRadius;
   xp = 0;
+  // Last non-zero movement direction (unit vector), used by directional
+  // skills like Asas da Fênix. Faces down by default, before any input.
+  facingX = 0;
+  facingY = 1;
 
   private readonly cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   private readonly wasdKeys: Record<'W' | 'A' | 'S' | 'D', Phaser.Input.Keyboard.Key>;
@@ -38,8 +42,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     const length = Math.hypot(moveX, moveY);
     if (length > 0) {
-      moveX = (moveX / length) * this.speed;
-      moveY = (moveY / length) * this.speed;
+      this.facingX = moveX / length;
+      this.facingY = moveY / length;
+      moveX = this.facingX * this.speed;
+      moveY = this.facingY * this.speed;
     }
 
     this.setVelocity(moveX, moveY);

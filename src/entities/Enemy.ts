@@ -66,6 +66,14 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  // Instant displacement (Asas da Fênix). Uses body.reset so the physics
+  // body and the sprite transform move together, same as spawn().
+  knockback(dirX: number, dirY: number, distance: number): void {
+    if (!this.active || distance <= 0) return;
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    body.reset(this.x + dirX * distance, this.y + dirY * distance);
+  }
+
   chase(targetX: number, targetY: number): void {
     if (!this.active) return;
 
