@@ -90,7 +90,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
 
 ## Fase 3 — Progressão
 
-- [ ] **T040 — XP e subida de nível** · Dep.: T023
+- [x] **T040 — XP e subida de nível** · Dep.: T023
   Curva `5 + nível × 10`; suporte a vários níveis de uma vez (fila de level-ups). Com testes.
   **Pronto quando:** os testes passam e subir de nível dispara o evento.
 

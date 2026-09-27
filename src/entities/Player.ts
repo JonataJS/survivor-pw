@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { mage } from '../data/classes';
 import { movingEarth } from '../data/skills';
 import { calculateStats } from '../systems/CombatSystem';
+import { XpSystem } from '../systems/XpSystem';
 
 // How long the dash's burst of movement lasts. Distance and recarga come
 // from data/skills.ts (Terra Móvel); this is purely the animation timing.
@@ -13,7 +14,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   readonly speed: number = mage.speed;
   readonly physicalDefense: number = mage.physicalDefense;
   readonly pickupRadius: number = mage.pickupRadius;
-  xp = 0;
+  private readonly xpSystem = new XpSystem();
   // Last non-zero movement direction (unit vector), used by directional
   // skills like Asas da Fênix. Faces down by default, before any input.
   facingX = 0;
@@ -101,6 +102,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   addXp(amount: number): void {
-    this.xp += amount;
+    this.xpSystem.addXp(amount);
+  }
+
+  get level(): number {
+    return this.xpSystem.level;
+  }
+
+  get xp(): number {
+    return this.xpSystem.xp;
   }
 }
