@@ -41,6 +41,8 @@ import {
   type UpgradeOption,
 } from '../systems/UpgradeSystem';
 import { CultivationSystem } from '../systems/CultivationSystem';
+import { DamageNumberSystem } from '../systems/DamageNumberSystem';
+import { GOD_COLOR, EVIL_COLOR } from '../skills/pathColors';
 import type { LevelUpSceneData } from './LevelUpScene';
 import type { CultivationSceneData } from './CultivationScene';
 import { EventBus } from '../core/EventBus';
@@ -58,6 +60,8 @@ export class GameScene extends Phaser.Scene {
   private projectileSystem!: ProjectileSystem;
   private gemSystem!: GemSystem;
   private areaEffectSystem!: AreaEffectSystem;
+  private damageNumberSystem!: DamageNumberSystem;
+  private playerAura!: Phaser.GameObjects.Arc;
   private matchEnded = false;
   private timerText!: Phaser.GameObjects.Text;
   private dashText!: Phaser.GameObjects.Text;
@@ -113,6 +117,13 @@ export class GameScene extends Phaser.Scene {
     this.projectileSystem = new ProjectileSystem(this);
     this.gemSystem = new GemSystem(this);
     this.areaEffectSystem = new AreaEffectSystem(this);
+    this.damageNumberSystem = new DamageNumberSystem(this);
+    // T046: aura ao redor do mago, oculta até o Cultivo ser escolhido —
+    // troca de cor conforme o caminho (mesma paleta dos efeitos de skill).
+    this.playerAura = this.add
+      .circle(this.player.x, this.player.y, 22, 0xffffff, 0.25)
+      .setVisible(false)
+      .setDepth(this.player.depth - 1);
 
     this.skillRng = createRng(Date.now());
     this.skillSystem = new SkillSystem();
@@ -212,6 +223,7 @@ export class GameScene extends Phaser.Scene {
     this.player.setCultivationContext(this.equippedPassives, this.cultivationSystem.path);
     this.player.update(delta / 1000);
     this.updatePeriodicBuff(delta / 1000);
+    this.playerAura.setPosition(this.player.x, this.player.y);
     this.dashText.setText(
       this.player.dashCooldownRemaining > 0
         ? `Dash: ${this.player.dashCooldownRemaining.toFixed(1)}s`
@@ -314,9 +326,10 @@ export class GameScene extends Phaser.Scene {
   private updatePathIndicator(): void {
     const path = this.cultivationSystem.path;
     if (!path) return;
-    const color = path === 'god' ? 0xffd700 : 0x8800ff;
+    const color = path === 'god' ? GOD_COLOR : EVIL_COLOR;
     this.pathIcon.setFillStyle(color).setVisible(true);
     this.pathText.setText(path === 'god' ? 'God' : 'Evil').setColor(path === 'god' ? '#ffd700' : '#cc66ff');
+    this.playerAura.setFillStyle(color, 0.25).setVisible(true);
   }
 
   private openLevelUp(): void {
@@ -560,6 +573,7 @@ export class GameScene extends Phaser.Scene {
     });
 
     enemy.hp -= finalDamage;
+    if (isCrit) this.damageNumberSystem.playCrit(enemy.x, enemy.y, finalDamage);
 
     for (const status of effects?.statusChances ?? []) {
       if (this.skillRng() >= status.chance) continue;

@@ -19,11 +19,15 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   // still in flight) can detect that the pool recycled this instance into a
   // different logical enemy, even though the JS object is the same.
   generation = 0;
+  // T046: ícone acima do inimigo enquanto atordoado/paralisado — um único
+  // sprite por slot do pool (não recriado a cada spawn/status).
+  private readonly statusIcon: Phaser.GameObjects.Sprite;
 
   constructor(scene: Phaser.Scene) {
     super(scene, 0, 0, 'enemy-common');
     scene.add.existing(this);
     scene.physics.add.existing(this);
+    this.statusIcon = scene.add.sprite(0, 0, 'status-stun').setVisible(false);
     this.deactivate();
   }
 
@@ -57,6 +61,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setActive(false);
     this.setVisible(false);
     this.setVelocity(0, 0);
+    this.statusIcon.setVisible(false);
 
     const body = this.body as Phaser.Physics.Arcade.Body | null;
     if (body) body.enable = false;
@@ -120,6 +125,15 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.isParalyzed = false;
       }
     }
+
+    if (this.isStunned) {
+      this.statusIcon.setTexture('status-stun').setVisible(true);
+    } else if (this.isParalyzed) {
+      this.statusIcon.setTexture('status-paralyze').setVisible(true);
+    } else {
+      this.statusIcon.setVisible(false);
+    }
+    this.statusIcon.setPosition(this.x, this.y - this.height / 2 - 8);
   }
 
   // Instant displacement (Asas da Fênix). Uses body.reset so the physics

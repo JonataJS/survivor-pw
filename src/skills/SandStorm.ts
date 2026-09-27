@@ -2,6 +2,7 @@ import { BaseSkill, type SkillContext } from './Skill';
 import { sandStorm } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
+import { effectColor } from './pathColors';
 
 const EARTH_COLOR = 0x8a5a2b;
 const SEARCH_RADIUS = 500;
@@ -30,8 +31,8 @@ export class SandStormSkill extends BaseSkill {
     if (distance <= 0) return;
 
     this.areaEffectSystem.playBeam(ctx.casterX, ctx.casterY, Math.atan2(dy, dx), distance, {
-      textureKey: 'projectile-earth',
-      tint: EARTH_COLOR,
+      textureKey: 'effect-white',
+      tint: effectColor(ctx.path, EARTH_COLOR),
       width: BEAM_WIDTH,
       travelDurationMs: TRAVEL_DURATION_MS,
       fadeDurationMs: 200,

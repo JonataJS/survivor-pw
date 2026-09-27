@@ -3,6 +3,7 @@ import { stoneRain } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { Enemy } from '../entities/Enemy';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
+import { effectColor } from './pathColors';
 
 const EARTH_COLOR = 0x8a5a2b;
 const IMPACT_DELAY_MS = 600;
@@ -28,8 +29,8 @@ export class StoneRainSkill extends BaseSkill {
         x,
         y,
         {
-          textureKey: 'projectile-earth',
-          tint: EARTH_COLOR,
+          textureKey: 'effect-white',
+          tint: effectColor(ctx.path, EARTH_COLOR),
           maxScale: 6,
           growDurationMs: 150,
           fadeDurationMs: 250,

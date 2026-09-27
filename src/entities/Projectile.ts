@@ -26,6 +26,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     damage: number,
     textureKey: string,
     effects?: DamageEffects,
+    tint = 0xffffff,
   ): void {
     this.target = target;
     this.targetGeneration = target.generation;
@@ -34,6 +35,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.lifetimeMs = 0;
 
     this.setTexture(textureKey);
+    this.setTint(tint);
     this.setPosition(x, y);
     this.setActive(true);
     this.setVisible(true);

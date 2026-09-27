@@ -114,7 +114,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Garantir que as 6 skills de ataque, a Terra Móvel e os 6 passivos respondem a todos os modificadores da tabela de `spec.md` §5.4, incluindo o buff periódico da Serenidade God.
   **Pronto quando:** no modo debug (comando para forçar God ou Evil), cada aditivo tem efeito visível ou mensurável.
 
-- [ ] **T046 — Visual do caminho** · Dep.: T044
+- [x] **T046 — Visual do caminho** · Dep.: T044
   Efeitos das skills e aura do mago trocam de cor conforme o caminho; números de crítico maiores e em outra cor; ícone de atordoado/paralisado no inimigo.
   **Pronto quando:** dá para identificar o caminho e os status só olhando a tela.
 

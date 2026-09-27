@@ -3,6 +3,7 @@ import { suddenSpring } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { Enemy } from '../entities/Enemy';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
+import { effectColor } from './pathColors';
 
 const WATER_COLOR = 0x3388ff;
 
@@ -24,8 +25,8 @@ export class SuddenSpringSkill extends BaseSkill {
       chosen.add(target);
 
       this.areaEffectSystem.play(target.x, target.y, {
-        textureKey: 'projectile-water',
-        tint: WATER_COLOR,
+        textureKey: 'effect-white',
+        tint: effectColor(ctx.path, WATER_COLOR),
         maxScale: 5,
         growDurationMs: 150,
         fadeDurationMs: 250,

@@ -54,6 +54,27 @@ export class BootScene extends Phaser.Scene {
     graphics.fillEllipse(9, 5, 18, 10);
     graphics.generateTexture('shadow', 18, 10);
 
+    // Plain white circle, always tinted at runtime (setTint multiplies a
+    // texture's own colors, so effects that need to switch between the
+    // element color and a Cultivo path color need a neutral base).
+    graphics.clear();
+    graphics.fillStyle(0xffffff, 1);
+    graphics.fillCircle(6, 6, 6);
+    graphics.generateTexture('effect-white', 12, 12);
+
+    // T046: pequenos ícones de status acima do inimigo — atordoado
+    // (triângulo amarelo) e paralisado (círculo ciano), formas distintas
+    // além da cor para quem tem dificuldade de percepção de cor.
+    graphics.clear();
+    graphics.fillStyle(0xffdd33, 1);
+    graphics.fillTriangle(5, 0, 10, 10, 0, 10);
+    graphics.generateTexture('status-stun', 10, 10);
+
+    graphics.clear();
+    graphics.fillStyle(0x55e0ff, 1);
+    graphics.fillCircle(5, 5, 5);
+    graphics.generateTexture('status-paralyze', 10, 10);
+
     graphics.clear();
     graphics.fillStyle(GEM_COLOR, 1);
     graphics.fillPoints(

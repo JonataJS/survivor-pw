@@ -2,6 +2,7 @@ import { BaseSkill, type SkillContext } from './Skill';
 import { phoenixWings } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
+import { effectColor } from './pathColors';
 
 const FIRE_COLOR = 0xff5522;
 const DEFAULT_WIDTH = 80;
@@ -31,8 +32,8 @@ export class PhoenixWingsSkill extends BaseSkill {
       }
 
       this.areaEffectSystem.playBeam(ctx.casterX, ctx.casterY, Math.atan2(dirY, dirX), range, {
-        textureKey: 'projectile-fire',
-        tint: FIRE_COLOR,
+        textureKey: 'effect-white',
+        tint: effectColor(ctx.path, FIRE_COLOR),
         width,
         travelDurationMs: TRAVEL_DURATION_MS,
         fadeDurationMs: 200,

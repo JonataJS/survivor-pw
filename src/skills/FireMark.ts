@@ -3,6 +3,9 @@ import { fireMark } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { Enemy } from '../entities/Enemy';
 import type { ProjectileSystem } from '../systems/ProjectileSystem';
+import { effectColor } from './pathColors';
+
+const FIRE_COLOR = 0xff5522;
 
 export class FireMarkSkill extends BaseSkill {
   constructor(private readonly projectileSystem: ProjectileSystem) {
@@ -19,10 +22,15 @@ export class FireMarkSkill extends BaseSkill {
       if (!target) break;
 
       chosen.add(target);
-      this.projectileSystem.spawn(ctx.casterX, ctx.casterY, target, damage, 'projectile-fire', {
-        critChance: stats.critChance,
-        lifesteal: stats.lifesteal,
-      });
+      this.projectileSystem.spawn(
+        ctx.casterX,
+        ctx.casterY,
+        target,
+        damage,
+        'effect-white',
+        { critChance: stats.critChance, lifesteal: stats.lifesteal },
+        effectColor(ctx.path, FIRE_COLOR),
+      );
     }
   }
 }

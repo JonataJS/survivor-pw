@@ -2,6 +2,7 @@ import { BaseSkill, type SkillContext } from './Skill';
 import { flamingStorm } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
+import { effectColor } from './pathColors';
 
 const FIRE_COLOR = 0xff5522;
 // The circle texture is 12px wide; scale so its display diameter matches 2×radius.
@@ -35,8 +36,8 @@ export class FlamingStormSkill extends BaseSkill {
     }
 
     this.areaEffectSystem.play(ctx.casterX, ctx.casterY, {
-      textureKey: 'projectile-fire',
-      tint: FIRE_COLOR,
+      textureKey: 'effect-white',
+      tint: effectColor(ctx.path, FIRE_COLOR),
       maxScale: (radius * 2) / TEXTURE_DIAMETER,
       growDurationMs: 200,
       fadeDurationMs: 300,
