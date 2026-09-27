@@ -94,7 +94,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Curva `5 + nível × 10`; suporte a vários níveis de uma vez (fila de level-ups). Com testes.
   **Pronto quando:** os testes passam e subir de nível dispara o evento.
 
-- [ ] **T041 — Sorteio de upgrades** · Dep.: T040, T030
+- [x] **T041 — Sorteio de upgrades** · Dep.: T040, T030
   3 opções, respeitando slots (6+6), nível máximo 5 e fallback de +20 HP. Com testes e RNG com semente.
   **Pronto quando:** os testes cobrem todos os casos de `spec.md` §7.
 
