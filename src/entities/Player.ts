@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { mage } from '../data/classes';
 import { movingEarth } from '../data/skills';
-import { calculateStats } from '../systems/CombatSystem';
+import { calculateStats, type EquippedPassive } from '../systems/CombatSystem';
 import { XpSystem } from '../systems/XpSystem';
+import type { Path } from '../data/types';
 
 // How long the dash's burst of movement lasts. Distance and recarga come
 // from data/skills.ts (Terra Móvel); this is purely the animation timing.
@@ -32,6 +33,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private dashDirX = 0;
   private dashDirY = 0;
   private dashSpeed = 0;
+  // Set each frame by GameScene so Terra Móvel também recebe Serenidade e
+  // o aditivo de Cultivo, como qualquer outra skill (spec.md §5.1).
+  private cultivationEquippedPassives: EquippedPassive[] = [];
+  private cultivationPath: Path | undefined;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'player');
@@ -82,8 +87,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  setCultivationContext(equippedPassives: EquippedPassive[], path: Path | undefined): void {
+    this.cultivationEquippedPassives = equippedPassives;
+    this.cultivationPath = path;
+  }
+
   private startDash(): void {
-    const stats = calculateStats(movingEarth, this.dashLevel);
+    const stats = calculateStats(
+      movingEarth,
+      this.dashLevel,
+      this.cultivationEquippedPassives,
+      this.cultivationPath,
+    );
     const distance = stats.values.distance ?? 0;
     const cooldown = stats.values.cooldown ?? 0;
     if (distance <= 0) return;
@@ -115,7 +130,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   get dashCooldownDuration(): number {
-    return calculateStats(movingEarth, this.dashLevel).values.cooldown ?? 0;
+    return (
+      calculateStats(movingEarth, this.dashLevel, this.cultivationEquippedPassives, this.cultivationPath)
+        .values.cooldown ?? 0
+    );
   }
 
   get level(): number {

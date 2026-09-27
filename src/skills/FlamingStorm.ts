@@ -15,10 +15,23 @@ export class FlamingStormSkill extends BaseSkill {
   protected fire(ctx: SkillContext, stats: CalculatedStats): void {
     const damage = stats.values.damage ?? 0;
     const radius = stats.values.radius ?? 0;
+    const healOnHit = stats.healOnHit;
+    // "Cura ao acertar" (evil) é limitada por pulso — não por inimigo —
+    // então o teto é somado aqui, ao longo dos alvos deste fire() só.
+    let healedThisPulse = 0;
 
     const targets = ctx.findEnemiesInRadius(ctx.casterX, ctx.casterY, radius);
     for (const enemy of targets) {
-      ctx.dealDamage(enemy, damage);
+      ctx.dealDamage(enemy, damage, {
+        critChance: stats.critChance,
+        statusChances: stats.statusChances,
+      });
+
+      if (healOnHit && healedThisPulse < healOnHit.maxPerActivation && ctx.rng() < healOnHit.chance) {
+        const heal = Math.min(healOnHit.value, healOnHit.maxPerActivation - healedThisPulse);
+        ctx.healPlayer(heal);
+        healedThisPulse += heal;
+      }
     }
 
     this.areaEffectSystem.play(ctx.casterX, ctx.casterY, {

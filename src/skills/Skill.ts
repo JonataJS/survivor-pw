@@ -1,6 +1,23 @@
 import type { Enemy } from '../entities/Enemy';
 import type { Path, SkillDef } from '../data/types';
-import { calculateStats, type CalculatedStats, type EquippedPassive } from '../systems/CombatSystem';
+import {
+  calculateStats,
+  type CalculatedStats,
+  type EquippedPassive,
+  type LifestealEffect,
+  type StatusChanceEffect,
+} from '../systems/CombatSystem';
+import type { Rng } from '../core/rng';
+
+// Extra per-hit effects a skill's own cultivo aditivo may carry (crítico,
+// roubo de vida, atordoar/paralisar) — resolved centrally at hit-time by
+// GameScene's dealDamage, since the roll needs the shared seeded RNG and,
+// for lifesteal, direct access to the player.
+export interface DamageEffects {
+  critChance?: number;
+  lifesteal?: LifestealEffect;
+  statusChances?: StatusChanceEffect[];
+}
 
 export interface SkillContext {
   casterX: number;
@@ -24,8 +41,16 @@ export interface SkillContext {
   findEnemiesInRadius: (centerX: number, centerY: number, radius: number) => Enemy[];
   // Shared damage → death → gem-drop pipeline (owned by GameScene), so every
   // skill that hits an enemy directly (not through a Projectile) uses the
-  // exact same resolution as everything else.
-  dealDamage: (enemy: Enemy, damage: number) => void;
+  // exact same resolution as everything else. Returns the final damage
+  // actually dealt (post-crítico/buff periódico), for skills that need it
+  // (e.g. lifesteal healing based on the resolved amount).
+  dealDamage: (enemy: Enemy, damage: number, effects?: DamageEffects) => number;
+  // Serenidade evil / Tempestade Flamejante evil (cura ao acertar) — heals
+  // the player directly; skills track their own per-activation caps.
+  healPlayer: (amount: number) => void;
+  // Shared seeded RNG for aditivo chance rolls (roubo de vida, atordoar,
+  // paralisar, cura ao acertar) that live inside a skill's own fire().
+  rng: Rng;
 }
 
 export interface Skill {

@@ -110,7 +110,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Duas colunas (God dourado/branco, Evil vermelho/roxo) listando os aditivos das skills e passivos atuais, lidos de `descricao` nos dados; confirmar com clique, toque ou teclas 1/2. Ícone do caminho no HUD depois da escolha.
   **Pronto quando:** a escolha pausa o jogo, aplica o caminho e segue para o level-up normal do nível 20.
 
-- [ ] **T045 — Aditivos em cada skill e passivo** · Dep.: T043, T022–T030
+- [x] **T045 — Aditivos em cada skill e passivo** · Dep.: T043, T022–T030
   Garantir que as 6 skills de ataque, a Terra Móvel e os 6 passivos respondem a todos os modificadores da tabela de `spec.md` §5.4, incluindo o buff periódico da Serenidade God.
   **Pronto quando:** no modo debug (comando para forçar God ou Evil), cada aditivo tem efeito visível ou mensurável.
 

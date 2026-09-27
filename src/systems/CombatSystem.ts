@@ -219,6 +219,7 @@ export function calculateStats(
     values.cooldown = values.cooldown * (1 - serenity) * acc.cooldownMult + acc.flatCooldown;
   }
   if (values.radius !== undefined) values.radius *= acc.areaMult;
+  if (values.width !== undefined) values.width *= acc.areaMult;
   if (values.range !== undefined) values.range *= acc.rangeMult;
   if (values.distance !== undefined) values.distance *= acc.rangeMult;
   if (values.slowPercentage !== undefined) values.slowPercentage *= acc.slowMult;

@@ -11,6 +11,7 @@ import {
   calculatePhysicalDamage,
   calculateStats,
   CONTACT_DAMAGE_INTERVAL_SECONDS,
+  CRIT_MULTIPLIER,
   type EquippedPassive,
 } from '../systems/CombatSystem';
 import { FireMarkSkill } from '../skills/FireMark';
@@ -33,7 +34,7 @@ import {
 import { attackSkills, fireMark, movingEarth } from '../data/skills';
 import type { PassiveDef, Path, SkillDef } from '../data/types';
 import type { Enemy } from '../entities/Enemy';
-import type { Skill } from '../skills/Skill';
+import type { DamageEffects, Skill } from '../skills/Skill';
 import {
   rollUpgradeOptions,
   type EquippedSkillState,
@@ -83,6 +84,12 @@ export class GameScene extends Phaser.Scene {
   };
   private pathIcon!: Phaser.GameObjects.Arc;
   private pathText!: Phaser.GameObjects.Text;
+  // Serenidade god: a cada `interval` segundos, +`damageBonus` de dano por
+  // `duration` segundos — global, então fica fora do ciclo de recarga de
+  // qualquer skill (calculateDamage's periodicBuffActive é lido daqui).
+  private periodicBuffTimer = 0;
+  private periodicBuffActiveRemaining = 0;
+  private periodicBuffBonus = 0;
   matchElapsedSeconds = 0;
 
   constructor() {
@@ -155,6 +162,8 @@ export class GameScene extends Phaser.Scene {
     keyboard.on('keydown-F6', () => this.togglePassive(earthShield));
     keyboard.on('keydown-F7', () => this.togglePassive(fireShield));
     keyboard.on('keydown-F8', () => this.togglePassive(serenity));
+    keyboard.on('keydown-F9', () => this.forcePath('god'));
+    keyboard.on('keydown-F10', () => this.forcePath('evil'));
 
     this.add.text(width / 2, 40, 'Game (placeholder)', { fontSize: '24px' }).setOrigin(0.5).setScrollFactor(0);
     this.timerText = this.add
@@ -200,7 +209,9 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     if (this.matchEnded) return;
 
+    this.player.setCultivationContext(this.equippedPassives, this.cultivationSystem.path);
     this.player.update(delta / 1000);
+    this.updatePeriodicBuff(delta / 1000);
     this.dashText.setText(
       this.player.dashCooldownRemaining > 0
         ? `Dash: ${this.player.dashCooldownRemaining.toFixed(1)}s`
@@ -244,9 +255,13 @@ export class GameScene extends Phaser.Scene {
         this.findEnemiesInLine(dirX, dirY, range, halfWidth),
       findEnemiesInRadius: (centerX, centerY, radius) =>
         this.findEnemiesInRadius(centerX, centerY, radius),
-      dealDamage: (enemy, damage) => this.dealDamageToEnemy(enemy, damage),
+      dealDamage: (enemy, damage, effects) => this.dealDamageToEnemy(enemy, damage, effects),
+      healPlayer: (amount) => this.healPlayer(amount),
+      rng: this.skillRng,
     });
-    this.projectileSystem.update(delta, (enemy, damage) => this.dealDamageToEnemy(enemy, damage));
+    this.projectileSystem.update(delta, (enemy, damage, effects) =>
+      this.dealDamageToEnemy(enemy, damage, effects),
+    );
     this.gemSystem.update(
       this.player.x,
       this.player.y,
@@ -378,11 +393,15 @@ export class GameScene extends Phaser.Scene {
         `Entidades: ${totalEntities}`,
         `Células ocupadas: ${cellCount}`,
         `XP: ${this.player.xp}   Gemas ativas: ${this.gemSystem.activeGems.size}`,
+        `Caminho: ${this.cultivationSystem.path ?? 'nenhum'}`,
         `Passivos: ${passiveNames}`,
         `Defesa física: ${(this.player.physicalDefense + this.totalPhysicalDefenseBonus()).toFixed(1)}` +
+          `   Redução de dano: ${(this.totalDamageTakenReduction() * 100).toFixed(0)}%` +
           `   Regen: ${this.totalRegenPerSecond().toFixed(1)}/s`,
+        `Buff periódico (Serenidade god): ${this.periodicBuffActiveRemaining > 0 ? `ativo (${this.periodicBuffActiveRemaining.toFixed(1)}s)` : 'inativo'}`,
         '[F1] fechar debug   [F2] +300 inimigos',
         '[F3] Maestria Fogo [F4] Água [F5] Terra [F6] Escudo Terra [F7] Escudo Fogo [F8] Serenidade',
+        '[F9] Forçar God   [F10] Forçar Evil',
       ].join('\n'),
     );
 
@@ -403,22 +422,73 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  private forcePath(path: Path): void {
+    this.cultivationSystem.choosePath(path);
+    this.updatePathIndicator();
+  }
+
+  private updatePeriodicBuff(deltaSeconds: number): void {
+    const path = this.cultivationSystem.path;
+    const equippedSerenity = this.equippedPassives.find((p) => p.def.id === serenity.id);
+    if (!path || !equippedSerenity) {
+      this.periodicBuffTimer = 0;
+      this.periodicBuffActiveRemaining = 0;
+      return;
+    }
+
+    const buff = calculateStats(serenity, equippedSerenity.level, [], path).periodicBuff;
+    if (!buff) {
+      this.periodicBuffActiveRemaining = 0;
+      return;
+    }
+
+    this.periodicBuffTimer += deltaSeconds;
+    if (this.periodicBuffTimer >= buff.interval) {
+      this.periodicBuffTimer -= buff.interval;
+      this.periodicBuffActiveRemaining = buff.duration;
+    }
+    this.periodicBuffBonus = buff.damageBonus;
+    if (this.periodicBuffActiveRemaining > 0) {
+      this.periodicBuffActiveRemaining = Math.max(0, this.periodicBuffActiveRemaining - deltaSeconds);
+    }
+  }
+
+  private healPlayer(amount: number): void {
+    this.player.hp = Math.min(this.player.maxHp, this.player.hp + amount);
+  }
+
   private totalPhysicalDefenseBonus(): number {
+    const path = this.cultivationSystem.path;
     let total = 0;
     for (const equipped of this.equippedPassives) {
       if (equipped.def.id !== earthShield.id) continue;
-      total += calculateStats(equipped.def, equipped.level).values.physicalDefenseBonus ?? 0;
+      total += calculateStats(equipped.def, equipped.level, [], path).values.physicalDefenseBonus ?? 0;
     }
     return total;
   }
 
   private totalRegenPerSecond(): number {
+    const path = this.cultivationSystem.path;
     let total = 0;
     for (const equipped of this.equippedPassives) {
       if (equipped.def.id !== fireShield.id) continue;
-      total += calculateStats(equipped.def, equipped.level).values.regenPerSecond ?? 0;
+      total += calculateStats(equipped.def, equipped.level, [], path).values.regenPerSecond ?? 0;
     }
     return total;
+  }
+
+  // Escudo de Terra/Fogo god: −15% de dano recebido cada, lido via
+  // calculateStats como qualquer outro aditivo; capado pra não zerar o
+  // dano de contato por completo se ambos forem equipados no god.
+  private totalDamageTakenReduction(): number {
+    const path = this.cultivationSystem.path;
+    if (!path) return 0;
+    let total = 0;
+    for (const equipped of this.equippedPassives) {
+      if (equipped.def.id !== earthShield.id && equipped.def.id !== fireShield.id) continue;
+      total += calculateStats(equipped.def, equipped.level, [], path).damageTakenReduction;
+    }
+    return Math.min(total, 0.9);
   }
 
   private findRandomVisibleEnemy(exclude?: Set<Enemy>): Enemy | undefined {
@@ -476,12 +546,37 @@ export class GameScene extends Phaser.Scene {
     return candidates.filter((enemy) => enemy.active);
   }
 
-  private dealDamageToEnemy(enemy: Enemy, damage: number): void {
-    enemy.hp -= calculateDamage(damage);
+  // Shared hit resolution for every skill (T045): rolls crítico, aplica o
+  // buff periódico da Serenidade god, e resolve os aditivos por acerto
+  // (roubo de vida, atordoar/paralisar) antes do dano cair no HP.
+  private dealDamageToEnemy(enemy: Enemy, damage: number, effects?: DamageEffects): number {
+    const critChance = effects?.critChance ?? 0;
+    const isCrit = critChance > 0 && this.skillRng() < critChance;
+    const finalDamage = calculateDamage(damage, {
+      isCrit,
+      critMultiplier: CRIT_MULTIPLIER,
+      periodicBuffActive: this.periodicBuffActiveRemaining > 0,
+      periodicBuffBonus: this.periodicBuffBonus,
+    });
+
+    enemy.hp -= finalDamage;
+
+    for (const status of effects?.statusChances ?? []) {
+      if (this.skillRng() >= status.chance) continue;
+      if (status.status === 'stun') enemy.applyStun(status.duration);
+      if (status.status === 'paralyze') enemy.applyParalyze(status.duration);
+    }
+
+    if (effects?.lifesteal && this.skillRng() < effects.lifesteal.chance) {
+      this.healPlayer(finalDamage * effects.lifesteal.percentage);
+    }
+
     if (enemy.hp <= 0) {
       this.gemSystem.spawn(enemy.x, enemy.y, enemy.def.xp);
       this.spawnSystem.release(enemy);
     }
+
+    return finalDamage;
   }
 
   private handleContactDamage(): void {
@@ -493,18 +588,22 @@ export class GameScene extends Phaser.Scene {
       this.player.y,
       CONTACT_QUERY_RADIUS,
     );
+    const damageTakenReduction = this.totalDamageTakenReduction();
 
     for (const enemy of nearby) {
       if (enemy.contactCooldown > 0) continue;
+      // Atordoado/paralisado: sem outra ação no MVP, o inimigo também não
+      // consegue causar dano de contato enquanto isso durar.
+      if (enemy.isStunned || enemy.isParalyzed) continue;
 
       const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, enemy.x, enemy.y);
       if (distance > playerRadius + enemy.contactRadius) continue;
 
-      const damage = calculatePhysicalDamage(
+      const rawDamage = calculatePhysicalDamage(
         enemy.def.contactDamage * enemy.damageDealtMultiplier,
         this.player.physicalDefense + this.totalPhysicalDefenseBonus(),
       );
-      this.player.takeDamage(damage);
+      this.player.takeDamage(rawDamage * (1 - damageTakenReduction));
       enemy.contactCooldown = CONTACT_DAMAGE_INTERVAL_SECONDS;
 
       if (this.player.hp <= 0) {

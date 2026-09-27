@@ -78,11 +78,11 @@ export const phoenixWings: SkillDef = {
   element: 'fire',
   type: 'attack',
   levels: [
-    { damage: 25, cooldown: 8.0, knockback: 80, range: 300, phoenixCount: 1 },
-    { damage: 32, cooldown: 8.0, knockback: 90, range: 340, phoenixCount: 1 },
-    { damage: 38, cooldown: 8.0, knockback: 100, range: 380, phoenixCount: 1 },
-    { damage: 45, cooldown: 8.0, knockback: 110, range: 420, phoenixCount: 1 },
-    { damage: 55, cooldown: 8.0, knockback: 130, range: 480, phoenixCount: 2 },
+    { damage: 25, cooldown: 8.0, knockback: 80, range: 300, phoenixCount: 1, width: 80 },
+    { damage: 32, cooldown: 8.0, knockback: 90, range: 340, phoenixCount: 1, width: 80 },
+    { damage: 38, cooldown: 8.0, knockback: 100, range: 380, phoenixCount: 1, width: 80 },
+    { damage: 45, cooldown: 8.0, knockback: 110, range: 420, phoenixCount: 1, width: 80 },
+    { damage: 55, cooldown: 8.0, knockback: 130, range: 480, phoenixCount: 2, width: 80 },
   ],
   cultivation: {
     god: {

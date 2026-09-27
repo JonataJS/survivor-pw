@@ -36,7 +36,12 @@ export class StoneRainSkill extends BaseSkill {
         },
         IMPACT_DELAY_MS,
         () => {
-          if (target.active) ctx.dealDamage(target, damage);
+          if (target.active) {
+            ctx.dealDamage(target, damage, {
+              critChance: stats.critChance,
+              statusChances: stats.statusChances,
+            });
+          }
         },
       );
     }

@@ -4,7 +4,7 @@ import type { CalculatedStats } from '../systems/CombatSystem';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
 
 const FIRE_COLOR = 0xff5522;
-const BEAM_HALF_WIDTH = 40;
+const DEFAULT_WIDTH = 80;
 const TRAVEL_DURATION_MS = 250;
 
 export class PhoenixWingsSkill extends BaseSkill {
@@ -17,20 +17,23 @@ export class PhoenixWingsSkill extends BaseSkill {
     const damage = stats.values.damage ?? 0;
     const knockback = stats.values.knockback ?? 0;
     const range = stats.values.range ?? 0;
+    // Evil: Fênix 50% mais larga (area_mult) — acerta mais inimigos.
+    const width = stats.values.width ?? DEFAULT_WIDTH;
+    const halfWidth = width / 2;
     const dirX = ctx.facingX;
     const dirY = ctx.facingY;
 
     for (let i = 0; i < phoenixCount; i++) {
-      const targets = ctx.findEnemiesInLine(dirX, dirY, range, BEAM_HALF_WIDTH);
+      const targets = ctx.findEnemiesInLine(dirX, dirY, range, halfWidth);
       for (const enemy of targets) {
-        ctx.dealDamage(enemy, damage);
+        ctx.dealDamage(enemy, damage, { critChance: stats.critChance });
         if (enemy.active) enemy.knockback(dirX, dirY, knockback);
       }
 
       this.areaEffectSystem.playBeam(ctx.casterX, ctx.casterY, Math.atan2(dirY, dirX), range, {
         textureKey: 'projectile-fire',
         tint: FIRE_COLOR,
-        width: BEAM_HALF_WIDTH * 2,
+        width,
         travelDurationMs: TRAVEL_DURATION_MS,
         fadeDurationMs: 200,
       });

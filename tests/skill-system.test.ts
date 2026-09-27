@@ -3,6 +3,7 @@ import { BaseSkill, type SkillContext } from '../src/skills/Skill';
 import { SkillSystem } from '../src/systems/SkillSystem';
 import type { SkillDef } from '../src/data/types';
 import { serenity } from '../src/data/passives';
+import { createRng } from '../src/core/rng';
 
 const testSkillDef: SkillDef = {
   id: 'test-skill',
@@ -43,7 +44,9 @@ function baseContext(overrides: Partial<SkillContext> = {}): SkillContext {
     findStrongestEnemyNearby: () => undefined,
     findEnemiesInLine: () => [],
     findEnemiesInRadius: () => [],
-    dealDamage: () => {},
+    dealDamage: () => 0,
+    healPlayer: () => {},
+    rng: createRng(1),
     ...overrides,
   };
 }

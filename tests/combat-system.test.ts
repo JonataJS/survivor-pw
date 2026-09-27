@@ -105,6 +105,7 @@ describe('calculateStats — cultivo (plan.md §3.3)', () => {
   it('Asas da Fênix evil: fênix 50% mais larga (area_mult não altera cooldown)', () => {
     const stats = calculateStats(phoenixWings, 1, [], 'evil');
     expect(stats.values.cooldown).toBe(8.0);
+    expect(stats.values.width).toBeCloseTo(80 * 1.5);
   });
 
   it('Tempestade Flamejante evil: 25% de chance de curar 1 HP (máx. 5)', () => {

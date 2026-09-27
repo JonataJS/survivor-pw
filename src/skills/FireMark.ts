@@ -19,7 +19,10 @@ export class FireMarkSkill extends BaseSkill {
       if (!target) break;
 
       chosen.add(target);
-      this.projectileSystem.spawn(ctx.casterX, ctx.casterY, target, damage, 'projectile-fire');
+      this.projectileSystem.spawn(ctx.casterX, ctx.casterY, target, damage, 'projectile-fire', {
+        critChance: stats.critChance,
+        lifesteal: stats.lifesteal,
+      });
     }
   }
 }

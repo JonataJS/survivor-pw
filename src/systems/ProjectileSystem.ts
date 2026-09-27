@@ -2,8 +2,9 @@ import Phaser from 'phaser';
 import { Pool } from '../core/Pool';
 import { Projectile } from '../entities/Projectile';
 import type { Enemy } from '../entities/Enemy';
+import type { DamageEffects } from '../skills/Skill';
 
-export type DealDamage = (enemy: Enemy, damage: number) => void;
+export type DealDamage = (enemy: Enemy, damage: number, effects?: DamageEffects) => number;
 
 export class ProjectileSystem {
   private readonly pool: Pool<Projectile>;
@@ -16,9 +17,16 @@ export class ProjectileSystem {
     );
   }
 
-  spawn(x: number, y: number, target: Enemy, damage: number, textureKey: string): void {
+  spawn(
+    x: number,
+    y: number,
+    target: Enemy,
+    damage: number,
+    textureKey: string,
+    effects?: DamageEffects,
+  ): void {
     const projectile = this.pool.acquire();
-    projectile.fire(x, y, target, damage, textureKey);
+    projectile.fire(x, y, target, damage, textureKey, effects);
     this.active.add(projectile);
   }
 
@@ -35,7 +43,7 @@ export class ProjectileSystem {
       const distance = Phaser.Math.Distance.Between(projectile.x, projectile.y, target.x, target.y);
 
       if (distance <= projectile.hitRadius + target.contactRadius) {
-        dealDamage(target, projectile.damage);
+        dealDamage(target, projectile.damage, projectile.effects);
         this.release(projectile);
         continue;
       }

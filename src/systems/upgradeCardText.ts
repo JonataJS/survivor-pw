@@ -30,6 +30,7 @@ const FIELD_META: Record<string, FieldMeta> = {
   range: { label: 'Alcance', format: 'flat' },
   phoenixCount: { label: 'Fênix', format: 'flat' },
   radius: { label: 'Raio', format: 'flat' },
+  width: { label: 'Largura', format: 'flat' },
   damageReduction: { label: 'Redução de dano do alvo', format: 'percent' },
   debuffDuration: { label: 'Duração do efeito', format: 'seconds' },
   distance: { label: 'Distância do dash', format: 'flat' },

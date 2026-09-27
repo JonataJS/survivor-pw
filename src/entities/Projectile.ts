@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { Enemy } from './Enemy';
+import type { DamageEffects } from '../skills/Skill';
 
 const PROJECTILE_SPEED = 500;
 const MAX_LIFETIME_MS = 3000;
@@ -7,6 +8,7 @@ const MAX_LIFETIME_MS = 3000;
 export class Projectile extends Phaser.Physics.Arcade.Sprite {
   damage = 0;
   target?: Enemy;
+  effects?: DamageEffects;
   private targetGeneration = -1;
   private lifetimeMs = 0;
 
@@ -17,10 +19,18 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.deactivate();
   }
 
-  fire(x: number, y: number, target: Enemy, damage: number, textureKey: string): void {
+  fire(
+    x: number,
+    y: number,
+    target: Enemy,
+    damage: number,
+    textureKey: string,
+    effects?: DamageEffects,
+  ): void {
     this.target = target;
     this.targetGeneration = target.generation;
     this.damage = damage;
+    this.effects = effects;
     this.lifetimeMs = 0;
 
     this.setTexture(textureKey);
@@ -38,6 +48,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.setVisible(false);
     this.setVelocity(0, 0);
     this.target = undefined;
+    this.effects = undefined;
 
     const body = this.body as Phaser.Physics.Arcade.Body | null;
     if (body) body.enable = false;

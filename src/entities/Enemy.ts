@@ -11,6 +11,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   private slowRemaining = 0;
   damageDealtMultiplier = 1;
   private damageDebuffRemaining = 0;
+  isStunned = false;
+  private stunRemaining = 0;
+  isParalyzed = false;
+  private paralyzeRemaining = 0;
   // Bumped on every spawn() so stale external references (e.g. a Projectile
   // still in flight) can detect that the pool recycled this instance into a
   // different logical enemy, even though the JS object is the same.
@@ -33,6 +37,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.slowRemaining = 0;
     this.damageDealtMultiplier = 1;
     this.damageDebuffRemaining = 0;
+    this.isStunned = false;
+    this.stunRemaining = 0;
+    this.isParalyzed = false;
+    this.paralyzeRemaining = 0;
 
     this.setTexture(`enemy-${def.id}`);
     this.contactRadius = this.width / 2;
@@ -67,6 +75,19 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.damageDebuffRemaining = Math.max(this.damageDebuffRemaining, durationSeconds);
   }
 
+  // Chuva de Pedra evil (atordoar) / Tempestade Flamejante god (paralisar):
+  // both simply stop the enemy from chasing until the duration runs out —
+  // enemies have no other action in the MVP, so "can't act" == "can't move".
+  applyStun(durationSeconds: number): void {
+    this.stunRemaining = Math.max(this.stunRemaining, durationSeconds);
+    this.isStunned = true;
+  }
+
+  applyParalyze(durationSeconds: number): void {
+    this.paralyzeRemaining = Math.max(this.paralyzeRemaining, durationSeconds);
+    this.isParalyzed = true;
+  }
+
   tickStatus(deltaSeconds: number): void {
     if (this.slowRemaining > 0) {
       this.slowRemaining -= deltaSeconds;
@@ -83,6 +104,22 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.damageDealtMultiplier = 1;
       }
     }
+
+    if (this.stunRemaining > 0) {
+      this.stunRemaining -= deltaSeconds;
+      if (this.stunRemaining <= 0) {
+        this.stunRemaining = 0;
+        this.isStunned = false;
+      }
+    }
+
+    if (this.paralyzeRemaining > 0) {
+      this.paralyzeRemaining -= deltaSeconds;
+      if (this.paralyzeRemaining <= 0) {
+        this.paralyzeRemaining = 0;
+        this.isParalyzed = false;
+      }
+    }
   }
 
   // Instant displacement (Asas da Fênix). Uses body.reset so the physics
@@ -95,6 +132,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   chase(targetX: number, targetY: number): void {
     if (!this.active) return;
+    if (this.isStunned || this.isParalyzed) {
+      this.setVelocity(0, 0);
+      return;
+    }
 
     const dx = targetX - this.x;
     const dy = targetY - this.y;
