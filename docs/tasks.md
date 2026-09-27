@@ -35,7 +35,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Mago com HP e velocidade vindos dos dados; movimento por WASD/setas; câmera seguindo.
   **Pronto quando:** o mago anda em 8 direções numa área maior que a tela.
 
-- [ ] **T012 — Pool de objetos e grade espacial** · Dep.: T001
+- [x] **T012 — Pool de objetos e grade espacial** · Dep.: T001
   `core/Pool.ts` e `core/SpatialGrid.ts`, com testes (inserir, mover, consultar vizinhos, mais próximo).
   **Pronto quando:** os testes passam.
 
