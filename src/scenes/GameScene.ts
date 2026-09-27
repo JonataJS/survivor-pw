@@ -32,6 +32,7 @@ export class GameScene extends Phaser.Scene {
   private areaEffectSystem!: AreaEffectSystem;
   private matchEnded = false;
   private timerText!: Phaser.GameObjects.Text;
+  private dashText!: Phaser.GameObjects.Text;
   private fastForwardKey!: Phaser.Input.Keyboard.Key;
   private debugActive = false;
   private debugText!: Phaser.GameObjects.Text;
@@ -89,6 +90,10 @@ export class GameScene extends Phaser.Scene {
       .text(width - 16, 16, this.formatTime(0), { fontSize: '20px' })
       .setOrigin(1, 0)
       .setScrollFactor(0);
+    this.dashText = this.add
+      .text(width - 16, 44, '', { fontSize: '16px', color: '#8a5a2b' })
+      .setOrigin(1, 0)
+      .setScrollFactor(0);
     this.debugText = this.add
       .text(16, 44, '', { fontSize: '16px', color: '#ffdd55', backgroundColor: '#00000088' })
       .setScrollFactor(0)
@@ -118,7 +123,12 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     if (this.matchEnded) return;
 
-    this.player.update();
+    this.player.update(delta / 1000);
+    this.dashText.setText(
+      this.player.dashCooldownRemaining > 0
+        ? `Dash: ${this.player.dashCooldownRemaining.toFixed(1)}s`
+        : 'Dash: pronto',
+    );
 
     const fastForwarding = this.fastForwardKey.isDown;
     const timeScale = fastForwarding ? debug.fastForwardTimeScale : 1;
@@ -261,6 +271,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleContactDamage(): void {
+    if (this.player.invulnerable) return;
+
     const playerRadius = this.player.width / 2;
     const nearby = this.spawnSystem.grid.queryNeighbors(
       this.player.x,

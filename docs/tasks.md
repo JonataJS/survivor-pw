@@ -80,7 +80,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
 - [x] **T028 — Tempestade de Areia** · Dep.: T021 — rajada de areia do mago até o inimigo mais forte por perto; dano em alvo único e −50% no dano dele por 3 s.
   **Pronto quando (T024–T028):** cada skill funciona nos níveis 1 a 5 com os valores dos dados.
 
-- [ ] **T029 — Terra Móvel (dash)** · Dep.: T011, T021
+- [x] **T029 — Terra Móvel (dash)** · Dep.: T011, T021
   Espaço/botão; dash na direção do movimento; intocável durante o dash; recarga mostrada.
   **Pronto quando:** o dash atravessa inimigos sem receber dano.
 
