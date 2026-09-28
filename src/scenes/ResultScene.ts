@@ -2,14 +2,20 @@ import Phaser from 'phaser';
 import { createTextButton } from '../ui/textButton';
 import type { RunResult } from '../systems/StatsTracker';
 import { scoreService } from '../services/LocalScoreService';
+import { resolveRunSetup, type RunSetup } from '../systems/runSetup';
+
+interface ResultSceneData extends RunResult {
+  setup?: RunSetup;
+}
 
 export class ResultScene extends Phaser.Scene {
   constructor() {
     super('Result');
   }
 
-  create(data: RunResult): void {
+  create(data: ResultSceneData): void {
     const { width, height } = this.scale;
+    const setup = resolveRunSetup(data.setup) ?? resolveRunSetup()!;
     this.cameras.main.setBackgroundColor('#101820');
     void scoreService.saveRun(data);
 
@@ -59,7 +65,7 @@ export class ResultScene extends Phaser.Scene {
     }
 
     createTextButton(this, width / 2, height - 54, 'Jogar de novo', () => {
-      this.scene.start('Game');
+      this.scene.start('Game', setup);
     });
   }
 

@@ -11,11 +11,11 @@ import { EventBus } from '../core/EventBus';
 const DASH_DURATION_SECONDS = 0.15;
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
-  maxHp: number = mage.maxHp;
-  hp: number = mage.maxHp;
-  readonly speed: number = mage.speed;
-  readonly physicalDefense: number = mage.physicalDefense;
-  readonly pickupRadius: number = mage.pickupRadius;
+  maxHp: number;
+  hp: number;
+  readonly speed: number;
+  readonly physicalDefense: number;
+  readonly pickupRadius: number;
   private readonly xpSystem = new XpSystem();
   // Last non-zero movement direction (unit vector), used by directional
   // skills like Asas da Fênix. Faces down by default, before any input.
@@ -43,8 +43,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private cultivationEquippedPassives: EquippedPassive[] = [];
   private cultivationPath: Path | undefined;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, classDef = mage) {
     super(scene, x, y, 'player');
+
+    this.maxHp = classDef.maxHp;
+    this.hp = classDef.maxHp;
+    this.speed = classDef.speed;
+    this.physicalDefense = classDef.physicalDefense;
+    this.pickupRadius = classDef.pickupRadius;
 
     scene.add.existing(this);
     scene.physics.add.existing(this);

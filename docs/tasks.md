@@ -164,15 +164,15 @@ Objetivo: apresentar as classes e os mapas no menu, permitir iniciar somente com
   Implementar seleção padrão, validação e rejeição de opções indisponíveis para classe e mapa em funções puras, com testes.
   **Pronto quando:** os testes confirmam Mago e Toca dos Lobos como padrões, aceitam as opções disponíveis e rejeitam opções futuras ou IDs inválidos.
 
-- [ ] **T065 — Seletor de classe no menu** · Dep.: T064
+- [x] **T065 — Seletor de classe no menu** · Dep.: T064
   Mostrar os seis cartões de classe. Mago pode ser selecionado; Guerreiro, Bárbaro, Feiticeira, Arqueiro e Sacerdote exibem “Em breve”, têm aparência indisponível e não respondem a clique/toque/teclado.
   **Pronto quando:** Mago aparece selecionado inicialmente, o estado selecionado é visível e as outras cinco classes não podem ser ativadas.
 
-- [ ] **T066 — Seletor de mapa no menu** · Dep.: T064
+- [x] **T066 — Seletor de mapa no menu** · Dep.: T064
   Mostrar os três cartões de mapa. Toca dos Lobos pode ser selecionado; Caverna do Fogo e Caverna do Escorpião-Serpente exibem “Em breve”, têm aparência indisponível e não respondem a clique/toque/teclado.
   **Pronto quando:** Toca dos Lobos aparece selecionada inicialmente e somente ela pode ser ativada.
 
-- [ ] **T067 — Passagem e retenção do setup da partida** · Dep.: T065, T066
+- [x] **T067 — Passagem e retenção do setup da partida** · Dep.: T065, T066
   Enviar os IDs selecionados de classe e mapa ao iniciar `GameScene`; conservar o setup para o botão “Jogar de novo” de `ResultScene`. Não persistir a seleção entre sessões. A Toca dos Lobos utiliza as regras e a arena atualmente implementadas; conteúdo visual específico fica para a Fase 7.
   **Pronto quando:** a partida recebe Mago/Toca dos Lobos e “Jogar de novo” inicia a mesma combinação sem voltar ao padrão por engano.
 

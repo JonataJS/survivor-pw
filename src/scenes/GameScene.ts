@@ -50,6 +50,8 @@ import type { HudSceneData } from './HudScene';
 import { EventBus } from '../core/EventBus';
 import { StatsTracker } from '../systems/StatsTracker';
 import { findNearestVisibleTarget } from '../systems/targetLogic';
+import { playerClasses } from '../data/classes';
+import { resolveRunSetup, type RunSetup } from '../systems/runSetup';
 
 const SKILL_ELEMENTS = new Map<string, Element>(attackSkills.map((skill) => [skill.id, skill.element]));
 
@@ -100,14 +102,17 @@ export class GameScene extends Phaser.Scene {
   private periodicBuffTimer = 0;
   private periodicBuffActiveRemaining = 0;
   private periodicBuffBonus = 0;
+  private runSetup!: RunSetup;
   matchElapsedSeconds = 0;
 
   constructor() {
     super('Game');
   }
 
-  create(): void {
+  create(data?: RunSetup): void {
     const { width, height } = this.scale;
+
+    this.runSetup = resolveRunSetup(data) ?? resolveRunSetup()!;
 
     this.matchElapsedSeconds = 0;
     this.matchEnded = false;
@@ -118,7 +123,9 @@ export class GameScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
 
-    this.player = new Player(this, WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+    const selectedClass = playerClasses.find((entry) => entry.id === this.runSetup.classId);
+    if (!selectedClass) throw new Error(`Playable class not found: ${this.runSetup.classId}`);
+    this.player = new Player(this, WORLD_WIDTH / 2, WORLD_HEIGHT / 2, selectedClass);
     this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     this.spawnSystem = new SpawnSystem(this, WORLD_WIDTH, WORLD_HEIGHT);
     this.projectileSystem = new ProjectileSystem(this);
@@ -647,16 +654,16 @@ export class GameScene extends Phaser.Scene {
     if (this.matchEnded) return;
     this.matchEnded = true;
     this.scene.stop('Hud');
-    this.scene.start(
-      'Result',
-      this.statsTracker.createRunResult(
+    this.scene.start('Result', {
+      ...this.statsTracker.createRunResult(
         victory,
         this.matchElapsedSeconds,
         this.player.level,
         this.cultivationSystem.path,
         this.killCount,
       ),
-    );
+      setup: this.runSetup,
+    });
   }
 
   private drawWorldGrid(): void {
