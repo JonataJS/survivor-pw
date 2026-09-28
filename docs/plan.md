@@ -29,7 +29,7 @@ survivor-pw/
 │   ├── main.ts              # cria o Phaser.Game e registra as cenas
 │   ├── config.ts            # resolução, FPS, flags de debug
 │   ├── scenes/
-│   │   ├── BootScene.ts     # carrega assets e gera texturas placeholder
+│   │   ├── BootScene.ts     # carrega assets e gera texturas placeholder até a integração da arte
 │   │   ├── MenuScene.ts
 │   │   ├── GameScene.ts     # partida
 │   │   ├── HudScene.ts      # UI sobreposta à partida

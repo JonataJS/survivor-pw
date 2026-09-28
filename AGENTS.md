@@ -49,4 +49,4 @@ TypeScript (strict) · Phaser 3 · Vite · Vitest · ESLint + Prettier · deploy
 - Comunicação jogo → HUD pelo `EventBus`.
 - **Código em inglês, sempre:** nomes de arquivos, classes, funções, variáveis, campos de tipos e comentários — inclusive termos de domínio (`damage`, `cooldown`, `cultivation`, `mastery`, `stun`, `slow`, `path`, etc.), mesmo quando o `plan.md`/`spec.md` os descrevem em português. Só o texto exibido ao jogador (nomes de skills como "Marca do Fogo", labels de UI, descrições) fica em português, vindo de `src/data/`.
 - Textos da interface (o que o jogador vê) em português.
-- Arte é placeholder (formas geométricas geradas na BootScene). Não adicionar assets oficiais do Perfect World.
+- A arte atual é placeholder até a Fase 6. O projeto pode utilizar assets oficiais do Perfect World, pois é pessoal e sem fins comerciais, conforme decisão do usuário.

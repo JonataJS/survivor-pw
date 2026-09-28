@@ -6,7 +6,7 @@
 
 Jogo de ação no navegador, no estilo *Vampire Survivors* (o personagem ataca sozinho, o jogador só se move e escolhe upgrades), com a temática e as skills do *Perfect World*. O primeiro personagem jogável é o **Mago**, com skills baseadas no guia do Místicos do PW (fogo, água e terra).
 
-Projeto pessoal e sem fins comerciais nesta fase. A arte é placeholder (formas geométricas e cores por elemento); nenhum asset oficial do Perfect World entra no repositório.
+Projeto pessoal e sem fins comerciais. A arte atual é placeholder (formas geométricas e cores por elemento); o projeto pode utilizar assets oficiais do Perfect World, conforme decisão do usuário.
 
 ## 2. Objetivo do MVP
 
@@ -182,7 +182,7 @@ Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do p
 - Nome final do jogo.
 - O tempo de conjuração (cast) do PW deve ter algum papel? Por exemplo, um atraso visual antes do dano de skills pesadas.
 - Mapa infinito ou arena com bordas?
-- Arte: continuar com formas geométricas, usar pixel art própria ou gerar sprites?
+- Direção de arte e inventário de assets: definidos na Fase 6 de `tasks.md`; a integração continua fora desta fase.
 
 ---
 Fonte das skills: [Místicos do PW — Skills Magos](https://misticosdopw.blogspot.com/2011/09/skills-magos.html)

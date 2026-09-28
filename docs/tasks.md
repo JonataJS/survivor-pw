@@ -152,6 +152,39 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
 
 ---
 
+## Fase 6 — Direção de arte e produção de assets (sem integração)
+
+Objetivo: definir uma identidade visual consistente e produzir os arquivos de arte necessários para substituir os placeholders. Esta fase **não altera cenas, código de carregamento, HUD ou gameplay**; a integração fica para uma fase/tarefa posterior.
+
+Direção proposta: fantasia oriental de alto contraste, inspirada no universo e na iconografia de Perfect World, com silhuetas legíveis em escala pequena, acabamento ilustrado estilizado e paleta organizada por elemento. Assets oficiais do Perfect World podem ser usados por decisão do usuário; assets originais podem complementar o conjunto. Manter fundo transparente nos sprites e ícones sempre que aplicável.
+
+- [x] **T070 — Inventário e especificação visual**
+  Registrar referências aprovadas, paleta, escala, enquadramento, perspectiva, formatos, dimensões-alvo e convenções de nomes. Inventariar: Mago; inimigos Comum, Rápido e Tanque; cenário/terreno da arena; gema de XP; efeitos de fogo, água e terra; efeitos de status; ícones das 7 skills ativas (incluindo Terra Móvel), 6 passivos e caminhos God/Evil; elementos visuais de menu, HUD, level-up, cultivo, pausa e resultado.
+  **Ficha visual:** `docs/art/direction.md`.
+  **Pronto quando:** cada família tiver uma ficha com uso, dimensões/alvos, transparência, variantes/frames necessários e referência visual.
+
+- [ ] **T071 — Arte de personagens e inimigos** · Dep.: T070
+  Produzir sprites do Mago e dos três tipos de inimigo, incluindo variações/frames de animação requeridos pela apresentação do jogo. Garantir silhuetas distintas e leitura sobre o cenário.
+  **Pronto quando:** os arquivos finais estiverem exportados com nomes estáveis, transparência correta e escala consistente, sem alterar o código do jogo.
+
+- [ ] **T072 — Ícones de skills, passivos e cultivo** · Dep.: T070
+  Produzir ícones individuais para Marca do Fogo, Fonte Repentina, Chuva de Pedra, Asas da Fênix, Tempestade Flamejante, Tempestade de Areia, Terra Móvel, os seis passivos e os caminhos God/Evil; contemplar leitura em miniatura e variações de caminho quando necessárias.
+  **Pronto quando:** todos os ícones existirem nos tamanhos/famílias definidos em T070 e forem visualmente distinguíveis em escala de HUD.
+
+- [ ] **T073 — Efeitos de combate e itens** · Dep.: T070
+  Produzir arte da gema de XP, do cenário/terreno da arena e dos efeitos visuais de cada skill, impactos por elemento e estados stun/paralyze, cobrindo as cores de Cultivo God e Evil onde aplicável.
+  **Pronto quando:** o conjunto visual cobrir arena, todas as skills e estados do MVP, com sprites/frames separados e nomes mapeados para os comportamentos descritos na spec.
+
+- [ ] **T074 — Elementos gráficos das telas e interface** · Dep.: T070
+  Produzir molduras/ornamentos, fundos e elementos decorativos necessários para Menu, HUD, cartas de level-up, escolha de Cultivo, pausa e resultado, sem incluir texto rasterizado que deva permanecer localizável.
+  **Pronto quando:** houver inventário completo dos elementos de tela, exportados em camadas/arquivos reutilizáveis e sem textos embutidos.
+
+- [ ] **T075 — Revisão visual e pacote de entrega** · Dep.: T071, T072, T073, T074
+  Revisar consistência, transparência, recortes, legibilidade em escala real e organização dos arquivos. Documentar origem/licença dos assets usados e mapa asset → entidade/tela/efeito para a futura integração.
+  **Pronto quando:** o pacote final estiver completo, organizado em `public/assets/` (ou diretório acordado), com catálogo, créditos/licenças e checklist de cobertura; nenhum arquivo estiver referenciado pelo jogo nesta fase.
+
+---
+
 ## Pós-MVP (não detalhar ainda)
 
 - **T100** Supabase: projeto, tabelas `profiles` e `runs`, RLS.
