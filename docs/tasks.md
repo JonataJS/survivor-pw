@@ -176,7 +176,7 @@ Objetivo: apresentar as classes e os mapas no menu, permitir iniciar somente com
   Enviar os IDs selecionados de classe e mapa ao iniciar `GameScene`; conservar o setup para o botão “Jogar de novo” de `ResultScene`. Não persistir a seleção entre sessões. A Toca dos Lobos utiliza as regras e a arena atualmente implementadas; conteúdo visual específico fica para a Fase 7.
   **Pronto quando:** a partida recebe Mago/Toca dos Lobos e “Jogar de novo” inicia a mesma combinação sem voltar ao padrão por engano.
 
-- [ ] **T068 — Verificação do menu e das opções bloqueadas** · Dep.: T067
+- [x] **T068 — Verificação do menu e das opções bloqueadas** · Dep.: T067
   Testar lógica de disponibilidade e passagem do setup; conferir o menu em desktop e celular, incluindo seleção válida, cartões indisponíveis, etiqueta exata “Em breve” e início/repetição de partida.
   **Pronto quando:** somente Mago e Toca dos Lobos iniciam partidas, os cinco cartões de classe e dois de mapa restantes ficam bloqueados e o ciclo completo do MVP continua funcionando.
 
