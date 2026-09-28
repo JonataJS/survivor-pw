@@ -1,29 +1,41 @@
 import { describe, expect, it } from 'vitest';
 import { applyXpGain, buildLevelUpQueue, xpToNextLevel, XpSystem } from '../src/systems/XpSystem';
 import { EventBus } from '../src/core/EventBus';
+import { XP_REQUIRED_BY_LEVEL } from '../src/data/progression';
 
 describe('xpToNextLevel', () => {
-  it('follows 5 + nível × 10', () => {
-    expect(xpToNextLevel(1)).toBe(15);
-    expect(xpToNextLevel(2)).toBe(25);
-    expect(xpToNextLevel(20)).toBe(205);
+  it('uses the accelerated early and growing late progression curve', () => {
+    expect(xpToNextLevel(1)).toBe(5);
+    expect(xpToNextLevel(2)).toBe(8);
+    expect(xpToNextLevel(5)).toBe(22);
+    expect(xpToNextLevel(18)).toBe(450);
+    expect(xpToNextLevel(19)).toBe(540);
+    expect(xpToNextLevel(20)).toBe(580);
+  });
+
+  it('keeps the opening levels quick and the level-20 XP budget calibrated for a long run', () => {
+    const firstFiveLevels = XP_REQUIRED_BY_LEVEL.slice(0, 5).reduce((sum, xp) => sum + xp, 0);
+    const totalThroughLevel20 = XP_REQUIRED_BY_LEVEL.reduce((sum, xp) => sum + xp, 0);
+
+    expect(firstFiveLevels).toBe(63);
+    expect(totalThroughLevel20).toBe(2548);
   });
 });
 
 describe('applyXpGain', () => {
   it('accumulates xp without leveling up when below the threshold', () => {
-    const result = applyXpGain(1, 0, 10);
-    expect(result).toEqual({ level: 1, xp: 10, levelsGained: 0 });
+    const result = applyXpGain(1, 0, 4);
+    expect(result).toEqual({ level: 1, xp: 4, levelsGained: 0 });
   });
 
   it('levels up once when xp reaches the threshold, carrying the remainder', () => {
-    const result = applyXpGain(1, 10, 10);
-    expect(result).toEqual({ level: 2, xp: 5, levelsGained: 1 });
+    const result = applyXpGain(1, 0, 8);
+    expect(result).toEqual({ level: 2, xp: 3, levelsGained: 1 });
   });
 
   it('levels up multiple times from a single large gain (fila de level-ups)', () => {
-    // level 18 → 22: needs 185+195+205+215 = 800 to hit level 22 exactly
-    const result = applyXpGain(18, 0, 800);
+    // level 18 → 22: needs 450+540+580+620 XP to hit level 22 exactly
+    const result = applyXpGain(18, 0, 2190);
     expect(result).toEqual({ level: 22, xp: 0, levelsGained: 4 });
   });
 
@@ -92,7 +104,7 @@ describe('XpSystem', () => {
     const onLevelUp = (level: number) => levelsEmitted.push(level);
     EventBus.on('level-up', onLevelUp);
 
-    system.addXp(5);
+    system.addXp(4);
 
     EventBus.off('level-up', onLevelUp);
     expect(levelsEmitted).toEqual([]);

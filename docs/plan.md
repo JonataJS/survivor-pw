@@ -66,6 +66,7 @@ survivor-pw/
 │   │   ├── passives.ts
 │   │   ├── enemies.ts
 │   │   └── waves.ts         # curva de spawn
+│   │   ├── progression.ts   # curva de XP por nível
 │   ├── core/
 │   │   ├── Pool.ts          # reaproveitamento de objetos
 │   │   ├── SpatialGrid.ts   # busca de vizinhos/alvos
@@ -213,6 +214,7 @@ Lógica pura fica fora das classes do Phaser para ser testada com Vitest:
 - `calcularStats` com e sem cultivo, para cada skill e passivo (God e Evil);
 - fila de level-up inserindo o Cultivo no nível 20, inclusive ao subir vários níveis de uma vez;
 - curva de spawn por minuto.
+- curva de XP acelerada no começo e progressiva até o nível 20.
 
 Teste manual por checklist nos critérios de aceite de `spec.md`.
 
@@ -248,7 +250,7 @@ runs (
 ```
 
 - RLS: cada usuário insere só as próprias partidas; ranking é leitura pública.
-- Insert via **Edge Function** que faz checagens de sanidade (tempo ≤ 600 s, mortes compatíveis com o tempo, versão válida).
+- Insert via **Edge Function** que faz checagens de sanidade (tempo ≤ 1500 s, mortes compatíveis com o tempo, versão válida).
 
 ### Escalar no futuro
 

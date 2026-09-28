@@ -151,9 +151,9 @@ describe('calculateStats — passivos e seus próprios aditivos', () => {
     expect(stats.values.regenPerSecond).toBeCloseTo(1.5 * 3);
   });
 
-  it('Maestria evil: +5% de chance de crítico', () => {
+  it('Maestria evil: +8% de chance de crítico', () => {
     const stats = calculateStats(fireMastery, 5, [], 'evil');
-    expect(stats.critChance).toBeCloseTo(0.05);
+    expect(stats.critChance).toBeCloseTo(0.08);
   });
 
   it('Serenidade god: buff periódico de +100% de dano a cada 30s por 5s', () => {
@@ -163,11 +163,11 @@ describe('calculateStats — passivos e seus próprios aditivos', () => {
 });
 
 describe('calculateStats — cultivo de passivos equipados se propaga às skills', () => {
-  it('a maestria evil equipada soma +5% de crítico ao calcular uma skill do mesmo elemento', () => {
+  it('a maestria evil equipada soma +8% de crítico ao calcular uma skill do mesmo elemento', () => {
     const equipped: EquippedPassive[] = [{ def: fireMastery, level: 1 }];
     const stats = calculateStats(fireMark, 1, equipped, 'evil');
 
-    expect(stats.critChance).toBeCloseTo(0.05);
+    expect(stats.critChance).toBeCloseTo(0.08);
     // a maestria evil não dá bônus de dano do elemento — só a versão god
     expect(stats.values.damage).toBeCloseTo(10 * 1.1); // só o +10% base da maestria
   });
@@ -184,8 +184,8 @@ describe('calculateStats — cultivo de passivos equipados se propaga às skills
     const equipped: EquippedPassive[] = [{ def: serenity, level: 1 }];
     const stats = calculateStats(stoneRain, 1, equipped, 'evil');
 
-    // serenidade base (-6%) × serenidade evil cultivo (cooldown_mult 0.8)
-    expect(stats.values.cooldown).toBeCloseTo(6.0 * (1 - 0.06) * 0.8);
+    // serenidade base (-6%) × serenidade evil cultivo (cooldown_mult 0.85)
+    expect(stats.values.cooldown).toBeCloseTo(6.0 * (1 - 0.06) * 0.85);
   });
 });
 

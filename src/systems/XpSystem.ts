@@ -1,8 +1,21 @@
 import { EventBus } from '../core/EventBus';
+import {
+  XP_REQUIRED_BY_LEVEL,
+  XP_REQUIREMENT_GROWTH_AFTER_CULTIVATION,
+} from '../data/progression';
 
-// spec.md §6: "XP para o próximo nível: 5 + (nível × 10)".
+// XP requirements are balance data so the pace can accelerate early and
+// become more gradual later in the run (T060).
 export function xpToNextLevel(level: number): number {
-  return 5 + level * 10;
+  const safeLevel = Math.max(1, Math.floor(level));
+  const configuredRequirement = XP_REQUIRED_BY_LEVEL[safeLevel - 1];
+  if (configuredRequirement !== undefined) return configuredRequirement;
+
+  const lastRequirement = XP_REQUIRED_BY_LEVEL[XP_REQUIRED_BY_LEVEL.length - 1];
+  return (
+    lastRequirement +
+    (safeLevel - XP_REQUIRED_BY_LEVEL.length) * XP_REQUIREMENT_GROWTH_AFTER_CULTIVATION
+  );
 }
 
 // spec.md §5.4/§7: nível em que o Cultivo (God/Evil) abre, antes do

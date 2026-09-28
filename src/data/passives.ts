@@ -6,8 +6,8 @@ const masteryCultivation = () => ({
     modifiers: [{ type: 'element_damage_bonus' as const, value: 0.25 }],
   },
   evil: {
-    description: '+5% de chance de crítico',
-    modifiers: [{ type: 'crit_chance' as const, value: 0.05 }],
+    description: '+8% de chance de crítico',
+    modifiers: [{ type: 'crit_chance' as const, value: 0.08 }],
   },
 });
 
@@ -113,8 +113,8 @@ export const serenity: PassiveDef = {
       modifiers: [{ type: 'periodic_buff', interval: 30, duration: 5, damageBonus: 1.0 }],
     },
     evil: {
-      description: '−20% de espera adicional',
-      modifiers: [{ type: 'cooldown_mult', value: 0.8 }],
+      description: '−15% de espera adicional',
+      modifiers: [{ type: 'cooldown_mult', value: 0.85 }],
     },
   },
 };

@@ -26,9 +26,9 @@ entrar no jogo → jogar com o Mago → sobreviver ou morrer → ver o resultado
 2. Inimigos surgem fora da tela e andam na direção do jogador. A quantidade e a força aumentam com o tempo.
 3. Inimigos mortos soltam **gemas de experiência**. O jogador coleta ao passar perto (raio de coleta).
 4. Ao subir de nível, o jogo pausa e mostra **3 opções** aleatórias: skill nova, melhorar skill existente ou passivo.
-5. No **nível 20**, no lugar do level-up normal, abre a tela de **Cultivo**: o jogador escolhe **God** ou **Evil**, e todas as skills ganham o aditivo do caminho escolhido até o fim da partida (seção 5.4).
+5. No **nível 20**, no lugar do level-up normal, abre a tela de **Cultivo**: o jogador escolhe **God** ou **Evil**, e todas as skills ganham o aditivo do caminho escolhido até o fim da partida (seção 5.4). A progressão é rápida nos níveis iniciais e desacelera ao longo da partida, com meta de atingir o nível 20 por volta dos 20 minutos.
 6. A partida acaba quando:
-   - **Vitória:** o jogador sobrevive **10 minutos**.
+   - **Vitória:** o jogador sobrevive **25 minutos**. A dificuldade aumenta até o fim da partida.
    - **Derrota:** o HP chega a zero.
 7. A tela final mostra tempo sobrevivido, nível, caminho de cultivo, inimigos mortos e dano por skill, com botão "Jogar de novo".
 
@@ -110,10 +110,10 @@ Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do p
 | Tempestade Flamejante | 20% de chance por acerto de **paralisar** por 3 s | 25% de chance por acerto de curar 1 HP (máx. 5 HP por pulso) |
 | Tempestade de Areia | Efeito de −50% de dano dura 50% mais | + dano fixo extra por acerto |
 | Terra Móvel | −30% de espera | Dash 50% mais longo |
-| Maestrias (cada uma) | +25% de dano do elemento | +5% de chance de **crítico** |
+| Maestrias (cada uma) | +25% de dano do elemento | +8% de chance de **crítico** |
 | Escudo de Terra | −15% de dano recebido | Bônus de defesa do escudo +150% |
 | Escudo de Fogo | −15% de dano recebido | Regeneração do escudo ×3 |
-| Serenidade | A cada 30 s, +100% de dano por 5 s | −20% de espera adicional |
+| Serenidade | A cada 30 s, +100% de dano por 5 s | −15% de espera adicional |
 
 **Novos efeitos necessários no combate**
 - **Crítico:** chance base 0%; acerto crítico causa 200% de dano e mostra o número maior e em outra cor.
@@ -142,7 +142,7 @@ Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do p
 
 ## 7. Progressão na partida
 
-- XP para o próximo nível: `5 + (nível × 10)` (inicial, ajustável).
+- XP para o próximo nível vem de `src/data/progression.ts`: os primeiros níveis exigem pouco XP e o custo aumenta progressivamente até o nível 20, com continuidade após o Cultivo.
 - Regras das 3 opções de level-up:
   - não oferece skills no nível máximo;
   - não oferece skill nova se os slots estiverem cheios;

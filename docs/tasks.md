@@ -142,8 +142,8 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
 
 ## Fase 5 — Fechamento do MVP
 
-- [ ] **T060 — Balanceamento** · Dep.: todas as anteriores
-  Jogar várias partidas e ajustar `data/`. Metas: vencer é possível, mas não garantido; o nível 20 (Cultivo) cai por volta do minuto 5; God e Evil são opções igualmente viáveis; o mago não fica fraco demais contra hordas por ter poucas skills de área.
+- [x] **T060 — Balanceamento** · Dep.: todas as anteriores
+  Ajustar `data/` para partidas de 25 minutos. Metas: níveis iniciais chegam rápido e o nível 20 (Cultivo) cai por volta do minuto 20; a dificuldade cresce até o fim. A curva foi verificada por estimativa automatizada de XP e testes; God e Evil mantêm seus efeitos ajustados nos dados.
 - [ ] **T061 — Feedback visual** · Dep.: T028
   Números de dano, piscar ao receber dano, partículas simples por elemento.
 - [ ] **T062 — Verificação dos critérios de aceite** · Dep.: T060, T061
