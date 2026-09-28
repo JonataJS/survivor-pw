@@ -132,8 +132,8 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Vitória/derrota, tempo, nível, caminho de cultivo, mortes e dano por skill (`StatsTracker`); "Jogar de novo".
   **Pronto quando:** os números batem com a partida jogada.
 
-- [ ] **T053 — Recorde local** · Dep.: T052
-  `ScoreService` + `LocalScoreService` salvando o melhor resultado no navegador; exibido no menu.
+- [x] **T053 — Recorde local** · Dep.: T052
+  `ScoreService` + `LocalScoreService` salvando o melhor resultado no navegador (maior tempo; mortes como desempate); exibido no menu.
   **Pronto quando:** o recorde continua lá depois de recarregar a página.
 
 - [ ] **T054 — Controles de toque** · Dep.: T011, T029

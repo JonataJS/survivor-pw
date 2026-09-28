@@ -1,15 +1,17 @@
 import Phaser from 'phaser';
 import { createTextButton } from '../ui/textButton';
 import type { RunResult } from '../systems/StatsTracker';
+import { scoreService } from '../services/LocalScoreService';
 
 export class ResultScene extends Phaser.Scene {
   constructor() {
     super('Result');
   }
 
-  create(data: Partial<RunResult> = {}): void {
+  create(data: RunResult): void {
     const { width, height } = this.scale;
     this.cameras.main.setBackgroundColor('#101820');
+    void scoreService.saveRun(data);
 
     this.add
       .text(width / 2, 48, data.victory ? 'Vitória!' : 'Derrota', {
@@ -19,10 +21,10 @@ export class ResultScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     const summary = [
-      `Tempo sobrevivido: ${this.formatTime(data.survivedSeconds ?? 0)}`,
-      `Nível: ${data.level ?? 1}`,
+      `Tempo sobrevivido: ${this.formatTime(data.survivedSeconds)}`,
+      `Nível: ${data.level}`,
       `Cultivo: ${data.cultivationPath ? this.formatPath(data.cultivationPath) : 'Não escolhido'}`,
-      `Inimigos derrotados: ${data.kills ?? 0}`,
+      `Inimigos derrotados: ${data.kills}`,
     ];
     summary.forEach((line, index) => {
       this.add
@@ -40,7 +42,7 @@ export class ResultScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    const damageRows = [...(data.damageBySkill ?? [])].sort((a, b) => b.damage - a.damage);
+    const damageRows = [...data.damageBySkill].sort((a, b) => b.damage - a.damage);
     if (damageRows.length === 0) {
       this.add
         .text(width / 2, 318, 'Nenhum dano registrado', { fontSize: '18px', color: '#bbbbbb' })

@@ -230,11 +230,11 @@ O jogo depende só da interface `ScoreService`:
 ```ts
 interface ScoreService {
   saveRun(result: RunResult): Promise<void>;
-  ranking(limit: number): Promise<RankingEntry[]>;
+  getBestRun(): Promise<RunResult | null>;
 }
 ```
 
-No MVP, `LocalScoreService` guarda o melhor resultado no navegador. Depois, `SupabaseScoreService` implementa a mesma interface.
+No MVP, `LocalScoreService` guarda no navegador o resultado com maior tempo sobrevivido (mortes desempata) e o expõe para o menu. O ranking remoto fica para a fase pós-MVP; nessa fase, a interface pode ser ampliada com a consulta de ranking e `SupabaseScoreService` implementará o contrato atualizado.
 
 Esboço das tabelas:
 
