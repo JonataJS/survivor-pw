@@ -160,7 +160,7 @@ Objetivo: apresentar as classes e os mapas no menu, permitir iniciar somente com
   Criar definições de catálogo para as classes Mago (`mage`), Guerreiro (`warrior`), Bárbaro (`barbarian`), Feiticeira (`venomancer`), Arqueiro (`archer`) e Sacerdote (`cleric`), e para os mapas Toca dos Lobos (`wolves-den`), Caverna do Fogo (`fire-cave`) e Caverna do Escorpião-Serpente (`scorpion-serpent-cave`). Somente Mago e Toca dos Lobos ficam disponíveis. Manter os atributos jogáveis separados dos metadados de apresentação das classes bloqueadas; não inventar atributos ou regras para conteúdo futuro.
   **Pronto quando:** os catálogos têm IDs estáveis em inglês, nomes exibidos em português e disponibilidade explícita; apenas Mago e Toca dos Lobos apontam para conteúdo jogável existente.
 
-- [ ] **T064 — Regras puras de seleção** · Dep.: T063
+- [x] **T064 — Regras puras de seleção** · Dep.: T063
   Implementar seleção padrão, validação e rejeição de opções indisponíveis para classe e mapa em funções puras, com testes.
   **Pronto quando:** os testes confirmam Mago e Toca dos Lobos como padrões, aceitam as opções disponíveis e rejeitam opções futuras ou IDs inválidos.
 
