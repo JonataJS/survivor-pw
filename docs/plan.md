@@ -65,6 +65,8 @@ survivor-pw/
 │   │   └── MovingEarth.ts       # Terra Móvel
 │   ├── data/                # TODO o balanceamento fica aqui
 │   │   ├── classes.ts       # atributos do Mago
+│   │   ├── classCatalog.ts  # opções do menu e disponibilidade
+│   │   ├── maps.ts          # catálogo e disponibilidade dos mapas
 │   │   ├── skills.ts        # valores por nível de cada skill
 │   │   ├── passives.ts
 │   │   ├── enemies.ts
@@ -86,7 +88,18 @@ survivor-pw/
 
 ### 3.1 Cenas
 
-`Boot → Menu → Game (+ Hud em paralelo) → LevelUp / Cultivation / Pause (sobrepostas, pausam o Game) → Result → Menu`
+`Boot → Menu (seleção de classe e mapa) → Game (+ Hud em paralelo) → LevelUp / Cultivation / Pause (sobrepostas, pausam o Game) → Result → Menu`
+
+`MenuScene` lê os catálogos de seleção e começa com Mago e Toca dos Lobos selecionados. Opções marcadas como indisponíveis aparecem com a etiqueta “Em breve” e não aceitam seleção. Ao iniciar, envia um `RunSetup` com `classId` e `mapId` à `GameScene`; `ResultScene` conserva o mesmo setup para “Jogar de novo”. A seleção não é salva entre sessões. `classCatalog.ts` serve à apresentação do menu; apenas classes implementadas possuem dados jogáveis em `classes.ts`. `maps.ts` distingue mapas disponíveis e futuros; Toca dos Lobos usa o loop e as regras de partida já existentes, sem introduzir mecânicas específicas de mapa nesta mudança.
+
+```ts
+interface RunSetup {
+  classId: string;
+  mapId: string;
+}
+```
+
+`GameScene` resolve `classId` para os atributos jogáveis cadastrados antes de criar `Player`. O mapa selecionado acompanha o estado da partida para a futura apresentação temática; nesta tarefa Toca dos Lobos mantém a arena, os limites e as regras atuais.
 
 `GameScene` roda a simulação. `HudScene` só lê o estado e escuta o `EventBus` (`hp-changed`, `xp-changed`, `level-up`, `cultivation-required`, `cultivation-chosen`, `enemy-killed`, `skill-leveled`).
 

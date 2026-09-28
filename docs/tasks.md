@@ -152,7 +152,37 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
 
 ---
 
-## Fase 6 — Direção de arte e produção de assets (sem integração)
+## Fase 6 — Seleção de classe e mapa no menu
+
+Objetivo: apresentar as classes e os mapas no menu, permitir iniciar somente com uma combinação implementada e manter o setup escolhido durante a partida e sua repetição.
+
+- [ ] **T063 — Catálogos de seleção** · Dep.: T062
+  Criar definições de catálogo para as classes Mago (`mage`), Guerreiro (`warrior`), Bárbaro (`barbarian`), Feiticeira (`venomancer`), Arqueiro (`archer`) e Sacerdote (`cleric`), e para os mapas Toca dos Lobos (`wolves-den`), Caverna do Fogo (`fire-cave`) e Caverna do Escorpião-Serpente (`scorpion-serpent-cave`). Somente Mago e Toca dos Lobos ficam disponíveis. Manter os atributos jogáveis separados dos metadados de apresentação das classes bloqueadas; não inventar atributos ou regras para conteúdo futuro.
+  **Pronto quando:** os catálogos têm IDs estáveis em inglês, nomes exibidos em português e disponibilidade explícita; apenas Mago e Toca dos Lobos apontam para conteúdo jogável existente.
+
+- [ ] **T064 — Regras puras de seleção** · Dep.: T063
+  Implementar seleção padrão, validação e rejeição de opções indisponíveis para classe e mapa em funções puras, com testes.
+  **Pronto quando:** os testes confirmam Mago e Toca dos Lobos como padrões, aceitam as opções disponíveis e rejeitam opções futuras ou IDs inválidos.
+
+- [ ] **T065 — Seletor de classe no menu** · Dep.: T064
+  Mostrar os seis cartões de classe. Mago pode ser selecionado; Guerreiro, Bárbaro, Feiticeira, Arqueiro e Sacerdote exibem “Em breve”, têm aparência indisponível e não respondem a clique/toque/teclado.
+  **Pronto quando:** Mago aparece selecionado inicialmente, o estado selecionado é visível e as outras cinco classes não podem ser ativadas.
+
+- [ ] **T066 — Seletor de mapa no menu** · Dep.: T064
+  Mostrar os três cartões de mapa. Toca dos Lobos pode ser selecionado; Caverna do Fogo e Caverna do Escorpião-Serpente exibem “Em breve”, têm aparência indisponível e não respondem a clique/toque/teclado.
+  **Pronto quando:** Toca dos Lobos aparece selecionada inicialmente e somente ela pode ser ativada.
+
+- [ ] **T067 — Passagem e retenção do setup da partida** · Dep.: T065, T066
+  Enviar os IDs selecionados de classe e mapa ao iniciar `GameScene`; conservar o setup para o botão “Jogar de novo” de `ResultScene`. Não persistir a seleção entre sessões. A Toca dos Lobos utiliza as regras e a arena atualmente implementadas; conteúdo visual específico fica para a Fase 7.
+  **Pronto quando:** a partida recebe Mago/Toca dos Lobos e “Jogar de novo” inicia a mesma combinação sem voltar ao padrão por engano.
+
+- [ ] **T068 — Verificação do menu e das opções bloqueadas** · Dep.: T067
+  Testar lógica de disponibilidade e passagem do setup; conferir o menu em desktop e celular, incluindo seleção válida, cartões indisponíveis, etiqueta exata “Em breve” e início/repetição de partida.
+  **Pronto quando:** somente Mago e Toca dos Lobos iniciam partidas, os cinco cartões de classe e dois de mapa restantes ficam bloqueados e o ciclo completo do MVP continua funcionando.
+
+---
+
+## Fase 7 — Direção de arte e produção de assets (sem integração)
 
 Objetivo: definir uma identidade visual consistente e produzir os arquivos de arte necessários para substituir os placeholders. Esta fase **não altera cenas, código de carregamento, HUD ou gameplay**; a integração fica para uma fase/tarefa posterior.
 

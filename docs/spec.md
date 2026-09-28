@@ -8,13 +8,16 @@ Jogo de ação no navegador, no estilo *Vampire Survivors* (o personagem ataca s
 
 Projeto pessoal e sem fins comerciais. A arte atual é placeholder (formas geométricas e cores por elemento); o projeto pode utilizar assets oficiais do Perfect World, conforme decisão do usuário.
 
+O menu inicial permite escolher classe e mapa. No MVP, Mago e Toca dos Lobos são as únicas opções disponíveis e já aparecem selecionadas por padrão. Guerreiro, Bárbaro, Feiticeira, Arqueiro, Sacerdote, Caverna do Fogo e Caverna do Escorpião-Serpente aparecem identificados com a tag **“Em breve”** e não podem ser selecionados.
+
 ## 2. Objetivo do MVP
 
 Uma partida jogável de ponta a ponta, publicada na Vercel:
 entrar no jogo → jogar com o Mago → sobreviver ou morrer → ver o resultado → jogar de novo.
 
 ### Fora do escopo do MVP
-- Outras classes (Guerreiro, Bárbaro, Arqueiro etc.)
+- Jogar com outras classes (Guerreiro, Bárbaro, Feiticeira, Arqueiro e Sacerdote); elas aparecem no menu como indisponíveis.
+- Jogar nos mapas Caverna do Fogo e Caverna do Escorpião-Serpente; eles aparecem no menu como indisponíveis.
 - Mana/MP (decisão: as skills usam **só tempo de espera**)
 - Chefes, baús e evoluções de skill (ultimates do nível 59)
 - Meta-progressão (ouro, refino, desbloqueios)
@@ -22,7 +25,7 @@ entrar no jogo → jogar com o Mago → sobreviver ou morrer → ver o resultado
 
 ## 3. Loop da partida
 
-1. O jogador começa no centro de um mapa aberto, com **Marca do Fogo** no nível 1.
+1. No menu, o jogador escolhe Mago e Toca dos Lobos (selecionados por padrão). A partida começa no centro do mapa com **Marca do Fogo** no nível 1.
 2. Inimigos surgem fora da tela e andam na direção do jogador. A quantidade e a força aumentam com o tempo.
 3. Inimigos mortos soltam **gemas de experiência**. O jogador coleta ao passar perto (raio de coleta).
 4. Ao subir de nível, o jogo pausa e mostra **3 opções** aleatórias: skill nova, melhorar skill existente ou passivo.
@@ -152,7 +155,7 @@ Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do p
 ## 8. Interface
 
 - **HUD:** barra de HP, barra de XP com o nível, cronômetro, contador de mortes, ícones das skills com o nível de cada uma e a recarga do dash.
-- **Tela inicial:** título, botão "Jogar" e controles.
+- **Menu inicial:** título e controles; seletores de classe e mapa apresentados em cartões. Mago e Toca dos Lobos ficam selecionados por padrão e podem ser confirmados; as outras cinco classes e os outros dois mapas mostram a tag “Em breve”, ficam desabilitados e não iniciam uma partida. As escolhas válidas são enviadas à partida; “Jogar de novo” mantém a mesma combinação.
 - **Level-up:** 3 cartas com nome, elemento (cor), nível atual → próximo e descrição do efeito.
 - **Cultivo:** duas colunas (God e Evil) com os aditivos das skills atuais; botão de confirmar em cada uma. Depois da escolha, um ícone do caminho fica no HUD.
 - **Pausa** e **tela final** (seção 3).
@@ -169,6 +172,7 @@ Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do p
 5. Com 300 inimigos na tela, o jogo se mantém perto de 60 FPS.
 6. Todo o balanceamento (dano, espera, HP, spawn, aditivos de cultivo) é editável em arquivos de dados, sem mexer na lógica.
 7. No nível 20 o Cultivo aparece, e cada aditivo God e Evil da seção 5.4 funciona, inclusive em skills pegas depois da escolha.
+8. O menu apresenta as seis classes e os três mapas listados nesta spec; somente Mago e Toca dos Lobos podem ser selecionados, enquanto as outras opções mostram “Em breve” e não podem ser iniciadas.
 
 ## 10. Fase pós-MVP (Supabase)
 
@@ -182,7 +186,7 @@ Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do p
 - Nome final do jogo.
 - O tempo de conjuração (cast) do PW deve ter algum papel? Por exemplo, um atraso visual antes do dano de skills pesadas.
 - Mapa infinito ou arena com bordas?
-- Direção de arte e inventário de assets: definidos na Fase 6 de `tasks.md`; a integração continua fora desta fase.
+- Direção de arte e inventário de assets: definidos na Fase 7 de `tasks.md`; a integração continua fora dessa fase.
 
 ---
 Fonte das skills: [Místicos do PW — Skills Magos](https://misticosdopw.blogspot.com/2011/09/skills-magos.html)
