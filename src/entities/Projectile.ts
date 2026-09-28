@@ -9,6 +9,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
   damage = 0;
   target?: Enemy;
   effects?: DamageEffects;
+  skillId?: string;
   private targetGeneration = -1;
   private lifetimeMs = 0;
 
@@ -27,11 +28,13 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     textureKey: string,
     effects?: DamageEffects,
     tint = 0xffffff,
+    skillId?: string,
   ): void {
     this.target = target;
     this.targetGeneration = target.generation;
     this.damage = damage;
     this.effects = effects;
+    this.skillId = skillId;
     this.lifetimeMs = 0;
 
     this.setTexture(textureKey);
@@ -51,6 +54,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.setVelocity(0, 0);
     this.target = undefined;
     this.effects = undefined;
+    this.skillId = undefined;
 
     const body = this.body as Phaser.Physics.Arcade.Body | null;
     if (body) body.enable = false;

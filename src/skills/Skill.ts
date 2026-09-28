@@ -44,7 +44,7 @@ export interface SkillContext {
   // exact same resolution as everything else. Returns the final damage
   // actually dealt (post-crítico/buff periódico), for skills that need it
   // (e.g. lifesteal healing based on the resolved amount).
-  dealDamage: (enemy: Enemy, damage: number, effects?: DamageEffects) => number;
+  dealDamage: (enemy: Enemy, damage: number, effects?: DamageEffects, skillId?: string) => number;
   // Serenidade evil / Tempestade Flamejante evil (cura ao acertar) — heals
   // the player directly; skills track their own per-activation caps.
   healPlayer: (amount: number) => void;

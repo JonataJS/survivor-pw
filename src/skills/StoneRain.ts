@@ -41,7 +41,7 @@ export class StoneRainSkill extends BaseSkill {
             ctx.dealDamage(target, damage, {
               critChance: stats.critChance,
               statusChances: stats.statusChances,
-            });
+            }, this.def.id);
           }
         },
       );

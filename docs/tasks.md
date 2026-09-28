@@ -128,7 +128,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Menu com título, "Jogar" e controles; pausa com Esc/P e botão "Continuar / Sair".
   **Pronto quando:** pausar congela tudo, inclusive recargas e spawn.
 
-- [ ] **T052 — Tela final** · Dep.: T015, T014
+- [x] **T052 — Tela final** · Dep.: T015, T014
   Vitória/derrota, tempo, nível, caminho de cultivo, mortes e dano por skill (`StatsTracker`); "Jogar de novo".
   **Pronto quando:** os números batem com a partida jogada.
 

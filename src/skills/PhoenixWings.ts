@@ -27,7 +27,7 @@ export class PhoenixWingsSkill extends BaseSkill {
     for (let i = 0; i < phoenixCount; i++) {
       const targets = ctx.findEnemiesInLine(dirX, dirY, range, halfWidth);
       for (const enemy of targets) {
-        ctx.dealDamage(enemy, damage, { critChance: stats.critChance });
+        ctx.dealDamage(enemy, damage, { critChance: stats.critChance }, this.def.id);
         if (enemy.active) enemy.knockback(dirX, dirY, knockback);
       }
 

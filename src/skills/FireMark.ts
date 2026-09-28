@@ -30,6 +30,7 @@ export class FireMarkSkill extends BaseSkill {
         'effect-white',
         { critChance: stats.critChance, lifesteal: stats.lifesteal },
         effectColor(ctx.path, FIRE_COLOR),
+        this.def.id,
       );
     }
   }

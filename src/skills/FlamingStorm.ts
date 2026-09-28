@@ -26,7 +26,7 @@ export class FlamingStormSkill extends BaseSkill {
       ctx.dealDamage(enemy, damage, {
         critChance: stats.critChance,
         statusChances: stats.statusChances,
-      });
+      }, this.def.id);
 
       if (healOnHit && healedThisPulse < healOnHit.maxPerActivation && ctx.rng() < healOnHit.chance) {
         const heal = Math.min(healOnHit.value, healOnHit.maxPerActivation - healedThisPulse);

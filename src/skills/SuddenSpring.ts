@@ -32,7 +32,7 @@ export class SuddenSpringSkill extends BaseSkill {
         fadeDurationMs: 250,
       });
 
-      ctx.dealDamage(target, damage, { critChance: stats.critChance });
+      ctx.dealDamage(target, damage, { critChance: stats.critChance }, this.def.id);
       if (target.active) {
         target.applySlow(slowPercentage, slowDuration);
       }

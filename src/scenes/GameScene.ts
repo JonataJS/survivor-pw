@@ -47,6 +47,7 @@ import type { LevelUpSceneData } from './LevelUpScene';
 import type { CultivationSceneData } from './CultivationScene';
 import type { HudSceneData } from './HudScene';
 import { EventBus } from '../core/EventBus';
+import { StatsTracker } from '../systems/StatsTracker';
 
 // Debug-only max level while there's no UI for it yet — lets T030's
 // passives be toggled on/off to verify their effect manually.
@@ -75,6 +76,7 @@ export class GameScene extends Phaser.Scene {
   private equippedPassives: EquippedPassive[] = [];
   private equippedSkills: EquippedSkillState[] = [];
   private skillInstances = new Map<string, Skill>();
+  private statsTracker = new StatsTracker();
   private skillFactories!: Record<string, () => Skill>;
   private pendingLevelUps = 0;
   private levelUpActive = false;
@@ -137,6 +139,7 @@ export class GameScene extends Phaser.Scene {
     };
     this.equippedSkills = [];
     this.skillInstances = new Map();
+    this.statsTracker = new StatsTracker();
     // spec.md §2: começa apenas com Marca do Fogo; Terra Móvel (dash) já vem
     // desbloqueada mas não ocupa slot de ataque — ver UpgradeSystem.ts.
     this.equippedSkills.push({ def: fireMark, level: 1 });
@@ -247,12 +250,13 @@ export class GameScene extends Phaser.Scene {
         this.findEnemiesInLine(dirX, dirY, range, halfWidth),
       findEnemiesInRadius: (centerX, centerY, radius) =>
         this.findEnemiesInRadius(centerX, centerY, radius),
-      dealDamage: (enemy, damage, effects) => this.dealDamageToEnemy(enemy, damage, effects),
+      dealDamage: (enemy, damage, effects, skillId) =>
+        this.dealDamageToEnemy(enemy, damage, effects, skillId),
       healPlayer: (amount) => this.healPlayer(amount),
       rng: this.skillRng,
     });
-    this.projectileSystem.update(delta, (enemy, damage, effects) =>
-      this.dealDamageToEnemy(enemy, damage, effects),
+    this.projectileSystem.update(delta, (enemy, damage, effects, skillId) =>
+      this.dealDamageToEnemy(enemy, damage, effects, skillId),
     );
     this.gemSystem.update(
       this.player.x,
@@ -367,6 +371,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private equipNewSkill(def: SkillDef, level: number): void {
+    this.statsTracker.registerSkill(def);
     const factory = this.skillFactories[def.id];
     if (!factory) return;
     const skill = factory();
@@ -542,7 +547,12 @@ export class GameScene extends Phaser.Scene {
   // Shared hit resolution for every skill (T045): rolls crítico, aplica o
   // buff periódico da Serenidade god, e resolve os aditivos por acerto
   // (roubo de vida, atordoar/paralisar) antes do dano cair no HP.
-  private dealDamageToEnemy(enemy: Enemy, damage: number, effects?: DamageEffects): number {
+  private dealDamageToEnemy(
+    enemy: Enemy,
+    damage: number,
+    effects?: DamageEffects,
+    skillId?: string,
+  ): number {
     const critChance = effects?.critChance ?? 0;
     const isCrit = critChance > 0 && this.skillRng() < critChance;
     const finalDamage = calculateDamage(damage, {
@@ -552,7 +562,9 @@ export class GameScene extends Phaser.Scene {
       periodicBuffBonus: this.periodicBuffBonus,
     });
 
+    const previousHp = Math.max(0, enemy.hp);
     enemy.hp -= finalDamage;
+    this.statsTracker.recordDamage(skillId, Math.min(previousHp, finalDamage));
     if (isCrit) this.damageNumberSystem.playCrit(enemy.x, enemy.y, finalDamage);
 
     for (const status of effects?.statusChances ?? []) {
@@ -613,7 +625,16 @@ export class GameScene extends Phaser.Scene {
     if (this.matchEnded) return;
     this.matchEnded = true;
     this.scene.stop('Hud');
-    this.scene.start('Result', { victory });
+    this.scene.start(
+      'Result',
+      this.statsTracker.createRunResult(
+        victory,
+        this.matchElapsedSeconds,
+        this.player.level,
+        this.cultivationSystem.path,
+        this.killCount,
+      ),
+    );
   }
 
   private drawWorldGrid(): void {

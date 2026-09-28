@@ -22,7 +22,7 @@ export class SandStormSkill extends BaseSkill {
     const damageReduction = stats.values.damageReduction ?? 0;
     const debuffDuration = stats.values.debuffDuration ?? 0;
 
-    ctx.dealDamage(target, damage, { critChance: stats.critChance });
+    ctx.dealDamage(target, damage, { critChance: stats.critChance }, this.def.id);
     if (target.active) target.applyDamageDebuff(damageReduction, debuffDuration);
 
     const dx = target.x - ctx.casterX;
