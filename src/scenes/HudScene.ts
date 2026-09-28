@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { MATCH_DURATION_SECONDS } from '../config';
 import { xpToNextLevel } from '../systems/XpSystem';
 import { EventBus } from '../core/EventBus';
+import { TouchControls } from '../ui/TouchControls';
 import { GOD_COLOR, EVIL_COLOR } from '../skills/pathColors';
 import type { Player } from '../entities/Player';
 import type { EquippedSkillState } from '../systems/UpgradeSystem';
@@ -47,6 +48,7 @@ export class HudScene extends Phaser.Scene {
     { bg: Phaser.GameObjects.Rectangle; levelText: Phaser.GameObjects.Text }
   >();
   private skillIconsRow!: Phaser.GameObjects.Container;
+  private touchEnabled = false;
 
   private player!: Player;
   private equippedSkills!: EquippedSkillState[];
@@ -78,6 +80,7 @@ export class HudScene extends Phaser.Scene {
     this.player = data.player;
     this.equippedSkills = data.equippedSkills;
     this.path = undefined;
+    this.touchEnabled = this.sys.game.device.input.touch;
 
     // HP bar
     this.add.rectangle(
@@ -157,6 +160,10 @@ export class HudScene extends Phaser.Scene {
     // Skill icons row (bottom-left)
     this.skillIconsRow = this.add.container(16, this.scale.height - SKILL_ICON_SIZE - 16);
     this.skillIconsRow.setScrollFactor(0);
+    if (this.touchEnabled) {
+      this.input.addPointer(1);
+      new TouchControls(this, this.player);
+    }
 
     this.updateHpBar(this.player.hp, this.player.maxHp);
     this.updateXpBar(this.player.xp, xpToNextLevel(this.player.level));
@@ -219,6 +226,10 @@ export class HudScene extends Phaser.Scene {
     }
     this.skillIcons.clear();
     this.skillIconsRow.removeAll();
+
+    const rowWidth = this.equippedSkills.length * (SKILL_ICON_SIZE + SKILL_ICON_GAP) - SKILL_ICON_GAP;
+    const rowX = this.touchEnabled ? (this.scale.width - rowWidth) / 2 : 16;
+    this.skillIconsRow.setPosition(rowX, this.scale.height - SKILL_ICON_SIZE - 16);
 
     this.equippedSkills.forEach((equipped, index) => {
       const x = index * (SKILL_ICON_SIZE + SKILL_ICON_GAP);

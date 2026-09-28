@@ -34,6 +34,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private dashDirX = 0;
   private dashDirY = 0;
   private dashSpeed = 0;
+  private virtualMoveX = 0;
+  private virtualMoveY = 0;
+  private dashRequested = false;
   // Set each frame by GameScene so Terra Móvel também recebe Serenidade e
   // o aditivo de Cultivo, como qualquer outra skill (spec.md §5.1).
   private cultivationEquippedPassives: EquippedPassive[] = [];
@@ -65,8 +68,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    let moveX = 0;
-    let moveY = 0;
+    let moveX = this.virtualMoveX;
+    let moveY = this.virtualMoveY;
 
     if (this.cursors.left.isDown || this.wasdKeys.A.isDown) moveX -= 1;
     if (this.cursors.right.isDown || this.wasdKeys.D.isDown) moveX += 1;
@@ -83,9 +86,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.setVelocity(moveX, moveY);
 
-    if (Phaser.Input.Keyboard.JustDown(this.dashKey) && this.dashCooldownRemaining <= 0) {
+    const shouldDash = this.dashRequested || Phaser.Input.Keyboard.JustDown(this.dashKey);
+    this.dashRequested = false;
+    if (shouldDash && this.dashCooldownRemaining <= 0) {
       this.startDash();
     }
+  }
+
+  setVirtualMovement(x: number, y: number): void {
+    const magnitude = Math.hypot(x, y);
+    const scale = magnitude > 1 ? 1 / magnitude : 1;
+    this.virtualMoveX = x * scale;
+    this.virtualMoveY = y * scale;
+  }
+
+  requestDash(): void {
+    this.dashRequested = true;
   }
 
   setCultivationContext(equippedPassives: EquippedPassive[], path: Path | undefined): void {

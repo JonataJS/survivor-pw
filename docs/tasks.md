@@ -136,7 +136,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   `ScoreService` + `LocalScoreService` salvando o melhor resultado no navegador (maior tempo; mortes como desempate); exibido no menu.
   **Pronto quando:** o recorde continua lá depois de recarregar a página.
 
-- [ ] **T054 — Controles de toque** · Dep.: T011, T029
+- [x] **T054 — Controles de toque** · Dep.: T011, T029
   Joystick virtual e botão de dash, só em telas de toque; escala `FIT`.
   **Pronto quando:** dá para jogar uma partida completa no celular.
 
