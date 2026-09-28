@@ -47,6 +47,7 @@ survivor-pw/
 │   │   ├── SkillSystem.ts   # recargas e disparo das skills
 │   │   ├── SpawnSystem.ts   # ondas por tempo
 │   │   ├── CombatSystem.ts  # dano, crítico, defesa, status (lentidão, atordoar, paralisar, redução de dano)
+│   │   ├── targetLogic.ts   # seleção de alvos visíveis para auto-aim
 │   │   ├── DamageNumberSystem.ts # números flutuantes de dano
 │   │   ├── ElementHitEffectSystem.ts # partículas de impacto por elemento
 │   │   ├── CultivationSystem.ts # caminho ativo e aplicação dos modificadores
@@ -192,7 +193,7 @@ finalCooldown = cooldown(level) × (1 − serenity) × cultivationCooldownMult
 ### 3.4 Desempenho
 
 - **Pools** para inimigos, projéteis, gemas e efeitos: nada é criado ou destruído durante a partida.
-- **SpatialGrid** (células de ~64 px) para achar o inimigo mais próximo e checar colisões, em vez de comparar todos com todos.
+- **SpatialGrid** (células de ~64 px) para buscar candidatos de alvo visíveis e checar colisões, em vez de comparar todos com todos.
 - Física arcade do Phaser só para o que precisa; áreas usam checagem de distância pela grade.
 - Gemas próximas se fundem numa só quando passarem de ~200 na tela.
 - Modo debug (tecla F1) mostra FPS, total de entidades e as células da grade.

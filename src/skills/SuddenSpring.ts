@@ -20,7 +20,7 @@ export class SuddenSpringSkill extends BaseSkill {
     const chosen = new Set<Enemy>();
 
     for (let i = 0; i < spoutCount; i++) {
-      const target = ctx.findNearestEnemy(chosen);
+      const target = ctx.findNearestVisibleEnemy(chosen);
       if (!target) break;
       chosen.add(target);
 

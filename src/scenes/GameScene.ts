@@ -49,6 +49,7 @@ import type { CultivationSceneData } from './CultivationScene';
 import type { HudSceneData } from './HudScene';
 import { EventBus } from '../core/EventBus';
 import { StatsTracker } from '../systems/StatsTracker';
+import { findNearestVisibleTarget } from '../systems/targetLogic';
 
 const SKILL_ELEMENTS = new Map<string, Element>(attackSkills.map((skill) => [skill.id, skill.element]));
 
@@ -242,12 +243,22 @@ export class GameScene extends Phaser.Scene {
       facingY: this.player.facingY,
       equippedPassives: this.equippedPassives,
       path: this.cultivationSystem.path,
-      findNearestEnemy: (exclude) =>
-        this.spawnSystem.grid.findNearest(
+      findNearestVisibleEnemy: (exclude) => {
+        const view = this.cameras.main.worldView;
+        const searchRadius = Math.hypot(view.width, view.height);
+        const candidates = this.spawnSystem.grid.queryNeighbors(
           this.player.x,
           this.player.y,
-          (enemy) => enemy.active && !exclude?.has(enemy),
-        ),
+          searchRadius,
+        );
+        return findNearestVisibleTarget(
+          candidates,
+          this.player.x,
+          this.player.y,
+          view,
+          exclude,
+        );
+      },
       findRandomVisibleEnemy: (exclude) => this.findRandomVisibleEnemy(exclude),
       findStrongestEnemyNearby: (radius, exclude) =>
         this.findStrongestEnemyNearby(radius, exclude),

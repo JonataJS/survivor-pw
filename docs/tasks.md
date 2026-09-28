@@ -66,14 +66,14 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   **Pronto quando:** uma skill de teste dispara no ritmo certo.
 
 - [x] **T022 — Marca do Fogo** · Dep.: T021
-  Projétil no inimigo mais próximo; +projéteis nos níveis 3 e 5. Skill inicial.
+  Projétil no inimigo visível mais próximo; +projéteis nos níveis 3 e 5. Skill inicial.
   **Pronto quando:** o mago mata inimigos comuns sozinho desde o começo.
 
 - [x] **T023 — Gemas de XP e coleta** · Dep.: T014
   Gema ao matar; atração dentro do raio de coleta; fusão acima de ~200 gemas.
   **Pronto quando:** coletar gemas enche a barra de XP.
 
-- [x] **T024 — Fonte Repentina** · Dep.: T021 — coluna de água que sobe do chão sob o inimigo (dano instantâneo, sem projétil), com lentidão. Visual: círculo azul no chão que cresce para cima em forma de jato vertical e se desfaz.
+- [x] **T024 — Fonte Repentina** · Dep.: T021 — coluna de água que sobe do chão sob o inimigo visível mais próximo (dano instantâneo, sem projétil), com lentidão. Visual: círculo azul no chão que cresce para cima em forma de jato vertical e se desfaz.
 - [x] **T025 — Chuva de Pedra** · Dep.: T021 — pedra que cai do céu como meteoro sobre um inimigo aleatório visível (sombra no chão antes do impacto).
 - [x] **T026 — Asas da Fênix** · Dep.: T021 — fênix de fogo em linha reta na direção do movimento, atravessa e empurra todos os inimigos no caminho.
 - [x] **T027 — Tempestade Flamejante** · Dep.: T021 — área em pulsos ao redor do jogador.

@@ -28,7 +28,7 @@ export interface SkillContext {
   facingY: number;
   equippedPassives: EquippedPassive[];
   path?: Path;
-  findNearestEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
+  findNearestVisibleEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
   findRandomVisibleEnemy: (exclude?: Set<Enemy>) => Enemy | undefined;
   // Highest-HP enemy within `radius` of the caster — the "inimigo mais
   // forte por perto" target for Tempestade de Areia.

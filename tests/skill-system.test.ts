@@ -39,7 +39,7 @@ function baseContext(overrides: Partial<SkillContext> = {}): SkillContext {
     facingY: 1,
     equippedPassives: [],
     path: undefined,
-    findNearestEnemy: () => undefined,
+    findNearestVisibleEnemy: () => undefined,
     findRandomVisibleEnemy: () => undefined,
     findStrongestEnemyNearby: () => undefined,
     findEnemiesInLine: () => [],
@@ -135,18 +135,18 @@ describe('SkillSystem', () => {
 });
 
 describe('busca de alvo pela grade', () => {
-  it('exposes findNearestEnemy so a skill can target through the context', () => {
+  it('exposes findNearestVisibleEnemy so a skill can target through the context', () => {
     const fakeEnemy = { id: 'fake' } as unknown as import('../src/entities/Enemy').Enemy;
 
     class TargetingSkill extends BaseSkill {
       lastTarget: unknown;
       protected fire(ctx: SkillContext): void {
-        this.lastTarget = ctx.findNearestEnemy();
+        this.lastTarget = ctx.findNearestVisibleEnemy();
       }
     }
 
     const skill = new TargetingSkill(testSkillDef, 1);
-    const ctx = baseContext({ findNearestEnemy: () => fakeEnemy });
+    const ctx = baseContext({ findNearestVisibleEnemy: () => fakeEnemy });
     skill.update(0, ctx);
 
     expect(skill.lastTarget).toBe(fakeEnemy);

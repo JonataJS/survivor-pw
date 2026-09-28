@@ -60,8 +60,8 @@ O "Espera" do PW vira o tempo de recarga. O tempo de conjuração (cast) do PW �
 
 | Skill | Elemento | Comportamento no jogo | Espera base | Upgrades por nível |
 |---|---|---|---|---|
-| **Marca do Fogo** (inicial) | Fogo | Projétil no inimigo mais próximo | 1,5 s | +dano, +1 projétil nos níveis 3 e 5 |
-| **Fonte Repentina** | Água | Coluna de água que **brota do chão embaixo do inimigo mais próximo**, de baixo para cima. Acerta na hora, sem projétil viajando. Aplica **lentidão** (−40% por 2 s) | 3 s | +dano, +duração da lentidão, +1 coluna (em outro inimigo) nos níveis 3 e 5 |
+| **Marca do Fogo** (inicial) | Fogo | Projétil no inimigo visível mais próximo | 1,5 s | +dano, +1 projétil nos níveis 3 e 5 |
+| **Fonte Repentina** | Água | Coluna de água que **brota do chão embaixo do inimigo visível mais próximo**, de baixo para cima. Acerta na hora, sem projétil viajando. Aplica **lentidão** (−40% por 2 s) | 3 s | +dano, +duração da lentidão, +1 coluna (em outro inimigo) nos níveis 3 e 5 |
 | **Chuva de Pedra** | Terra | Uma pedra cai do céu como um pequeno meteoro sobre um inimigo aleatório na tela; dano alto num alvo | 6 s | +dano, +1 pedra (em outro inimigo) nos níveis 3 e 5 |
 | **Asas da Fênix** | Fogo | Uma fênix de fogo sai do mago em **linha reta** na direção do movimento, atravessa e acerta **todos os inimigos no caminho**, **empurrando-os para trás** | 8 s | +dano, +força do empurrão, +alcance, +1 fênix no nível 5 |
 | **Tempestade Flamejante** | Fogo | Área grande ao redor do jogador, dano em pulsos | 15 s | +dano, +raio, −espera |
