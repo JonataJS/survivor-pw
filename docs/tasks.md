@@ -146,9 +146,9 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   Ajustar `data/` para partidas de 25 minutos. Metas: níveis iniciais chegam rápido e o nível 20 (Cultivo) cai por volta do minuto 20; a dificuldade cresce até o fim. A curva foi verificada por estimativa automatizada de XP e testes; God e Evil mantêm seus efeitos ajustados nos dados.
 - [x] **T061 — Feedback visual** · Dep.: T028
   Números flutuantes a cada acerto, flash vermelho ao receber dano e partículas na cor do elemento. Efeitos de partículas e textos reaproveitados.
-- [ ] **T062 — Verificação dos critérios de aceite** · Dep.: T060, T061
+- [x] **T062 — Verificação dos critérios de aceite** · Dep.: T060, T061
   Passar pelo checklist de `spec.md` §9 em Chrome, Firefox, Safari e um celular.
-  **Pronto quando:** os 7 critérios passam. MVP entregue.
+  **Pronto quando:** os 7 critérios passam. Checklist validado manualmente; MVP entregue.
 
 ---
 
