@@ -124,7 +124,7 @@ Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar p
   HP, XP e nível, cronômetro, mortes, ícones de skills com nível e recarga do dash.
   **Pronto quando:** tudo atualiza em tempo real via EventBus.
 
-- [ ] **T051 — Menu e pausa** · Dep.: T003
+- [x] **T051 — Menu e pausa** · Dep.: T003
   Menu com título, "Jogar" e controles; pausa com Esc/P e botão "Continuar / Sair".
   **Pronto quando:** pausar congela tudo, inclusive recargas e spawn.
 

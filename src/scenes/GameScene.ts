@@ -66,6 +66,7 @@ export class GameScene extends Phaser.Scene {
   private matchEnded = false;
   private killCount = 0;
   private fastForwardKey!: Phaser.Input.Keyboard.Key;
+  private pauseKeyHandler!: (event: KeyboardEvent) => void;
   private debugActive = false;
   private debugText!: Phaser.GameObjects.Text;
   private debugGridGraphics!: Phaser.GameObjects.Graphics;
@@ -159,6 +160,17 @@ export class GameScene extends Phaser.Scene {
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.fastForwardKey = keyboard.addKey('F');
+    this.pauseKeyHandler = (event) => {
+      if (event.repeat || this.matchEnded || this.levelUpActive || this.cultivationActive) return;
+      if (event.code === 'Escape' || event.code === 'KeyP') {
+        this.scene.pause();
+        this.scene.launch('Pause');
+      }
+    };
+    keyboard.on('keydown', this.pauseKeyHandler);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      keyboard.off('keydown', this.pauseKeyHandler);
+    });
 
     this.debugActive = false;
     keyboard.on('keydown-F1', () => {
@@ -187,18 +199,6 @@ export class GameScene extends Phaser.Scene {
     createTextButton(this, width / 2 - 220, height - 100, 'Pausar', () => {
       this.scene.pause();
       this.scene.launch('Pause');
-    }).setScrollFactor(0);
-
-    createTextButton(this, width / 2 - 70, height - 100, 'Level Up', () => {
-      if (!this.levelUpActive) this.openLevelUp();
-    }).setScrollFactor(0);
-
-    createTextButton(this, width / 2 + 100, height - 100, 'Cultivo', () => {
-      if (!this.cultivationActive) this.openCultivation();
-    }).setScrollFactor(0);
-
-    createTextButton(this, width / 2, height - 40, 'Terminar partida', () => {
-      this.endMatch(false);
     }).setScrollFactor(0);
   }
 
