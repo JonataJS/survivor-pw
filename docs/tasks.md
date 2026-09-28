@@ -206,12 +206,20 @@ Direção proposta: fantasia oriental de alto contraste, inspirada no universo e
   **Pronto quando:** o conjunto visual cobrir arena, todas as skills e estados do MVP, com sprites/frames separados e nomes mapeados para os comportamentos descritos na spec.
 
 - [ ] **T074 — Elementos gráficos das telas e interface** · Dep.: T070
-  Produzir molduras/ornamentos, fundos e elementos decorativos necessários para Menu, HUD, cartas de level-up, escolha de Cultivo, pausa e resultado, sem incluir texto rasterizado que deva permanecer localizável.
-  **Pronto quando:** houver inventário completo dos elementos de tela, exportados em camadas/arquivos reutilizáveis e sem textos embutidos.
+  Produzir molduras/ornamentos, fundos e elementos decorativos necessários para Menu, HUD, cartas de level-up, escolha de Cultivo, pausa e resultado, sem incluir texto rasterizado que deva permanecer localizável. Para o menu, incluir retrato do Mago (128×128), uma silhueta genérica reutilizável para as cinco classes “Em breve”, miniaturas 320×180 dos três mapas e fundo/moldura para a seleção.
+  **Pronto quando:** houver inventário completo dos elementos de tela, incluindo retrato, silhueta bloqueada e as três miniaturas do menu, exportados em camadas/arquivos reutilizáveis e sem textos embutidos.
 
 - [ ] **T075 — Revisão visual e pacote de entrega** · Dep.: T071, T072, T073, T074
   Revisar consistência, transparência, recortes, legibilidade em escala real e organização dos arquivos. Documentar origem/licença dos assets usados e mapa asset → entidade/tela/efeito para a futura integração.
   **Pronto quando:** o pacote final estiver completo, organizado em `public/assets/` (ou diretório acordado), com catálogo, créditos/licenças e checklist de cobertura; nenhum arquivo estiver referenciado pelo jogo nesta fase.
+
+---
+
+## Fase 8 — Integração visual do menu
+
+- [ ] **T080 — Aplicar assets de arte ao menu** · Dep.: T075
+  Carregar e integrar em `MenuScene` o fundo e a moldura, o retrato do Mago, a silhueta genérica das classes bloqueadas e as miniaturas dos três mapas. Substituir os cartões planos atuais por cartões ilustrados, preservando seleção, etiquetas “Em breve”, clique/toque e layout responsivo; não alterar as regras de disponibilidade ou o setup da partida.
+  **Pronto quando:** o menu usa os assets finais nas dimensões de T070, todas as classes e mapas continuam legíveis e os estados disponível, selecionado e “Em breve” funcionam em desktop e celular.
 
 ---
 
