@@ -34,6 +34,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private dashDirX = 0;
   private dashDirY = 0;
   private dashSpeed = 0;
+  private damageFlashEvent?: Phaser.Time.TimerEvent;
   private virtualMoveX = 0;
   private virtualMoveY = 0;
   private dashRequested = false;
@@ -129,6 +130,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   takeDamage(amount: number): void {
+    if (amount > 0) {
+      this.setTintFill(0xff4444);
+      this.damageFlashEvent?.remove(false);
+      this.damageFlashEvent = this.scene.time.delayedCall(110, () => {
+        this.clearTint();
+        this.damageFlashEvent = undefined;
+      });
+    }
     this.hp = Math.max(0, this.hp - amount);
     EventBus.emit('hp-changed', this.hp, this.maxHp);
   }

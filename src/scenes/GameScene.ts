@@ -32,7 +32,7 @@ import {
   passives,
 } from '../data/passives';
 import { attackSkills, fireMark, movingEarth } from '../data/skills';
-import type { PassiveDef, Path, SkillDef } from '../data/types';
+import type { Element, PassiveDef, Path, SkillDef } from '../data/types';
 import type { Enemy } from '../entities/Enemy';
 import type { DamageEffects, Skill } from '../skills/Skill';
 import {
@@ -42,12 +42,15 @@ import {
 } from '../systems/UpgradeSystem';
 import { CultivationSystem } from '../systems/CultivationSystem';
 import { DamageNumberSystem } from '../systems/DamageNumberSystem';
+import { ElementHitEffectSystem } from '../systems/ElementHitEffectSystem';
 import { GOD_COLOR, EVIL_COLOR } from '../skills/pathColors';
 import type { LevelUpSceneData } from './LevelUpScene';
 import type { CultivationSceneData } from './CultivationScene';
 import type { HudSceneData } from './HudScene';
 import { EventBus } from '../core/EventBus';
 import { StatsTracker } from '../systems/StatsTracker';
+
+const SKILL_ELEMENTS = new Map<string, Element>(attackSkills.map((skill) => [skill.id, skill.element]));
 
 // Debug-only max level while there's no UI for it yet — lets T030's
 // passives be toggled on/off to verify their effect manually.
@@ -63,6 +66,7 @@ export class GameScene extends Phaser.Scene {
   private gemSystem!: GemSystem;
   private areaEffectSystem!: AreaEffectSystem;
   private damageNumberSystem!: DamageNumberSystem;
+  private elementHitEffectSystem!: ElementHitEffectSystem;
   private playerAura!: Phaser.GameObjects.Arc;
   private matchEnded = false;
   private killCount = 0;
@@ -120,6 +124,7 @@ export class GameScene extends Phaser.Scene {
     this.gemSystem = new GemSystem(this);
     this.areaEffectSystem = new AreaEffectSystem(this);
     this.damageNumberSystem = new DamageNumberSystem(this);
+    this.elementHitEffectSystem = new ElementHitEffectSystem(this);
     // T046: aura ao redor do mago, oculta até o Cultivo ser escolhido —
     // troca de cor conforme o caminho (mesma paleta dos efeitos de skill).
     this.playerAura = this.add
@@ -565,7 +570,13 @@ export class GameScene extends Phaser.Scene {
     const previousHp = Math.max(0, enemy.hp);
     enemy.hp -= finalDamage;
     this.statsTracker.recordDamage(skillId, Math.min(previousHp, finalDamage));
-    if (isCrit) this.damageNumberSystem.playCrit(enemy.x, enemy.y, finalDamage);
+    if (isCrit) {
+      this.damageNumberSystem.playCrit(enemy.x, enemy.y, finalDamage);
+    } else {
+      this.damageNumberSystem.playDamage(enemy.x, enemy.y, finalDamage);
+    }
+    const element = skillId ? SKILL_ELEMENTS.get(skillId) : undefined;
+    if (element) this.elementHitEffectSystem.playHit(element, enemy.x, enemy.y);
 
     for (const status of effects?.statusChances ?? []) {
       if (this.skillRng() >= status.chance) continue;

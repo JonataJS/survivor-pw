@@ -88,7 +88,7 @@ Disponível desde o início. Sobe de nível pelo menu de upgrades, como as outra
 
 ### 5.4 Cultivo: God ou Evil
 
-Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do personagem, com meta de cair por volta do **minuto 5** da partida (ajustar na curva de XP).
+Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do personagem, com meta de cair por volta do **minuto 20** da partida (ajustar na curva de XP).
 
 **Regras**
 - Escolha **única** por partida e **irreversível**.
@@ -157,6 +157,7 @@ Inspirado no cultivo do nível 89 do PW. No jogo, acontece no **nível 20** do p
 - **Cultivo:** duas colunas (God e Evil) com os aditivos das skills atuais; botão de confirmar em cada uma. Depois da escolha, um ícone do caminho fica no HUD.
 - **Pausa** e **tela final** (seção 3).
 - Cores por elemento: fogo = laranja/vermelho, água = azul, terra = marrom/âmbar.
+- Feedback de combate: números flutuantes em cada acerto, flash vermelho ao receber dano e partículas simples na cor do elemento da skill.
 - Textos em português.
 
 ## 9. Critérios de aceite do MVP

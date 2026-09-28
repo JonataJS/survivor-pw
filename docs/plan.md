@@ -47,6 +47,8 @@ survivor-pw/
 │   │   ├── SkillSystem.ts   # recargas e disparo das skills
 │   │   ├── SpawnSystem.ts   # ondas por tempo
 │   │   ├── CombatSystem.ts  # dano, crítico, defesa, status (lentidão, atordoar, paralisar, redução de dano)
+│   │   ├── DamageNumberSystem.ts # números flutuantes de dano
+│   │   ├── ElementHitEffectSystem.ts # partículas de impacto por elemento
 │   │   ├── CultivationSystem.ts # caminho ativo e aplicação dos modificadores
 │   │   ├── XpSystem.ts      # XP e subida de nível
 │   │   ├── UpgradeSystem.ts # sorteio das 3 opções
