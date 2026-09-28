@@ -1,228 +1,228 @@
-# Tarefas — Survivor PW (MVP)
+﻿# Tarefas â€” Survivor PW (MVP)
 
-> Documento 3 de 3 do SDD. Executar em ordem. Cada tarefa é pequena, tem dependências e um critério de pronto.
-> Referências: `spec.md` (o quê) e `plan.md` (como).
+> Documento 3 de 3 do SDD. Executar em ordem. Cada tarefa Ã© pequena, tem dependÃªncias e um critÃ©rio de pronto.
+> ReferÃªncias: `spec.md` (o quÃª) e `plan.md` (como).
 
-Legenda: `[ ]` a fazer · `[x]` feito · **Dep.** = tarefas que precisam estar prontas antes.
+Legenda: `[ ]` a fazer Â· `[x]` feito Â· **Dep.** = tarefas que precisam estar prontas antes.
 
 ---
 
-## Fase 0 — Setup
+## Fase 0 â€” Setup
 
-- [x] **T001 — Criar o projeto**
-  Vite + TypeScript + Phaser 3. ESLint, Prettier e Vitest configurados. Pastas conforme `plan.md` §2.
+- [x] **T001 â€” Criar o projeto**
+  Vite + TypeScript + Phaser 3. ESLint, Prettier e Vitest configurados. Pastas conforme `plan.md` Â§2.
   **Pronto quando:** `npm run dev` abre uma tela preta do Phaser; `npm test` roda.
 
-- [x] **T002 — Deploy inicial na Vercel** · Dep.: T001
-  Repositório no GitHub conectado à Vercel.
-  **Pronto quando:** a URL pública abre o jogo; um push na `main` atualiza o site.
+- [x] **T002 â€” Deploy inicial na Vercel** Â· Dep.: T001
+  RepositÃ³rio no GitHub conectado Ã  Vercel.
+  **Pronto quando:** a URL pÃºblica abre o jogo; um push na `main` atualiza o site.
 
-- [x] **T003 — Cenas vazias e navegação** · Dep.: T001
+- [x] **T003 â€” Cenas vazias e navegaÃ§Ã£o** Â· Dep.: T001
   Boot, Menu, Game, Hud, Pause, LevelUp, Cultivo e Result, com troca entre elas.
-  **Pronto quando:** dá para ir do Menu ao Game e voltar pelo Result usando botões de teste.
+  **Pronto quando:** dÃ¡ para ir do Menu ao Game e voltar pelo Result usando botÃµes de teste.
 
-- [x] **T004 — Texturas placeholder** · Dep.: T003
-  Gerar na BootScene formas simples: mago (círculo roxo), inimigos (quadrados por tipo), projéteis e gemas, com cores por elemento.
+- [x] **T004 â€” Texturas placeholder** Â· Dep.: T003
+  Gerar na BootScene formas simples: mago (cÃ­rculo roxo), inimigos (quadrados por tipo), projÃ©teis e gemas, com cores por elemento.
   **Pronto quando:** todas as texturas usadas no MVP existem sem arquivos externos.
 
-## Fase 1 — Núcleo da partida
+## Fase 1 â€” NÃºcleo da partida
 
-- [x] **T010 — Dados do jogo** · Dep.: T001
-  Criar `data/classes.ts`, `skills.ts`, `passives.ts`, `enemies.ts` e `waves.ts` com os valores de `spec.md` §5–§6, e os tipos `SkillDef`, `EnemyDef`, `Modificador` etc. Cada skill e passivo já inclui o bloco `cultivo` (God e Evil) de `spec.md` §5.4.
+- [x] **T010 â€” Dados do jogo** Â· Dep.: T001
+  Criar `data/classes.ts`, `skills.ts`, `passives.ts`, `enemies.ts` e `waves.ts` com os valores de `spec.md` Â§5â€“Â§6, e os tipos `SkillDef`, `EnemyDef`, `Modificador` etc. Cada skill e passivo jÃ¡ inclui o bloco `cultivo` (God e Evil) de `spec.md` Â§5.4.
   **Pronto quando:** os arquivos compilam e cobrem todas as skills, passivos, aditivos de cultivo e inimigos do MVP.
 
-- [x] **T011 — Jogador e movimento** · Dep.: T004, T010
-  Mago com HP e velocidade vindos dos dados; movimento por WASD/setas; câmera seguindo.
-  **Pronto quando:** o mago anda em 8 direções numa área maior que a tela.
+- [x] **T011 â€” Jogador e movimento** Â· Dep.: T004, T010
+  Mago com HP e velocidade vindos dos dados; movimento por WASD/setas; cÃ¢mera seguindo.
+  **Pronto quando:** o mago anda em 8 direÃ§Ãµes numa Ã¡rea maior que a tela.
 
-- [x] **T012 — Pool de objetos e grade espacial** · Dep.: T001
-  `core/Pool.ts` e `core/SpatialGrid.ts`, com testes (inserir, mover, consultar vizinhos, mais próximo).
+- [x] **T012 â€” Pool de objetos e grade espacial** Â· Dep.: T001
+  `core/Pool.ts` e `core/SpatialGrid.ts`, com testes (inserir, mover, consultar vizinhos, mais prÃ³ximo).
   **Pronto quando:** os testes passam.
 
-- [x] **T013 — Inimigos e spawn** · Dep.: T011, T012
+- [x] **T013 â€” Inimigos e spawn** Â· Dep.: T011, T012
   `Enemy` com os 3 tipos; `SpawnSystem` lendo `waves.ts`, surgindo fora da tela e perseguindo o jogador.
-  **Pronto quando:** as ondas crescem com o tempo e os tipos Rápido (1:30) e Tanque (3:00) aparecem na hora certa.
+  **Pronto quando:** as ondas crescem com o tempo e os tipos RÃ¡pido (1:30) e Tanque (3:00) aparecem na hora certa.
 
-- [x] **T014 — Dano de contato e morte** · Dep.: T013
-  Inimigo encosta → dano no jogador (intervalo de 0,5 s, com defesa). HP zero → Result com derrota.
-  **Pronto quando:** morrer leva à tela final.
+- [x] **T014 â€” Dano de contato e morte** Â· Dep.: T013
+  Inimigo encosta â†’ dano no jogador (intervalo de 0,5 s, com defesa). HP zero â†’ Result com derrota.
+  **Pronto quando:** morrer leva Ã  tela final.
 
-- [x] **T015 — Cronômetro e vitória** · Dep.: T011
-  Cronômetro de partida; aos 25:00 → Result com vitória.
-  **Pronto quando:** com um modo de tempo acelerado (debug), a vitória é disparada.
+- [x] **T015 â€” CronÃ´metro e vitÃ³ria** Â· Dep.: T011
+  CronÃ´metro de partida; aos 25:00 â†’ Result com vitÃ³ria.
+  **Pronto quando:** com um modo de tempo acelerado (debug), a vitÃ³ria Ã© disparada.
 
-- [x] **T016 — Teste de estresse** · Dep.: T013
+- [x] **T016 â€” Teste de estresse** Â· Dep.: T013
   Modo debug (F1) mostrando FPS e total de entidades; comando para gerar 300 inimigos.
-  **Pronto quando:** 300 inimigos rodam perto de 60 FPS. Se não, otimizar antes de seguir.
+  **Pronto quando:** 300 inimigos rodam perto de 60 FPS. Se nÃ£o, otimizar antes de seguir.
 
-## Fase 2 — Combate e skills
+## Fase 2 â€” Combate e skills
 
-- [x] **T020 — Sistema de combate** · Dep.: T010
-  `CombatSystem` com dano por elemento, maestrias, defesa, **crítico** e status (lentidão, redução de dano, **atordoar**, **paralisar**), além de **roubo de vida** e cura por acerto. Função pura `calcularStats(def, nivel, passivos, caminho)`. Lógica pura, com testes.
-  **Pronto quando:** os testes cobrem as fórmulas de `plan.md` §3.2 e §3.3.
+- [x] **T020 â€” Sistema de combate** Â· Dep.: T010
+  `CombatSystem` com dano por elemento, maestrias, defesa, **crÃ­tico** e status (lentidÃ£o, reduÃ§Ã£o de dano, **atordoar**, **paralisar**), alÃ©m de **roubo de vida** e cura por acerto. FunÃ§Ã£o pura `calcularStats(def, nivel, passivos, caminho)`. LÃ³gica pura, com testes.
+  **Pronto quando:** os testes cobrem as fÃ³rmulas de `plan.md` Â§3.2 e Â§3.3.
 
-- [x] **T021 — Base de skills** · Dep.: T020, T012
+- [x] **T021 â€” Base de skills** Â· Dep.: T020, T012
   Interface `Skill`, `SkillSystem` (recarga, disparo, Serenidade) e busca de alvo pela grade.
   **Pronto quando:** uma skill de teste dispara no ritmo certo.
 
-- [x] **T022 — Marca do Fogo** · Dep.: T021
-  Projétil no inimigo visível mais próximo; +projéteis nos níveis 3 e 5. Skill inicial.
-  **Pronto quando:** o mago mata inimigos comuns sozinho desde o começo.
+- [x] **T022 â€” Marca do Fogo** Â· Dep.: T021
+  ProjÃ©til no inimigo visÃ­vel mais prÃ³ximo; +projÃ©teis nos nÃ­veis 3 e 5. Skill inicial.
+  **Pronto quando:** o mago mata inimigos comuns sozinho desde o comeÃ§o.
 
-- [x] **T023 — Gemas de XP e coleta** · Dep.: T014
-  Gema ao matar; atração dentro do raio de coleta; fusão acima de ~200 gemas.
+- [x] **T023 â€” Gemas de XP e coleta** Â· Dep.: T014
+  Gema ao matar; atraÃ§Ã£o dentro do raio de coleta; fusÃ£o acima de ~200 gemas.
   **Pronto quando:** coletar gemas enche a barra de XP.
 
-- [x] **T024 — Fonte Repentina** · Dep.: T021 — coluna de água que sobe do chão sob o inimigo visível mais próximo (dano instantâneo, sem projétil), com lentidão. Visual: círculo azul no chão que cresce para cima em forma de jato vertical e se desfaz.
-- [x] **T025 — Chuva de Pedra** · Dep.: T021 — pedra que cai do céu como meteoro sobre um inimigo aleatório visível (sombra no chão antes do impacto).
-- [x] **T026 — Asas da Fênix** · Dep.: T021 — fênix de fogo em linha reta na direção do movimento, atravessa e empurra todos os inimigos no caminho.
-- [x] **T027 — Tempestade Flamejante** · Dep.: T021 — área em pulsos ao redor do jogador.
-- [x] **T028 — Tempestade de Areia** · Dep.: T021 — rajada de areia do mago até o inimigo mais forte por perto; dano em alvo único e −50% no dano dele por 3 s.
-  **Pronto quando (T024–T028):** cada skill funciona nos níveis 1 a 5 com os valores dos dados.
+- [x] **T024 â€” Fonte Repentina** Â· Dep.: T021 â€” coluna de Ã¡gua que sobe do chÃ£o sob o inimigo visÃ­vel mais prÃ³ximo (dano instantÃ¢neo, sem projÃ©til), com lentidÃ£o. Visual: cÃ­rculo azul no chÃ£o que cresce para cima em forma de jato vertical e se desfaz.
+- [x] **T025 â€” Chuva de Pedra** Â· Dep.: T021 â€” pedra que cai do cÃ©u como meteoro sobre um inimigo aleatÃ³rio visÃ­vel (sombra no chÃ£o antes do impacto).
+- [x] **T026 â€” Asas da FÃªnix** Â· Dep.: T021 â€” fÃªnix de fogo em linha reta na direÃ§Ã£o do movimento, atravessa e empurra todos os inimigos no caminho.
+- [x] **T027 â€” Tempestade Flamejante** Â· Dep.: T021 â€” Ã¡rea em pulsos ao redor do jogador.
+- [x] **T028 â€” Tempestade de Areia** Â· Dep.: T021 â€” rajada de areia do mago atÃ© o inimigo mais forte por perto; dano em alvo Ãºnico e âˆ’50% no dano dele por 3 s.
+  **Pronto quando (T024â€“T028):** cada skill funciona nos nÃ­veis 1 a 5 com os valores dos dados.
 
-- [x] **T029 — Terra Móvel (dash)** · Dep.: T011, T021
-  Espaço/botão; dash na direção do movimento; intocável durante o dash; recarga mostrada.
+- [x] **T029 â€” Terra MÃ³vel (dash)** Â· Dep.: T011, T021
+  EspaÃ§o/botÃ£o; dash na direÃ§Ã£o do movimento; intocÃ¡vel durante o dash; recarga mostrada.
   **Pronto quando:** o dash atravessa inimigos sem receber dano.
 
-- [x] **T030 — Passivos** · Dep.: T020
+- [x] **T030 â€” Passivos** Â· Dep.: T020
   3 maestrias, Escudo de Terra, Escudo de Fogo e Serenidade.
   **Pronto quando:** cada passivo altera o valor esperado (conferido no modo debug).
 
-## Fase 3 — Progressão
+## Fase 3 â€” ProgressÃ£o
 
-- [x] **T040 — XP e subida de nível** · Dep.: T023
-  Curva `5 + nível × 10`; suporte a vários níveis de uma vez (fila de level-ups). Com testes.
-  **Pronto quando:** os testes passam e subir de nível dispara o evento.
+- [x] **T040 â€” XP e subida de nÃ­vel** Â· Dep.: T023
+  Curva `5 + nÃ­vel Ã— 10`; suporte a vÃ¡rios nÃ­veis de uma vez (fila de level-ups). Com testes.
+  **Pronto quando:** os testes passam e subir de nÃ­vel dispara o evento.
 
-- [x] **T041 — Sorteio de upgrades** · Dep.: T040, T030
-  3 opções, respeitando slots (6+6), nível máximo 5 e fallback de +20 HP. Com testes e RNG com semente.
-  **Pronto quando:** os testes cobrem todos os casos de `spec.md` §7.
+- [x] **T041 â€” Sorteio de upgrades** Â· Dep.: T040, T030
+  3 opÃ§Ãµes, respeitando slots (6+6), nÃ­vel mÃ¡ximo 5 e fallback de +20 HP. Com testes e RNG com semente.
+  **Pronto quando:** os testes cobrem todos os casos de `spec.md` Â§7.
 
-- [x] **T042 — Tela de level-up** · Dep.: T041
-  Pausa o jogo; 3 cartas com nome, cor do elemento, nível atual → próximo e descrição; teclas 1/2/3, clique ou toque.
+- [x] **T042 â€” Tela de level-up** Â· Dep.: T041
+  Pausa o jogo; 3 cartas com nome, cor do elemento, nÃ­vel atual â†’ prÃ³ximo e descriÃ§Ã£o; teclas 1/2/3, clique ou toque.
   **Pronto quando:** escolher uma carta aplica o upgrade e retoma a partida.
 
-- [x] **T043 — Sistema de Cultivo** · Dep.: T040, T020
-  `CultivoSystem` guardando o caminho; `XpSystem` insere o Cultivo na fila no nível 20 (antes do level-up normal). Testes: nível 20 sozinho, subir do 18 ao 22 de uma vez, e skill pega depois da escolha já recebendo o aditivo.
+- [x] **T043 â€” Sistema de Cultivo** Â· Dep.: T040, T020
+  `CultivoSystem` guardando o caminho; `XpSystem` insere o Cultivo na fila no nÃ­vel 20 (antes do level-up normal). Testes: nÃ­vel 20 sozinho, subir do 18 ao 22 de uma vez, e skill pega depois da escolha jÃ¡ recebendo o aditivo.
   **Pronto quando:** os testes passam.
 
-- [x] **T044 — Tela de Cultivo** · Dep.: T043, T042
-  Duas colunas (God dourado/branco, Evil vermelho/roxo) listando os aditivos das skills e passivos atuais, lidos de `descricao` nos dados; confirmar com clique, toque ou teclas 1/2. Ícone do caminho no HUD depois da escolha.
-  **Pronto quando:** a escolha pausa o jogo, aplica o caminho e segue para o level-up normal do nível 20.
+- [x] **T044 â€” Tela de Cultivo** Â· Dep.: T043, T042
+  Duas colunas (God dourado/branco, Evil vermelho/roxo) listando os aditivos das skills e passivos atuais, lidos de `descricao` nos dados; confirmar com clique, toque ou teclas 1/2. Ãcone do caminho no HUD depois da escolha.
+  **Pronto quando:** a escolha pausa o jogo, aplica o caminho e segue para o level-up normal do nÃ­vel 20.
 
-- [x] **T045 — Aditivos em cada skill e passivo** · Dep.: T043, T022–T030
-  Garantir que as 6 skills de ataque, a Terra Móvel e os 6 passivos respondem a todos os modificadores da tabela de `spec.md` §5.4, incluindo o buff periódico da Serenidade God.
-  **Pronto quando:** no modo debug (comando para forçar God ou Evil), cada aditivo tem efeito visível ou mensurável.
+- [x] **T045 â€” Aditivos em cada skill e passivo** Â· Dep.: T043, T022â€“T030
+  Garantir que as 6 skills de ataque, a Terra MÃ³vel e os 6 passivos respondem a todos os modificadores da tabela de `spec.md` Â§5.4, incluindo o buff periÃ³dico da Serenidade God.
+  **Pronto quando:** no modo debug (comando para forÃ§ar God ou Evil), cada aditivo tem efeito visÃ­vel ou mensurÃ¡vel.
 
-- [x] **T046 — Visual do caminho** · Dep.: T044
-  Efeitos das skills e aura do mago trocam de cor conforme o caminho; números de crítico maiores e em outra cor; ícone de atordoado/paralisado no inimigo.
-  **Pronto quando:** dá para identificar o caminho e os status só olhando a tela.
+- [x] **T046 â€” Visual do caminho** Â· Dep.: T044
+  Efeitos das skills e aura do mago trocam de cor conforme o caminho; nÃºmeros de crÃ­tico maiores e em outra cor; Ã­cone de atordoado/paralisado no inimigo.
+  **Pronto quando:** dÃ¡ para identificar o caminho e os status sÃ³ olhando a tela.
 
-## Fase 4 — Interface
+## Fase 4 â€” Interface
 
-- [x] **T050 — HUD** · Dep.: T040, T029
-  HP, XP e nível, cronômetro, mortes, ícones de skills com nível e recarga do dash.
+- [x] **T050 â€” HUD** Â· Dep.: T040, T029
+  HP, XP e nÃ­vel, cronÃ´metro, mortes, Ã­cones de skills com nÃ­vel e recarga do dash.
   **Pronto quando:** tudo atualiza em tempo real via EventBus.
 
-- [x] **T051 — Menu e pausa** · Dep.: T003
-  Menu com título, "Jogar" e controles; pausa com Esc/P e botão "Continuar / Sair".
+- [x] **T051 â€” Menu e pausa** Â· Dep.: T003
+  Menu com tÃ­tulo, "Jogar" e controles; pausa com Esc/P e botÃ£o "Continuar / Sair".
   **Pronto quando:** pausar congela tudo, inclusive recargas e spawn.
 
-- [x] **T052 — Tela final** · Dep.: T015, T014
-  Vitória/derrota, tempo, nível, caminho de cultivo, mortes e dano por skill (`StatsTracker`); "Jogar de novo".
-  **Pronto quando:** os números batem com a partida jogada.
+- [x] **T052 â€” Tela final** Â· Dep.: T015, T014
+  VitÃ³ria/derrota, tempo, nÃ­vel, caminho de cultivo, mortes e dano por skill (`StatsTracker`); "Jogar de novo".
+  **Pronto quando:** os nÃºmeros batem com a partida jogada.
 
-- [x] **T053 — Recorde local** · Dep.: T052
+- [x] **T053 â€” Recorde local** Â· Dep.: T052
   `ScoreService` + `LocalScoreService` salvando o melhor resultado no navegador (maior tempo; mortes como desempate); exibido no menu.
-  **Pronto quando:** o recorde continua lá depois de recarregar a página.
+  **Pronto quando:** o recorde continua lÃ¡ depois de recarregar a pÃ¡gina.
 
-- [x] **T054 — Controles de toque** · Dep.: T011, T029
-  Joystick virtual e botão de dash, só em telas de toque; escala `FIT`.
-  **Pronto quando:** dá para jogar uma partida completa no celular.
+- [x] **T054 â€” Controles de toque** Â· Dep.: T011, T029
+  Joystick virtual e botÃ£o de dash, sÃ³ em telas de toque; escala `FIT`.
+  **Pronto quando:** dÃ¡ para jogar uma partida completa no celular.
 
-## Fase 5 — Fechamento do MVP
+## Fase 5 â€” Fechamento do MVP
 
-- [x] **T060 — Balanceamento** · Dep.: todas as anteriores
-  Ajustar `data/` para partidas de 25 minutos. Metas: níveis iniciais chegam rápido e o nível 20 (Cultivo) cai por volta do minuto 20; a dificuldade cresce até o fim. A curva foi verificada por estimativa automatizada de XP e testes; God e Evil mantêm seus efeitos ajustados nos dados.
-- [x] **T061 — Feedback visual** · Dep.: T028
-  Números flutuantes a cada acerto, flash vermelho ao receber dano e partículas na cor do elemento. Efeitos de partículas e textos reaproveitados.
-- [x] **T062 — Verificação dos critérios de aceite** · Dep.: T060, T061
-  Passar pelo checklist de `spec.md` §9 em Chrome, Firefox, Safari e um celular.
-  **Pronto quando:** os 7 critérios passam. Checklist validado manualmente; MVP entregue.
+- [x] **T060 â€” Balanceamento** Â· Dep.: todas as anteriores
+  Ajustar `data/` para partidas de 25 minutos. Metas: nÃ­veis iniciais chegam rÃ¡pido e o nÃ­vel 20 (Cultivo) cai por volta do minuto 20; a dificuldade cresce atÃ© o fim. A curva foi verificada por estimativa automatizada de XP e testes; God e Evil mantÃªm seus efeitos ajustados nos dados.
+- [x] **T061 â€” Feedback visual** Â· Dep.: T028
+  NÃºmeros flutuantes a cada acerto, flash vermelho ao receber dano e partÃ­culas na cor do elemento. Efeitos de partÃ­culas e textos reaproveitados.
+- [x] **T062 â€” VerificaÃ§Ã£o dos critÃ©rios de aceite** Â· Dep.: T060, T061
+  Passar pelo checklist de `spec.md` Â§9 em Chrome, Firefox, Safari e um celular.
+  **Pronto quando:** os 7 critÃ©rios passam. Checklist validado manualmente; MVP entregue.
 
 ---
 
-## Fase 6 — Seleção de classe e mapa no menu
+## Fase 6 â€” SeleÃ§Ã£o de classe e mapa no menu
 
-Objetivo: apresentar as classes e os mapas no menu, permitir iniciar somente com uma combinação implementada e manter o setup escolhido durante a partida e sua repetição.
+Objetivo: apresentar as classes e os mapas no menu, permitir iniciar somente com uma combinaÃ§Ã£o implementada e manter o setup escolhido durante a partida e sua repetiÃ§Ã£o.
 
-- [ ] **T063 — Catálogos de seleção** · Dep.: T062
-  Criar definições de catálogo para as classes Mago (`mage`), Guerreiro (`warrior`), Bárbaro (`barbarian`), Feiticeira (`venomancer`), Arqueiro (`archer`) e Sacerdote (`cleric`), e para os mapas Toca dos Lobos (`wolves-den`), Caverna do Fogo (`fire-cave`) e Caverna do Escorpião-Serpente (`scorpion-serpent-cave`). Somente Mago e Toca dos Lobos ficam disponíveis. Manter os atributos jogáveis separados dos metadados de apresentação das classes bloqueadas; não inventar atributos ou regras para conteúdo futuro.
-  **Pronto quando:** os catálogos têm IDs estáveis em inglês, nomes exibidos em português e disponibilidade explícita; apenas Mago e Toca dos Lobos apontam para conteúdo jogável existente.
+- [x] **T063 â€” CatÃ¡logos de seleÃ§Ã£o** Â· Dep.: T062
+  Criar definiÃ§Ãµes de catÃ¡logo para as classes Mago (`mage`), Guerreiro (`warrior`), BÃ¡rbaro (`barbarian`), Feiticeira (`venomancer`), Arqueiro (`archer`) e Sacerdote (`cleric`), e para os mapas Toca dos Lobos (`wolves-den`), Caverna do Fogo (`fire-cave`) e Caverna do EscorpiÃ£o-Serpente (`scorpion-serpent-cave`). Somente Mago e Toca dos Lobos ficam disponÃ­veis. Manter os atributos jogÃ¡veis separados dos metadados de apresentaÃ§Ã£o das classes bloqueadas; nÃ£o inventar atributos ou regras para conteÃºdo futuro.
+  **Pronto quando:** os catÃ¡logos tÃªm IDs estÃ¡veis em inglÃªs, nomes exibidos em portuguÃªs e disponibilidade explÃ­cita; apenas Mago e Toca dos Lobos apontam para conteÃºdo jogÃ¡vel existente.
 
-- [ ] **T064 — Regras puras de seleção** · Dep.: T063
-  Implementar seleção padrão, validação e rejeição de opções indisponíveis para classe e mapa em funções puras, com testes.
-  **Pronto quando:** os testes confirmam Mago e Toca dos Lobos como padrões, aceitam as opções disponíveis e rejeitam opções futuras ou IDs inválidos.
+- [ ] **T064 â€” Regras puras de seleÃ§Ã£o** Â· Dep.: T063
+  Implementar seleÃ§Ã£o padrÃ£o, validaÃ§Ã£o e rejeiÃ§Ã£o de opÃ§Ãµes indisponÃ­veis para classe e mapa em funÃ§Ãµes puras, com testes.
+  **Pronto quando:** os testes confirmam Mago e Toca dos Lobos como padrÃµes, aceitam as opÃ§Ãµes disponÃ­veis e rejeitam opÃ§Ãµes futuras ou IDs invÃ¡lidos.
 
-- [ ] **T065 — Seletor de classe no menu** · Dep.: T064
-  Mostrar os seis cartões de classe. Mago pode ser selecionado; Guerreiro, Bárbaro, Feiticeira, Arqueiro e Sacerdote exibem “Em breve”, têm aparência indisponível e não respondem a clique/toque/teclado.
-  **Pronto quando:** Mago aparece selecionado inicialmente, o estado selecionado é visível e as outras cinco classes não podem ser ativadas.
+- [ ] **T065 â€” Seletor de classe no menu** Â· Dep.: T064
+  Mostrar os seis cartÃµes de classe. Mago pode ser selecionado; Guerreiro, BÃ¡rbaro, Feiticeira, Arqueiro e Sacerdote exibem â€œEm breveâ€, tÃªm aparÃªncia indisponÃ­vel e nÃ£o respondem a clique/toque/teclado.
+  **Pronto quando:** Mago aparece selecionado inicialmente, o estado selecionado Ã© visÃ­vel e as outras cinco classes nÃ£o podem ser ativadas.
 
-- [ ] **T066 — Seletor de mapa no menu** · Dep.: T064
-  Mostrar os três cartões de mapa. Toca dos Lobos pode ser selecionado; Caverna do Fogo e Caverna do Escorpião-Serpente exibem “Em breve”, têm aparência indisponível e não respondem a clique/toque/teclado.
+- [ ] **T066 â€” Seletor de mapa no menu** Â· Dep.: T064
+  Mostrar os trÃªs cartÃµes de mapa. Toca dos Lobos pode ser selecionado; Caverna do Fogo e Caverna do EscorpiÃ£o-Serpente exibem â€œEm breveâ€, tÃªm aparÃªncia indisponÃ­vel e nÃ£o respondem a clique/toque/teclado.
   **Pronto quando:** Toca dos Lobos aparece selecionada inicialmente e somente ela pode ser ativada.
 
-- [ ] **T067 — Passagem e retenção do setup da partida** · Dep.: T065, T066
-  Enviar os IDs selecionados de classe e mapa ao iniciar `GameScene`; conservar o setup para o botão “Jogar de novo” de `ResultScene`. Não persistir a seleção entre sessões. A Toca dos Lobos utiliza as regras e a arena atualmente implementadas; conteúdo visual específico fica para a Fase 7.
-  **Pronto quando:** a partida recebe Mago/Toca dos Lobos e “Jogar de novo” inicia a mesma combinação sem voltar ao padrão por engano.
+- [ ] **T067 â€” Passagem e retenÃ§Ã£o do setup da partida** Â· Dep.: T065, T066
+  Enviar os IDs selecionados de classe e mapa ao iniciar `GameScene`; conservar o setup para o botÃ£o â€œJogar de novoâ€ de `ResultScene`. NÃ£o persistir a seleÃ§Ã£o entre sessÃµes. A Toca dos Lobos utiliza as regras e a arena atualmente implementadas; conteÃºdo visual especÃ­fico fica para a Fase 7.
+  **Pronto quando:** a partida recebe Mago/Toca dos Lobos e â€œJogar de novoâ€ inicia a mesma combinaÃ§Ã£o sem voltar ao padrÃ£o por engano.
 
-- [ ] **T068 — Verificação do menu e das opções bloqueadas** · Dep.: T067
-  Testar lógica de disponibilidade e passagem do setup; conferir o menu em desktop e celular, incluindo seleção válida, cartões indisponíveis, etiqueta exata “Em breve” e início/repetição de partida.
-  **Pronto quando:** somente Mago e Toca dos Lobos iniciam partidas, os cinco cartões de classe e dois de mapa restantes ficam bloqueados e o ciclo completo do MVP continua funcionando.
+- [ ] **T068 â€” VerificaÃ§Ã£o do menu e das opÃ§Ãµes bloqueadas** Â· Dep.: T067
+  Testar lÃ³gica de disponibilidade e passagem do setup; conferir o menu em desktop e celular, incluindo seleÃ§Ã£o vÃ¡lida, cartÃµes indisponÃ­veis, etiqueta exata â€œEm breveâ€ e inÃ­cio/repetiÃ§Ã£o de partida.
+  **Pronto quando:** somente Mago e Toca dos Lobos iniciam partidas, os cinco cartÃµes de classe e dois de mapa restantes ficam bloqueados e o ciclo completo do MVP continua funcionando.
 
 ---
 
-## Fase 7 — Direção de arte e produção de assets (sem integração)
+## Fase 7 â€” DireÃ§Ã£o de arte e produÃ§Ã£o de assets (sem integraÃ§Ã£o)
 
-Objetivo: definir uma identidade visual consistente e produzir os arquivos de arte necessários para substituir os placeholders. Esta fase **não altera cenas, código de carregamento, HUD ou gameplay**; a integração fica para uma fase/tarefa posterior.
+Objetivo: definir uma identidade visual consistente e produzir os arquivos de arte necessÃ¡rios para substituir os placeholders. Esta fase **nÃ£o altera cenas, cÃ³digo de carregamento, HUD ou gameplay**; a integraÃ§Ã£o fica para uma fase/tarefa posterior.
 
-Direção proposta: fantasia oriental de alto contraste, inspirada no universo e na iconografia de Perfect World, com silhuetas legíveis em escala pequena, acabamento ilustrado estilizado e paleta organizada por elemento. Assets oficiais do Perfect World podem ser usados por decisão do usuário; assets originais podem complementar o conjunto. Manter fundo transparente nos sprites e ícones sempre que aplicável.
+DireÃ§Ã£o proposta: fantasia oriental de alto contraste, inspirada no universo e na iconografia de Perfect World, com silhuetas legÃ­veis em escala pequena, acabamento ilustrado estilizado e paleta organizada por elemento. Assets oficiais do Perfect World podem ser usados por decisÃ£o do usuÃ¡rio; assets originais podem complementar o conjunto. Manter fundo transparente nos sprites e Ã­cones sempre que aplicÃ¡vel.
 
-- [x] **T070 — Inventário e especificação visual**
-  Registrar referências aprovadas, paleta, escala, enquadramento, perspectiva, formatos, dimensões-alvo e convenções de nomes. Inventariar: Mago; inimigos Comum, Rápido e Tanque; cenário/terreno da arena; gema de XP; efeitos de fogo, água e terra; efeitos de status; ícones das 7 skills ativas (incluindo Terra Móvel), 6 passivos e caminhos God/Evil; elementos visuais de menu, HUD, level-up, cultivo, pausa e resultado.
+- [x] **T070 â€” InventÃ¡rio e especificaÃ§Ã£o visual**
+  Registrar referÃªncias aprovadas, paleta, escala, enquadramento, perspectiva, formatos, dimensÃµes-alvo e convenÃ§Ãµes de nomes. Inventariar: Mago; inimigos Comum, RÃ¡pido e Tanque; cenÃ¡rio/terreno da arena; gema de XP; efeitos de fogo, Ã¡gua e terra; efeitos de status; Ã­cones das 7 skills ativas (incluindo Terra MÃ³vel), 6 passivos e caminhos God/Evil; elementos visuais de menu, HUD, level-up, cultivo, pausa e resultado.
   **Ficha visual:** `docs/art/direction.md`.
-  **Pronto quando:** cada família tiver uma ficha com uso, dimensões/alvos, transparência, variantes/frames necessários e referência visual.
+  **Pronto quando:** cada famÃ­lia tiver uma ficha com uso, dimensÃµes/alvos, transparÃªncia, variantes/frames necessÃ¡rios e referÃªncia visual.
 
-- [ ] **T071 — Arte de personagens e inimigos** · Dep.: T070
-  Produzir sprites do Mago e dos três tipos de inimigo, incluindo variações/frames de animação requeridos pela apresentação do jogo. Garantir silhuetas distintas e leitura sobre o cenário.
-  **Pronto quando:** os arquivos finais estiverem exportados com nomes estáveis, transparência correta e escala consistente, sem alterar o código do jogo.
+- [ ] **T071 â€” Arte de personagens e inimigos** Â· Dep.: T070
+  Produzir sprites do Mago e dos trÃªs tipos de inimigo, incluindo variaÃ§Ãµes/frames de animaÃ§Ã£o requeridos pela apresentaÃ§Ã£o do jogo. Garantir silhuetas distintas e leitura sobre o cenÃ¡rio.
+  **Pronto quando:** os arquivos finais estiverem exportados com nomes estÃ¡veis, transparÃªncia correta e escala consistente, sem alterar o cÃ³digo do jogo.
 
-- [ ] **T072 — Ícones de skills, passivos e cultivo** · Dep.: T070
-  Produzir ícones individuais para Marca do Fogo, Fonte Repentina, Chuva de Pedra, Asas da Fênix, Tempestade Flamejante, Tempestade de Areia, Terra Móvel, os seis passivos e os caminhos God/Evil; contemplar leitura em miniatura e variações de caminho quando necessárias.
-  **Pronto quando:** todos os ícones existirem nos tamanhos/famílias definidos em T070 e forem visualmente distinguíveis em escala de HUD.
+- [ ] **T072 â€” Ãcones de skills, passivos e cultivo** Â· Dep.: T070
+  Produzir Ã­cones individuais para Marca do Fogo, Fonte Repentina, Chuva de Pedra, Asas da FÃªnix, Tempestade Flamejante, Tempestade de Areia, Terra MÃ³vel, os seis passivos e os caminhos God/Evil; contemplar leitura em miniatura e variaÃ§Ãµes de caminho quando necessÃ¡rias.
+  **Pronto quando:** todos os Ã­cones existirem nos tamanhos/famÃ­lias definidos em T070 e forem visualmente distinguÃ­veis em escala de HUD.
 
-- [ ] **T073 — Efeitos de combate e itens** · Dep.: T070
-  Produzir arte da gema de XP, do cenário/terreno da arena e dos efeitos visuais de cada skill, impactos por elemento e estados stun/paralyze, cobrindo as cores de Cultivo God e Evil onde aplicável.
+- [ ] **T073 â€” Efeitos de combate e itens** Â· Dep.: T070
+  Produzir arte da gema de XP, do cenÃ¡rio/terreno da arena e dos efeitos visuais de cada skill, impactos por elemento e estados stun/paralyze, cobrindo as cores de Cultivo God e Evil onde aplicÃ¡vel.
   **Pronto quando:** o conjunto visual cobrir arena, todas as skills e estados do MVP, com sprites/frames separados e nomes mapeados para os comportamentos descritos na spec.
 
-- [ ] **T074 — Elementos gráficos das telas e interface** · Dep.: T070
-  Produzir molduras/ornamentos, fundos e elementos decorativos necessários para Menu, HUD, cartas de level-up, escolha de Cultivo, pausa e resultado, sem incluir texto rasterizado que deva permanecer localizável.
-  **Pronto quando:** houver inventário completo dos elementos de tela, exportados em camadas/arquivos reutilizáveis e sem textos embutidos.
+- [ ] **T074 â€” Elementos grÃ¡ficos das telas e interface** Â· Dep.: T070
+  Produzir molduras/ornamentos, fundos e elementos decorativos necessÃ¡rios para Menu, HUD, cartas de level-up, escolha de Cultivo, pausa e resultado, sem incluir texto rasterizado que deva permanecer localizÃ¡vel.
+  **Pronto quando:** houver inventÃ¡rio completo dos elementos de tela, exportados em camadas/arquivos reutilizÃ¡veis e sem textos embutidos.
 
-- [ ] **T075 — Revisão visual e pacote de entrega** · Dep.: T071, T072, T073, T074
-  Revisar consistência, transparência, recortes, legibilidade em escala real e organização dos arquivos. Documentar origem/licença dos assets usados e mapa asset → entidade/tela/efeito para a futura integração.
-  **Pronto quando:** o pacote final estiver completo, organizado em `public/assets/` (ou diretório acordado), com catálogo, créditos/licenças e checklist de cobertura; nenhum arquivo estiver referenciado pelo jogo nesta fase.
+- [ ] **T075 â€” RevisÃ£o visual e pacote de entrega** Â· Dep.: T071, T072, T073, T074
+  Revisar consistÃªncia, transparÃªncia, recortes, legibilidade em escala real e organizaÃ§Ã£o dos arquivos. Documentar origem/licenÃ§a dos assets usados e mapa asset â†’ entidade/tela/efeito para a futura integraÃ§Ã£o.
+  **Pronto quando:** o pacote final estiver completo, organizado em `public/assets/` (ou diretÃ³rio acordado), com catÃ¡logo, crÃ©ditos/licenÃ§as e checklist de cobertura; nenhum arquivo estiver referenciado pelo jogo nesta fase.
 
 ---
 
-## Pós-MVP (não detalhar ainda)
+## PÃ³s-MVP (nÃ£o detalhar ainda)
 
 - **T100** Supabase: projeto, tabelas `profiles` e `runs`, RLS.
-- **T101** Login anônimo.
-- **T102** `SupabaseScoreService` + Edge Function de validação.
+- **T101** Login anÃ´nimo.
+- **T102** `SupabaseScoreService` + Edge Function de validaÃ§Ã£o.
 - **T103** Tela de ranking.
-- **T110** Sutra do Coração e Orvalho da Manhã (ativas).
-- **T111** Chefes e baús.
-- **T112** Evoluções: Mar de Chamas, Ira do Dragão de Água, Peso da Montanha.
-- **T120** Meta-progressão (ouro e refino).
-- **T130** Próxima classe.
+- **T110** Sutra do CoraÃ§Ã£o e Orvalho da ManhÃ£ (ativas).
+- **T111** Chefes e baÃºs.
+- **T112** EvoluÃ§Ãµes: Mar de Chamas, Ira do DragÃ£o de Ãgua, Peso da Montanha.
+- **T120** Meta-progressÃ£o (ouro e refino).
+- **T130** PrÃ³xima classe.
