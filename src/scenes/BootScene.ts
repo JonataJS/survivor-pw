@@ -1,7 +1,5 @@
 import Phaser from 'phaser';
 
-const PLAYER_COLOR = 0x9b30ff;
-
 const ENEMY_TEXTURES: Record<string, { size: number; color: number }> = {
   'enemy-common': { size: 20, color: 0x999999 },
   'enemy-fast': { size: 14, color: 0xf0d030 },
@@ -16,24 +14,53 @@ const ELEMENT_COLORS: Record<string, number> = {
 
 const GEM_COLOR = 0x33ff88;
 
+// Mage spritesheet layout from public/assets/player/mage/mage-spritesheet.json:
+// a 4-column x 9-row uniform grid (92x92 cells). Row 0 holds the static
+// rotations (unused here); rows 1-8 hold 4-frame idle/walk animations for
+// south, west, east and north, in that order.
+const MAGE_ANIM_FRAMES: Record<string, { start: number; end: number }> = {
+  'mage-idle-south': { start: 4, end: 7 },
+  'mage-idle-west': { start: 8, end: 11 },
+  'mage-idle-east': { start: 12, end: 15 },
+  'mage-idle-north': { start: 16, end: 19 },
+  'mage-walk-south': { start: 20, end: 23 },
+  'mage-walk-west': { start: 24, end: 27 },
+  'mage-walk-east': { start: 28, end: 31 },
+  'mage-walk-north': { start: 32, end: 35 },
+};
+
 export class BootScene extends Phaser.Scene {
   constructor() {
     super('Boot');
   }
 
+  preload(): void {
+    this.load.spritesheet('mage', 'assets/player/mage/mage-spritesheet.png', {
+      frameWidth: 92,
+      frameHeight: 92,
+    });
+  }
+
   create(): void {
     this.cameras.main.setBackgroundColor('#000000');
     this.generatePlaceholderTextures();
+    this.generateMageAnimations();
     this.scene.start('Menu');
+  }
+
+  private generateMageAnimations(): void {
+    for (const [key, { start, end }] of Object.entries(MAGE_ANIM_FRAMES)) {
+      this.anims.create({
+        key,
+        frames: this.anims.generateFrameNumbers('mage', { start, end }),
+        frameRate: key.startsWith('mage-walk-') ? 8 : 4,
+        repeat: -1,
+      });
+    }
   }
 
   private generatePlaceholderTextures(): void {
     const graphics = this.add.graphics();
-
-    graphics.clear();
-    graphics.fillStyle(PLAYER_COLOR, 1);
-    graphics.fillCircle(16, 16, 16);
-    graphics.generateTexture('player', 32, 32);
 
     for (const [key, { size, color }] of Object.entries(ENEMY_TEXTURES)) {
       graphics.clear();

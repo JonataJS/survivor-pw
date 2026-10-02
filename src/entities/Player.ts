@@ -38,13 +38,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private virtualMoveX = 0;
   private virtualMoveY = 0;
   private dashRequested = false;
+  private currentAnim = '';
   // Set each frame by GameScene so Terra Móvel também recebe Serenidade e
   // o aditivo de Cultivo, como qualquer outra skill (spec.md §5.1).
   private cultivationEquippedPassives: EquippedPassive[] = [];
   private cultivationPath: Path | undefined;
 
   constructor(scene: Phaser.Scene, x: number, y: number, classDef = mage) {
-    super(scene, x, y, 'player');
+    super(scene, x, y, 'mage', 4);
 
     this.maxHp = classDef.maxHp;
     this.hp = classDef.maxHp;
@@ -54,7 +55,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
+
+    // Sprite source canvas is 92x92 (PixelLab padding for the staff), but
+    // gameplay (collision box, pickup/contact radius reads via `.width`
+    // elsewhere) expects the 32x32 footprint from docs/art/direction.md.
+    // setSize (Arcade.Sprite) resizes the physics body too, so it must run
+    // after physics.add.existing creates that body.
+    this.setDisplaySize(32, 32);
+    this.setSize(32, 32);
+
     this.setCollideWorldBounds(true);
+    this.playAnim('mage-idle-south');
 
     const keyboard = scene.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;
     this.cursors = keyboard.createCursorKeys();
@@ -71,6 +82,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.dashRemainingSeconds > 0) {
       this.dashRemainingSeconds -= deltaSeconds;
       this.setVelocity(this.dashDirX * this.dashSpeed, this.dashDirY * this.dashSpeed);
+      this.playAnim(`mage-walk-${this.facingDirection()}`);
       if (this.dashRemainingSeconds <= 0) this.invulnerable = false;
       return;
     }
@@ -89,6 +101,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.facingY = moveY / length;
       moveX = this.facingX * this.speed;
       moveY = this.facingY * this.speed;
+      this.playAnim(`mage-walk-${this.facingDirection()}`);
+    } else {
+      this.playAnim(`mage-idle-${this.facingDirection()}`);
     }
 
     this.setVelocity(moveX, moveY);
@@ -98,6 +113,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (shouldDash && this.dashCooldownRemaining <= 0) {
       this.startDash();
     }
+  }
+
+  // Project art only has 4 orientations (docs/art/direction.md), so diagonal
+  // movement snaps to whichever axis dominates the current facing vector.
+  private facingDirection(): 'south' | 'north' | 'east' | 'west' {
+    if (Math.abs(this.facingY) >= Math.abs(this.facingX)) {
+      return this.facingY >= 0 ? 'south' : 'north';
+    }
+    return this.facingX >= 0 ? 'east' : 'west';
+  }
+
+  private playAnim(key: string): void {
+    if (this.currentAnim === key) return;
+    this.currentAnim = key;
+    this.anims.play(key, true);
   }
 
   setVirtualMovement(x: number, y: number): void {
