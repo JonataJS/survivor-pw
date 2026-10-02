@@ -60,7 +60,17 @@ const SKILL_ELEMENTS = new Map<string, Element>(attackSkills.map((skill) => [ski
 const DEBUG_PASSIVE_LEVEL = 5;
 
 const GRID_SIZE = 100;
-const CONTACT_QUERY_RADIUS = 64;
+// Independent of the player's combat hitbox (Player.ts' 96x96 setSize) on
+// purpose: it used to equal half that hitbox when the hitbox was 32px, and
+// just carrying that growth over to 48px would nearly swallow the 60px
+// attraction radius (pickupRadius), making gems snap up almost on contact
+// instead of visibly flying in. Kept at the original value instead.
+const GEM_INSTANT_COLLECT_RADIUS = 16;
+// Must stay above the largest possible playerRadius + enemy.contactRadius
+// (48 + 16 = 64 for the tank, since the player hitbox grew to 96px — see
+// Player.ts) with margin for movement between frames, or handleContactDamage
+// can miss enemies that are already in contact range.
+const CONTACT_QUERY_RADIUS = 100;
 
 export class GameScene extends Phaser.Scene {
   private player!: Player;
@@ -285,7 +295,7 @@ export class GameScene extends Phaser.Scene {
       this.player.x,
       this.player.y,
       this.player.pickupRadius,
-      this.player.width / 2,
+      GEM_INSTANT_COLLECT_RADIUS,
       (value) => this.player.addXp(value),
     );
 

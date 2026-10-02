@@ -19,7 +19,10 @@ const game = new Phaser.Game({
     target: TARGET_FPS,
   },
   scale: {
-    mode: Phaser.Scale.FIT,
+    // ENVELOP fills the viewport completely (cropping overflow) instead of
+    // FIT's letterboxing, which is what showed up as black bars on the
+    // sides on wider/narrower-than-16:9 screens.
+    mode: Phaser.Scale.ENVELOP,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   physics: {

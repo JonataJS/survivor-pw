@@ -56,13 +56,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    // Sprite source canvas is 92x92 (PixelLab padding for the staff), but
-    // gameplay (collision box, pickup/contact radius reads via `.width`
-    // elsewhere) expects the 32x32 footprint from docs/art/direction.md.
-    // setSize (Arcade.Sprite) resizes the physics body too, so it must run
-    // after physics.add.existing creates that body.
-    this.setDisplaySize(32, 32);
-    this.setSize(32, 32);
+    // Visual size is 3x the original 32px (user request — the sprite read
+    // too small on screen), and the collision/contact/pickup footprint
+    // (`.width`, read by GameScene's contact damage and gem-pickup checks)
+    // matches it at 96x96 — a conscious choice to keep hitbox and sprite in
+    // sync rather than hiding a bigger character behind a small hitbox.
+    // This roughly doubles the effective contact range vs enemies, so
+    // data/enemies.ts' contactDamage was lowered to compensate — see the
+    // comment there. setSize (Arcade.Sprite) resizes the physics body too,
+    // so it must run after physics.add.existing creates that body.
+    this.setDisplaySize(96, 96);
+    this.setSize(96, 96);
 
     this.setCollideWorldBounds(true);
     this.playAnim('mage-idle-south');
