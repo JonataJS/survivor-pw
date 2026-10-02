@@ -181,7 +181,11 @@ export class GameScene extends Phaser.Scene {
       EventBus.off('cultivation-required', this.onCultivationRequired);
     });
 
-    const hudData: HudSceneData = { player: this.player, equippedSkills: this.equippedSkills };
+    const hudData: HudSceneData = {
+      player: this.player,
+      equippedSkills: this.equippedSkills,
+      skillInstances: this.skillInstances,
+    };
     this.scene.launch('Hud', hudData);
 
     const keyboard = this.input.keyboard as Phaser.Input.Keyboard.KeyboardPlugin;

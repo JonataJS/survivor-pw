@@ -4,13 +4,17 @@ import { xpToNextLevel } from '../systems/XpSystem';
 import { EventBus } from '../core/EventBus';
 import { TouchControls } from '../ui/TouchControls';
 import { GOD_COLOR, EVIL_COLOR } from '../skills/pathColors';
+import { skillIconTextureKey } from './BootScene';
+import { movingEarth } from '../data/skills';
 import type { Player } from '../entities/Player';
 import type { EquippedSkillState } from '../systems/UpgradeSystem';
+import type { Skill } from '../skills/Skill';
 import type { Element, Path } from '../data/types';
 
 export interface HudSceneData {
   player: Player;
   equippedSkills: EquippedSkillState[];
+  skillInstances: ReadonlyMap<string, Skill>;
 }
 
 const ELEMENT_COLORS: Record<Element, number> = {
@@ -45,13 +49,18 @@ export class HudScene extends Phaser.Scene {
   private pathText!: Phaser.GameObjects.Text;
   private skillIcons = new Map<
     string,
-    { bg: Phaser.GameObjects.Rectangle; levelText: Phaser.GameObjects.Text }
+    {
+      cooldownOverlay: Phaser.GameObjects.Graphics;
+      cooldownText: Phaser.GameObjects.Text;
+      levelText: Phaser.GameObjects.Text;
+    }
   >();
   private skillIconsRow!: Phaser.GameObjects.Container;
   private touchEnabled = false;
 
   private player!: Player;
   private equippedSkills!: EquippedSkillState[];
+  private skillInstances!: ReadonlyMap<string, Skill>;
   private path: Path | undefined;
 
   private readonly onHpChanged = (hp: number, maxHp: number): void => this.updateHpBar(hp, maxHp);
@@ -79,6 +88,7 @@ export class HudScene extends Phaser.Scene {
   create(data: HudSceneData): void {
     this.player = data.player;
     this.equippedSkills = data.equippedSkills;
+    this.skillInstances = data.skillInstances;
     this.path = undefined;
     this.touchEnabled = this.sys.game.device.input.touch;
 
@@ -196,6 +206,46 @@ export class HudScene extends Phaser.Scene {
     const ready = remaining <= 0;
     this.dashFill.setDisplaySize(ready ? 90 : 90 * (1 - remaining / Math.max(total, 0.001)), 18);
     this.dashText.setText(ready ? 'Dash: pronto' : `Dash: ${remaining.toFixed(1)}s`);
+
+    this.updateSkillCooldowns();
+  }
+
+  // Lê a recarga de cada skill equipada direto da instância viva (ou do
+  // Player, para Terra Móvel) a cada frame — mesmo padrão do dash acima —
+  // e desenha o "ponteiro de relógio" como um setor escuro que encolhe
+  // sobre o ícone até a skill ficar pronta.
+  private updateSkillCooldowns(): void {
+    for (const equipped of this.equippedSkills) {
+      const icon = this.skillIcons.get(equipped.def.id);
+      if (!icon) continue;
+
+      const { remaining, total } = this.getSkillCooldown(equipped.def.id);
+      const ratio = total > 0 ? Phaser.Math.Clamp(remaining / total, 0, 1) : 0;
+
+      icon.cooldownOverlay.clear();
+      if (ratio > 0) {
+        const center = SKILL_ICON_SIZE / 2;
+        const radius = SKILL_ICON_SIZE / 2 - 2;
+        const startAngle = -Math.PI / 2;
+        const endAngle = startAngle + ratio * Math.PI * 2;
+        icon.cooldownOverlay.fillStyle(0x000000, 0.7);
+        icon.cooldownOverlay.beginPath();
+        icon.cooldownOverlay.moveTo(center, center);
+        icon.cooldownOverlay.slice(center, center, radius, startAngle, endAngle, false);
+        icon.cooldownOverlay.closePath();
+        icon.cooldownOverlay.fillPath();
+      }
+      icon.cooldownText.setText(remaining >= 0.95 ? `${Math.ceil(remaining)}` : '');
+    }
+  }
+
+  private getSkillCooldown(skillId: string): { remaining: number; total: number } {
+    if (skillId === movingEarth.id) {
+      return { remaining: this.player.dashCooldownRemaining, total: this.player.dashCooldownDuration };
+    }
+    const skill = this.skillInstances.get(skillId);
+    if (!skill) return { remaining: 0, total: 0 };
+    return { remaining: skill.cooldownRemaining, total: skill.cooldownDuration };
   }
 
   private updateHpBar(hp: number, maxHp: number): void {
@@ -220,33 +270,40 @@ export class HudScene extends Phaser.Scene {
   }
 
   private rebuildSkillIcons(): void {
-    for (const icon of this.skillIcons.values()) {
-      icon.bg.destroy();
-      icon.levelText.destroy();
-    }
+    this.skillIconsRow.removeAll(true);
     this.skillIcons.clear();
-    this.skillIconsRow.removeAll();
 
     const rowWidth = this.equippedSkills.length * (SKILL_ICON_SIZE + SKILL_ICON_GAP) - SKILL_ICON_GAP;
     const rowX = this.touchEnabled ? (this.scale.width - rowWidth) / 2 : 16;
     this.skillIconsRow.setPosition(rowX, this.scale.height - SKILL_ICON_SIZE - 16);
 
     this.equippedSkills.forEach((equipped, index) => {
-      const x = index * (SKILL_ICON_SIZE + SKILL_ICON_GAP);
+      const slot = this.add.container(index * (SKILL_ICON_SIZE + SKILL_ICON_GAP), 0);
+      const center = SKILL_ICON_SIZE / 2;
       const color = ELEMENT_COLORS[equipped.def.element];
+
       const bg = this.add
-        .rectangle(x, 0, SKILL_ICON_SIZE, SKILL_ICON_SIZE, color)
+        .rectangle(0, 0, SKILL_ICON_SIZE, SKILL_ICON_SIZE, 0x111111)
         .setOrigin(0, 0)
-        .setStrokeStyle(2, 0x000000);
+        .setStrokeStyle(2, color);
+      const icon = this.add
+        .image(center, center, skillIconTextureKey(equipped.def.id))
+        .setDisplaySize(SKILL_ICON_SIZE - 6, SKILL_ICON_SIZE - 6);
+      const cooldownOverlay = this.add.graphics();
+      const cooldownText = this.add
+        .text(center, center, '', { fontSize: '15px', color: '#ffffff', fontStyle: 'bold' })
+        .setOrigin(0.5);
       const levelText = this.add
-        .text(x + SKILL_ICON_SIZE - 4, SKILL_ICON_SIZE - 4, `${equipped.level}`, {
+        .text(SKILL_ICON_SIZE - 4, SKILL_ICON_SIZE - 4, `${equipped.level}`, {
           fontSize: '13px',
           color: '#ffffff',
           backgroundColor: '#000000aa',
         })
         .setOrigin(1, 1);
-      this.skillIconsRow.add([bg, levelText]);
-      this.skillIcons.set(equipped.def.id, { bg, levelText });
+
+      slot.add([bg, icon, cooldownOverlay, cooldownText, levelText]);
+      this.skillIconsRow.add(slot);
+      this.skillIcons.set(equipped.def.id, { cooldownOverlay, cooldownText, levelText });
     });
   }
 

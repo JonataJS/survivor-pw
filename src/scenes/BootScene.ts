@@ -1,4 +1,11 @@
 import Phaser from 'phaser';
+import { attackSkills, activeSkills } from '../data/skills';
+
+const SKILL_ICON_IDS = [...attackSkills, ...activeSkills].map((skill) => skill.id);
+
+export function skillIconTextureKey(skillId: string): string {
+  return `skill-icon-${skillId}`;
+}
 
 const ENEMY_TEXTURES: Record<string, { size: number; color: number }> = {
   'enemy-common': { size: 20, color: 0x999999 },
@@ -39,6 +46,10 @@ export class BootScene extends Phaser.Scene {
       frameWidth: 92,
       frameHeight: 92,
     });
+
+    for (const skillId of SKILL_ICON_IDS) {
+      this.load.image(skillIconTextureKey(skillId), `assets/skills/mage/${skillId}.png`);
+    }
   }
 
   create(): void {
