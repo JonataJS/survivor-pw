@@ -17,7 +17,7 @@ const ELEMENT_COLORS: Record<Element, number> = {
 const NEUTRAL_COLOR = 0xcccccc;
 
 const CARD_WIDTH = 320;
-const CARD_HEIGHT = 260;
+const CARD_HEIGHT = 300;
 const CARD_GAP = 32;
 const ICON_SIZE = 32;
 
@@ -102,13 +102,13 @@ export class LevelUpScene extends Phaser.Scene {
         .setOrigin(0.5);
     }
     this.add
-      .text(x, y + 20, card.description, {
+      .text(x, y - CARD_HEIGHT / 2 + (iconId ? 152 : 112), card.description, {
         fontSize: '15px',
         color: '#bbbbbb',
         align: 'center',
         wordWrap: { width: CARD_WIDTH - 24 },
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0);
   }
 
   private selectOption(option: UpgradeOption): void {
