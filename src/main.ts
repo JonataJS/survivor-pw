@@ -19,10 +19,14 @@ const game = new Phaser.Game({
     target: TARGET_FPS,
   },
   scale: {
-    // ENVELOP fills the viewport completely (cropping overflow) instead of
-    // FIT's letterboxing, which is what showed up as black bars on the
-    // sides on wider/narrower-than-16:9 screens.
-    mode: Phaser.Scale.ENVELOP,
+    // RESIZE makes the canvas match the viewport exactly, with no
+    // letterboxing (FIT's black bars) and no cropping (ENVELOP's downside —
+    // it filled the screen but cropped the edges on non-16:9 windows,
+    // cutting off the corner-anchored HUD: HP/XP bars, skill icons, timer).
+    // HudScene already reads this.scale.width/height for its right/bottom
+    // anchors, so it adapts; the main camera auto-resizes with it too
+    // (Phaser's CameraManager#onResize).
+    mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   physics: {
