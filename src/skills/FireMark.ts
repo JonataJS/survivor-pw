@@ -4,6 +4,7 @@ import type { CalculatedStats } from '../systems/CombatSystem';
 import type { Enemy } from '../entities/Enemy';
 import type { ProjectileSystem } from '../systems/ProjectileSystem';
 import { effectColor } from './pathColors';
+import { effectAnimKey, effectFrameTextureKey } from '../scenes/BootScene';
 
 const FIRE_COLOR = 0xff5522;
 
@@ -27,10 +28,11 @@ export class FireMarkSkill extends BaseSkill {
         ctx.casterY,
         target,
         damage,
-        'effect-white',
+        effectFrameTextureKey(this.def.id, 0),
         { critChance: stats.critChance, lifesteal: stats.lifesteal },
         effectColor(ctx.path, FIRE_COLOR),
         this.def.id,
+        effectAnimKey(this.def.id),
       );
     }
   }

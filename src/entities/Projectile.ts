@@ -4,6 +4,10 @@ import type { DamageEffects } from '../skills/Skill';
 
 const PROJECTILE_SPEED = 500;
 const MAX_LIFETIME_MS = 3000;
+// Fixed collision radius, independent of whichever texture/animation is
+// currently assigned (the PixelLab VFX frames are 32px, the old placeholder
+// circle was 12px) — keeps hit detection stable across art swaps.
+const PROJECTILE_HIT_RADIUS = 6;
 
 export class Projectile extends Phaser.Physics.Arcade.Sprite {
   damage = 0;
@@ -29,6 +33,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     effects?: DamageEffects,
     tint = 0xffffff,
     skillId?: string,
+    animKey?: string,
   ): void {
     this.target = target;
     this.targetGeneration = target.generation;
@@ -38,6 +43,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.lifetimeMs = 0;
 
     this.setTexture(textureKey);
+    if (animKey) this.play(animKey);
     this.setTint(tint);
     this.setPosition(x, y);
     this.setActive(true);
@@ -52,6 +58,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.setActive(false);
     this.setVisible(false);
     this.setVelocity(0, 0);
+    this.anims.stop();
     this.target = undefined;
     this.effects = undefined;
     this.skillId = undefined;
@@ -82,7 +89,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
   }
 
   get hitRadius(): number {
-    return this.width / 2;
+    return PROJECTILE_HIT_RADIUS;
   }
 
   get expired(): boolean {

@@ -3,6 +3,7 @@ import { sandStorm } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
 import { effectColor } from './pathColors';
+import { effectAnimKey, effectFrameTextureKey } from '../scenes/BootScene';
 
 const EARTH_COLOR = 0x8a5a2b;
 const SEARCH_RADIUS = 500;
@@ -31,7 +32,8 @@ export class SandStormSkill extends BaseSkill {
     if (distance <= 0) return;
 
     this.areaEffectSystem.playBeam(ctx.casterX, ctx.casterY, Math.atan2(dy, dx), distance, {
-      textureKey: 'effect-white',
+      textureKey: effectFrameTextureKey(this.def.id, 0),
+      animKey: effectAnimKey(this.def.id),
       tint: effectColor(ctx.path, EARTH_COLOR),
       width: BEAM_WIDTH,
       travelDurationMs: TRAVEL_DURATION_MS,

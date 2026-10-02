@@ -3,10 +3,11 @@ import { flamingStorm } from '../data/skills';
 import type { CalculatedStats } from '../systems/CombatSystem';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
 import { effectColor } from './pathColors';
+import { effectAnimKey, effectFrameTextureKey } from '../scenes/BootScene';
 
 const FIRE_COLOR = 0xff5522;
-// The circle texture is 12px wide; scale so its display diameter matches 2×radius.
-const TEXTURE_DIAMETER = 12;
+// The PixelLab VFX frame is 32px wide; scale so its display diameter matches 2×radius.
+const TEXTURE_DIAMETER = 32;
 
 export class FlamingStormSkill extends BaseSkill {
   constructor(private readonly areaEffectSystem: AreaEffectSystem) {
@@ -36,7 +37,8 @@ export class FlamingStormSkill extends BaseSkill {
     }
 
     this.areaEffectSystem.play(ctx.casterX, ctx.casterY, {
-      textureKey: 'effect-white',
+      textureKey: effectFrameTextureKey(this.def.id, 0),
+      animKey: effectAnimKey(this.def.id),
       tint: effectColor(ctx.path, FIRE_COLOR),
       maxScale: (radius * 2) / TEXTURE_DIAMETER,
       growDurationMs: 200,

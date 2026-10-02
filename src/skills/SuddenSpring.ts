@@ -4,8 +4,13 @@ import type { CalculatedStats } from '../systems/CombatSystem';
 import type { Enemy } from '../entities/Enemy';
 import type { AreaEffectSystem } from '../systems/AreaEffectSystem';
 import { effectColor } from './pathColors';
+import { effectAnimKey, effectFrameTextureKey } from '../scenes/BootScene';
 
 const WATER_COLOR = 0x3388ff;
+// PixelLab VFX frames are 32px; maxScale picks the display diameter (was a
+// 60px-diameter 12px placeholder circle, maxScale 5 — kept the same look).
+const EFFECT_TEXTURE_DIAMETER = 32;
+const DISPLAY_DIAMETER = 60;
 
 export class SuddenSpringSkill extends BaseSkill {
   constructor(private readonly areaEffectSystem: AreaEffectSystem) {
@@ -25,9 +30,10 @@ export class SuddenSpringSkill extends BaseSkill {
       chosen.add(target);
 
       this.areaEffectSystem.play(target.x, target.y, {
-        textureKey: 'effect-white',
+        textureKey: effectFrameTextureKey(this.def.id, 0),
+        animKey: effectAnimKey(this.def.id),
         tint: effectColor(ctx.path, WATER_COLOR),
-        maxScale: 5,
+        maxScale: DISPLAY_DIAMETER / EFFECT_TEXTURE_DIAMETER,
         growDurationMs: 150,
         fadeDurationMs: 250,
       });

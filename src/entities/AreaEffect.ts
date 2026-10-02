@@ -12,5 +12,6 @@ export class AreaEffect extends Phaser.GameObjects.Sprite {
     this.setActive(false);
     this.setVisible(false);
     this.scene.tweens.killTweensOf(this);
+    this.anims.stop();
   }
 }

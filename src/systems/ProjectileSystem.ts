@@ -31,9 +31,10 @@ export class ProjectileSystem {
     effects?: DamageEffects,
     tint?: number,
     skillId?: string,
+    animKey?: string,
   ): void {
     const projectile = this.pool.acquire();
-    projectile.fire(x, y, target, damage, textureKey, effects, tint, skillId);
+    projectile.fire(x, y, target, damage, textureKey, effects, tint, skillId, animKey);
     this.active.add(projectile);
   }
 

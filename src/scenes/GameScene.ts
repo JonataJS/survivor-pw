@@ -21,6 +21,7 @@ import { PhoenixWingsSkill } from '../skills/PhoenixWings';
 import { FlamingStormSkill } from '../skills/FlamingStorm';
 import { SandStormSkill } from '../skills/SandStorm';
 import { createTextButton } from '../ui/textButton';
+import { CAVE_FLOOR_TEXTURE } from './BootScene';
 import { createRng, pickOne, type Rng } from '../core/rng';
 import {
   fireMastery,
@@ -59,7 +60,6 @@ const SKILL_ELEMENTS = new Map<string, Element>(attackSkills.map((skill) => [ski
 // passives be toggled on/off to verify their effect manually.
 const DEBUG_PASSIVE_LEVEL = 5;
 
-const GRID_SIZE = 100;
 // Independent of the player's combat hitbox (Player.ts' 96x96 setSize) on
 // purpose: it used to equal half that hitbox when the hitbox was 32px, and
 // just carrying that growth over to 48px would nearly swallow the 60px
@@ -127,8 +127,8 @@ export class GameScene extends Phaser.Scene {
     this.matchElapsedSeconds = 0;
     this.matchEnded = false;
     this.killCount = 0;
-    this.cameras.main.setBackgroundColor('#0a2a12');
-    this.drawWorldGrid();
+    this.cameras.main.setBackgroundColor('#1c1712');
+    this.drawCaveFloor();
 
     this.physics.world.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
     this.cameras.main.setBounds(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
@@ -680,15 +680,7 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  private drawWorldGrid(): void {
-    const graphics = this.add.graphics();
-    graphics.lineStyle(1, 0x1f4a2a, 1);
-
-    for (let x = 0; x <= WORLD_WIDTH; x += GRID_SIZE) {
-      graphics.lineBetween(x, 0, x, WORLD_HEIGHT);
-    }
-    for (let y = 0; y <= WORLD_HEIGHT; y += GRID_SIZE) {
-      graphics.lineBetween(0, y, WORLD_WIDTH, y);
-    }
+  private drawCaveFloor(): void {
+    this.add.tileSprite(0, 0, WORLD_WIDTH, WORLD_HEIGHT, CAVE_FLOOR_TEXTURE).setOrigin(0, 0);
   }
 }

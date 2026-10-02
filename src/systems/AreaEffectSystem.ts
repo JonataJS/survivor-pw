@@ -4,6 +4,10 @@ import { AreaEffect } from '../entities/AreaEffect';
 
 export interface AreaEffectConfig {
   textureKey: string;
+  // Looping VFX animation (see BootScene.effectAnimKey) to play instead of
+  // the static textureKey frame. Optional so a skill can still fall back to
+  // a plain tinted texture with no animation.
+  animKey?: string;
   tint?: number;
   maxScale: number;
   growDurationMs: number;
@@ -12,6 +16,7 @@ export interface AreaEffectConfig {
 
 export interface BeamEffectConfig {
   textureKey: string;
+  animKey?: string;
   tint?: number;
   width: number;
   travelDurationMs: number;
@@ -61,6 +66,7 @@ export class AreaEffectSystem {
   play(x: number, y: number, config: AreaEffectConfig): void {
     const effect = this.pool.acquire();
     effect.setTexture(config.textureKey);
+    if (config.animKey) effect.play(config.animKey);
     effect.setOrigin(0.5, 0.5);
     effect.setPosition(x, y);
     effect.setScale(0);
@@ -92,6 +98,7 @@ export class AreaEffectSystem {
   playBeam(x: number, y: number, angle: number, length: number, config: BeamEffectConfig): void {
     const effect = this.pool.acquire();
     effect.setTexture(config.textureKey);
+    if (config.animKey) effect.play(config.animKey);
     effect.setOrigin(0, 0.5);
     effect.setPosition(x, y);
     effect.setRotation(angle);
