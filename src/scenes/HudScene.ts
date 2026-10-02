@@ -6,6 +6,7 @@ import { TouchControls } from '../ui/TouchControls';
 import { GOD_COLOR, EVIL_COLOR } from '../skills/pathColors';
 import { skillIconTextureKey } from './BootScene';
 import { movingEarth } from '../data/skills';
+import { COLORS, FONT_BODY } from '../ui/theme';
 import type { Player } from '../entities/Player';
 import type { EquippedSkillState } from '../systems/UpgradeSystem';
 import type { Skill } from '../skills/Skill';
@@ -92,25 +93,30 @@ export class HudScene extends Phaser.Scene {
     this.path = undefined;
     this.touchEnabled = this.sys.game.device.input.touch;
 
-    // HP bar
-    this.add.rectangle(
-      BAR_X + HP_BAR_WIDTH / 2,
-      HP_BAR_Y + HP_BAR_HEIGHT / 2,
-      HP_BAR_WIDTH,
-      HP_BAR_HEIGHT,
-      0x220000,
-    ).setOrigin(0.5).setScrollFactor(0).setStrokeStyle(2, 0x000000);
+    // HP bar — moldura de bronze ao redor de um trilho escuro, estilo
+    // medieval/Perfect World (src/ui/theme.ts), no lugar da barra neutra.
+    const hpFrame = this.add.graphics().setScrollFactor(0);
+    hpFrame.fillStyle(COLORS.panel, 1);
+    hpFrame.fillRoundedRect(BAR_X - 4, HP_BAR_Y - 4, HP_BAR_WIDTH + 8, HP_BAR_HEIGHT + 8, 6);
+    hpFrame.lineStyle(3, COLORS.borderBronze, 1);
+    hpFrame.strokeRoundedRect(BAR_X - 4, HP_BAR_Y - 4, HP_BAR_WIDTH + 8, HP_BAR_HEIGHT + 8, 6);
+    this.add
+      .rectangle(BAR_X, HP_BAR_Y, HP_BAR_WIDTH, HP_BAR_HEIGHT, COLORS.hpTrack)
+      .setOrigin(0, 0)
+      .setScrollFactor(0);
     this.hpBarFill = this.add
-      .rectangle(BAR_X, HP_BAR_Y, HP_BAR_WIDTH, HP_BAR_HEIGHT, 0x33cc55)
+      .rectangle(BAR_X, HP_BAR_Y, HP_BAR_WIDTH, HP_BAR_HEIGHT, COLORS.hpFill)
       .setOrigin(0, 0)
       .setScrollFactor(0);
     this.hpText = this.add
       .text(BAR_X + HP_BAR_WIDTH / 2, HP_BAR_Y + HP_BAR_HEIGHT / 2, '', {
         fontSize: '13px',
-        color: '#ffffff',
+        fontFamily: FONT_BODY,
+        color: COLORS.textCream,
       })
       .setOrigin(0.5)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setShadow(0, 1, '#000000', 2, true, true);
 
     // XP bar + level
     this.add.rectangle(
@@ -251,7 +257,7 @@ export class HudScene extends Phaser.Scene {
   private updateHpBar(hp: number, maxHp: number): void {
     const ratio = maxHp > 0 ? Phaser.Math.Clamp(hp / maxHp, 0, 1) : 0;
     this.hpBarFill.setDisplaySize(HP_BAR_WIDTH * ratio, HP_BAR_HEIGHT);
-    this.hpBarFill.setFillStyle(ratio <= 0.3 ? 0xcc3333 : 0x33cc55);
+    this.hpBarFill.setFillStyle(ratio <= 0.3 ? COLORS.hpFillLow : COLORS.hpFill);
     this.hpText.setText(`${Math.ceil(hp)} / ${Math.ceil(maxHp)}`);
   }
 

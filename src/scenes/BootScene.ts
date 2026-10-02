@@ -56,7 +56,27 @@ export class BootScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#000000');
     this.generatePlaceholderTextures();
     this.generateMageAnimations();
-    this.scene.start('Menu');
+    this.startMenuWhenFontsReady();
+  }
+
+  // Garante que Cinzel/EB Garamond (tema medieval da UI, ver src/ui/theme.ts)
+  // já estejam carregadas antes do primeiro texto ser desenhado no canvas —
+  // sem isso o texto nasceria com a fonte de fallback e nunca seria
+  // re-renderizado quando a fonte web chegasse.
+  private startMenuWhenFontsReady(): void {
+    const start = (): void => {
+      this.scene.start('Menu');
+    };
+    if (!document.fonts) {
+      start();
+      return;
+    }
+    Promise.all([
+      document.fonts.load('700 32px Cinzel'),
+      document.fonts.load('400 16px "EB Garamond"'),
+    ])
+      .then(start)
+      .catch(start);
   }
 
   private generateMageAnimations(): void {

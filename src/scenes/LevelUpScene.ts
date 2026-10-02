@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { UpgradeOption } from '../systems/UpgradeSystem';
 import { describeUpgradeOption } from '../systems/upgradeCardText';
 import { skillIconTextureKey } from './BootScene';
+import { COLORS, FONT_BODY, FONT_TITLE, drawPanel } from '../ui/theme';
 import type { Element } from '../data/types';
 
 export interface LevelUpSceneData {
@@ -14,7 +15,7 @@ const ELEMENT_COLORS: Record<Element, number> = {
   water: 0x3388ff,
   earth: 0x8a5a2b,
 };
-const NEUTRAL_COLOR = 0xcccccc;
+const NEUTRAL_COLOR = COLORS.borderGold;
 
 const CARD_WIDTH = 320;
 const CARD_HEIGHT = 300;
@@ -35,10 +36,17 @@ export class LevelUpScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const options = data.options;
 
-    this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
+    this.add.rectangle(width / 2, height / 2, width, height, 0x0a0603, 0.72);
     this.add
-      .text(width / 2, height / 2 - CARD_HEIGHT / 2 - 60, 'Suba de nível!', { fontSize: '32px' })
-      .setOrigin(0.5);
+      .text(width / 2, height / 2 - CARD_HEIGHT / 2 - 60, 'Suba de nível!', {
+        fontSize: '32px',
+        fontFamily: FONT_TITLE,
+        fontStyle: 'bold',
+        color: COLORS.textGold,
+      })
+      .setOrigin(0.5)
+      .setLetterSpacing(1)
+      .setShadow(0, 2, '#000000', 4, true, true);
 
     const totalWidth = options.length * CARD_WIDTH + (options.length - 1) * CARD_GAP;
     const startX = width / 2 - totalWidth / 2 + CARD_WIDTH / 2;
@@ -67,48 +75,66 @@ export class LevelUpScene extends Phaser.Scene {
     const colorCss = `#${color.toString(16).padStart(6, '0')}`;
     const iconId = option.kind === 'new-skill' || option.kind === 'improve-skill' ? option.skill.id : undefined;
 
-    const background = this.add
-      .rectangle(x, y, CARD_WIDTH, CARD_HEIGHT, 0x1a1a1a, 0.95)
-      .setStrokeStyle(3, color)
-      .setInteractive({ useHandCursor: true });
+    const container = this.add.container(x, y);
+    const panel = this.add.graphics();
+    drawPanel(panel, CARD_WIDTH, CARD_HEIGHT, COLORS.panel, color, 10);
+    container.add(panel);
+    container.setSize(CARD_WIDTH, CARD_HEIGHT);
+    container.setInteractive({ useHandCursor: true });
+    container.on('pointerover', () => drawPanel(panel, CARD_WIDTH, CARD_HEIGHT, COLORS.panelHover, color, 10));
+    container.on('pointerout', () => drawPanel(panel, CARD_WIDTH, CARD_HEIGHT, COLORS.panel, color, 10));
+    container.on('pointerdown', () => this.selectOption(option));
 
-    background.on('pointerover', () => background.setFillStyle(0x2a2a2a, 0.95));
-    background.on('pointerout', () => background.setFillStyle(0x1a1a1a, 0.95));
-    background.on('pointerdown', () => this.selectOption(option));
-
-    this.add
-      .text(x, y - CARD_HEIGHT / 2 + 20, `[${hotkeyNumber}]`, { fontSize: '16px', color: '#888888' })
-      .setOrigin(0.5);
-    if (iconId) {
+    container.add(
       this.add
-        .image(x, y - CARD_HEIGHT / 2 + 50, skillIconTextureKey(iconId))
-        .setDisplaySize(ICON_SIZE, ICON_SIZE);
-    }
-    this.add
-      .text(x, y - CARD_HEIGHT / 2 + (iconId ? 96 : 52), card.title, {
-        fontSize: '22px',
-        color: colorCss,
-        fontStyle: 'bold',
-        align: 'center',
-        wordWrap: { width: CARD_WIDTH - 24 },
-      })
-      .setOrigin(0.5);
-    if (card.levelLabel) {
-      this.add
-        .text(x, y - CARD_HEIGHT / 2 + (iconId ? 128 : 90), card.levelLabel, {
+        .text(0, -CARD_HEIGHT / 2 + 20, `[${hotkeyNumber}]`, {
           fontSize: '16px',
-          color: '#dddddd',
+          fontFamily: FONT_BODY,
+          color: COLORS.textMuted,
         })
-        .setOrigin(0.5);
+        .setOrigin(0.5),
+    );
+    if (iconId) {
+      container.add(
+        this.add
+          .image(0, -CARD_HEIGHT / 2 + 50, skillIconTextureKey(iconId))
+          .setDisplaySize(ICON_SIZE, ICON_SIZE),
+      );
     }
-    this.add
-      .text(x, y - CARD_HEIGHT / 2 + (iconId ? 152 : 112), card.description, {
-        fontSize: '15px',
-        color: '#bbbbbb',
-        align: 'center',
-        wordWrap: { width: CARD_WIDTH - 24 },
-      })
-      .setOrigin(0.5, 0);
+    container.add(
+      this.add
+        .text(0, -CARD_HEIGHT / 2 + (iconId ? 96 : 52), card.title, {
+          fontSize: '22px',
+          fontFamily: FONT_TITLE,
+          color: colorCss,
+          fontStyle: 'bold',
+          align: 'center',
+          wordWrap: { width: CARD_WIDTH - 24 },
+        })
+        .setOrigin(0.5),
+    );
+    if (card.levelLabel) {
+      container.add(
+        this.add
+          .text(0, -CARD_HEIGHT / 2 + (iconId ? 128 : 90), card.levelLabel, {
+            fontSize: '16px',
+            fontFamily: FONT_BODY,
+            color: COLORS.textCream,
+          })
+          .setOrigin(0.5),
+      );
+    }
+    container.add(
+      this.add
+        .text(0, -CARD_HEIGHT / 2 + (iconId ? 152 : 112), card.description, {
+          fontSize: '15px',
+          fontFamily: FONT_BODY,
+          color: COLORS.textMuted,
+          align: 'center',
+          wordWrap: { width: CARD_WIDTH - 24 },
+        })
+        .setOrigin(0.5, 0),
+    );
   }
 
   private selectOption(option: UpgradeOption): void {
