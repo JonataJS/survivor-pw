@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { UpgradeOption } from '../systems/UpgradeSystem';
 import { describeUpgradeOption } from '../systems/upgradeCardText';
+import { skillIconTextureKey } from './BootScene';
 import type { Element } from '../data/types';
 
 export interface LevelUpSceneData {
@@ -16,8 +17,9 @@ const ELEMENT_COLORS: Record<Element, number> = {
 const NEUTRAL_COLOR = 0xcccccc;
 
 const CARD_WIDTH = 320;
-const CARD_HEIGHT = 240;
+const CARD_HEIGHT = 260;
 const CARD_GAP = 32;
+const ICON_SIZE = 32;
 
 export class LevelUpScene extends Phaser.Scene {
   private sceneData!: LevelUpSceneData;
@@ -63,6 +65,7 @@ export class LevelUpScene extends Phaser.Scene {
     const card = describeUpgradeOption(option);
     const color = card.element ? ELEMENT_COLORS[card.element] : NEUTRAL_COLOR;
     const colorCss = `#${color.toString(16).padStart(6, '0')}`;
+    const iconId = option.kind === 'new-skill' || option.kind === 'improve-skill' ? option.skill.id : undefined;
 
     const background = this.add
       .rectangle(x, y, CARD_WIDTH, CARD_HEIGHT, 0x1a1a1a, 0.95)
@@ -76,8 +79,13 @@ export class LevelUpScene extends Phaser.Scene {
     this.add
       .text(x, y - CARD_HEIGHT / 2 + 20, `[${hotkeyNumber}]`, { fontSize: '16px', color: '#888888' })
       .setOrigin(0.5);
+    if (iconId) {
+      this.add
+        .image(x, y - CARD_HEIGHT / 2 + 50, skillIconTextureKey(iconId))
+        .setDisplaySize(ICON_SIZE, ICON_SIZE);
+    }
     this.add
-      .text(x, y - CARD_HEIGHT / 2 + 52, card.title, {
+      .text(x, y - CARD_HEIGHT / 2 + (iconId ? 96 : 52), card.title, {
         fontSize: '22px',
         color: colorCss,
         fontStyle: 'bold',
@@ -87,7 +95,10 @@ export class LevelUpScene extends Phaser.Scene {
       .setOrigin(0.5);
     if (card.levelLabel) {
       this.add
-        .text(x, y - CARD_HEIGHT / 2 + 90, card.levelLabel, { fontSize: '16px', color: '#dddddd' })
+        .text(x, y - CARD_HEIGHT / 2 + (iconId ? 128 : 90), card.levelLabel, {
+          fontSize: '16px',
+          color: '#dddddd',
+        })
         .setOrigin(0.5);
     }
     this.add
