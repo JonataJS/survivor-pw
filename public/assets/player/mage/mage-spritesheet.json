@@ -1,0 +1,105 @@
+{
+  "character": {
+    "id": "288acc8b-6a43-4b07-a588-1e3530113d39",
+    "name": "Idle",
+    "prompt": "Stylized chibi fantasy wizard, male, spiky messy white/silver hair, pale skin, ornate crimson red and gold trimmed robe armor with teal/cyan accents, cream-colored long skirt, holding an ornate wizard's magic staff topped with a glowing red crystal orb gem \u2014 a ceremonial staff weapon, definitely not a torch or burning stick, oriental fantasy style",
+    "size": {
+      "width": 92,
+      "height": 92
+    },
+    "directions": 4,
+    "view": "low top-down"
+  },
+  "spritesheet": {
+    "path": "Mago_Chibi_v2-Idle.png",
+    "cell_size": {
+      "width": 92,
+      "height": 92
+    },
+    "sheet_size": {
+      "width": 368,
+      "height": 828
+    },
+    "columns": 4,
+    "pivot": "cell-center",
+    "rows": [
+      {
+        "row": 0,
+        "type": "rotations",
+        "frame_count": 4,
+        "directions": [
+          "south",
+          "west",
+          "east",
+          "north"
+        ]
+      },
+      {
+        "row": 1,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "idle",
+        "animation_group_id": "5625195b-44aa-4469-83f1-a2ebddefe04e",
+        "direction": "south"
+      },
+      {
+        "row": 2,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "idle",
+        "animation_group_id": "5625195b-44aa-4469-83f1-a2ebddefe04e",
+        "direction": "west"
+      },
+      {
+        "row": 3,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "idle",
+        "animation_group_id": "5625195b-44aa-4469-83f1-a2ebddefe04e",
+        "direction": "east"
+      },
+      {
+        "row": 4,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "idle",
+        "animation_group_id": "5625195b-44aa-4469-83f1-a2ebddefe04e",
+        "direction": "north"
+      },
+      {
+        "row": 5,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "walk",
+        "animation_group_id": "b0e96b18-1de0-4d57-85b9-a9cc0ce91e75",
+        "direction": "south"
+      },
+      {
+        "row": 6,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "walk",
+        "animation_group_id": "b0e96b18-1de0-4d57-85b9-a9cc0ce91e75",
+        "direction": "west"
+      },
+      {
+        "row": 7,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "walk",
+        "animation_group_id": "b0e96b18-1de0-4d57-85b9-a9cc0ce91e75",
+        "direction": "east"
+      },
+      {
+        "row": 8,
+        "type": "animation",
+        "frame_count": 4,
+        "animation": "walk",
+        "animation_group_id": "b0e96b18-1de0-4d57-85b9-a9cc0ce91e75",
+        "direction": "north"
+      }
+    ]
+  },
+  "export_version": "1.0",
+  "export_date": "2026-10-02T01:14:42.736633+00:00"
+}
