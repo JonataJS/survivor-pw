@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { createTextButton } from '../ui/textButton';
+import { COLORS, FONT_BODY, FONT_TITLE } from '../ui/theme';
 
 export class PauseScene extends Phaser.Scene {
   private resumeKeyHandler!: (event: KeyboardEvent) => void;
@@ -11,13 +12,22 @@ export class PauseScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.scale;
 
-    this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
-    this.add.text(width / 2, height / 2 - 60, 'Pausado', { fontSize: '36px' }).setOrigin(0.5);
+    this.add.rectangle(width / 2, height / 2, width, height, 0x0a0603, 0.72);
+    this.add
+      .text(width / 2, height / 2 - 60, 'Pausado', {
+        fontSize: '36px',
+        fontFamily: FONT_TITLE,
+        fontStyle: 'bold',
+        color: COLORS.textGold,
+      })
+      .setOrigin(0.5)
+      .setShadow(0, 2, '#000000', 4, true, true);
 
     this.add
       .text(width / 2, height / 2 - 15, 'Pressione Esc ou P para continuar', {
         fontSize: '18px',
-        color: '#dddddd',
+        fontFamily: FONT_BODY,
+        color: COLORS.textMuted,
       })
       .setOrigin(0.5);
 

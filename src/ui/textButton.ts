@@ -1,4 +1,8 @@
 import Phaser from 'phaser';
+import { COLORS, FONT_TITLE, drawPanel } from './theme';
+
+const PADDING_X = 28;
+const PADDING_Y = 14;
 
 export function createTextButton(
   scene: Phaser.Scene,
@@ -6,20 +10,27 @@ export function createTextButton(
   y: number,
   text: string,
   onClick: () => void,
-): Phaser.GameObjects.Text {
-  const button = scene.add
-    .text(x, y, text, {
-      fontSize: '28px',
-      color: '#ffffff',
-      backgroundColor: '#333333',
-      padding: { x: 16, y: 8 },
+): Phaser.GameObjects.Container {
+  const label = scene.add
+    .text(0, 0, text, {
+      fontSize: '24px',
+      fontFamily: FONT_TITLE,
+      fontStyle: 'bold',
+      color: COLORS.textGold,
     })
-    .setOrigin(0.5)
-    .setInteractive({ useHandCursor: true });
+    .setOrigin(0.5);
 
-  button.on('pointerover', () => button.setBackgroundColor('#555555'));
-  button.on('pointerout', () => button.setBackgroundColor('#333333'));
-  button.on('pointerdown', onClick);
+  const width = label.width + PADDING_X * 2;
+  const height = label.height + PADDING_Y * 2;
+  const panel = scene.add.graphics();
+  drawPanel(panel, width, height, COLORS.panel, COLORS.borderBronze, 8);
 
-  return button;
+  const container = scene.add.container(x, y, [panel, label]);
+  container.setSize(width, height);
+  container.setInteractive({ useHandCursor: true });
+  container.on('pointerover', () => drawPanel(panel, width, height, COLORS.panelHover, COLORS.borderGold, 8));
+  container.on('pointerout', () => drawPanel(panel, width, height, COLORS.panel, COLORS.borderBronze, 8));
+  container.on('pointerdown', onClick);
+
+  return container;
 }
